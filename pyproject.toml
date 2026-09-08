@@ -1,0 +1,19 @@
+[project]
+name = "aiplayer"
+version = "0.0.8"
+description = "Unified media player (KODI + local mpv)"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.28.0",
+    "zeroconf>=0.47.0",
+]
+
+[project.scripts]
+aiplayer = "aiplayer.aiplayer:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiplayer"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
