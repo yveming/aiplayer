@@ -75,7 +75,7 @@ def test_build_catchup_url():
         ('http://e.com/c/{timestamp}.m3u8',
          'http://e.com/c/1733054400.m3u8'),
         ('http://e.com/c/{utctime}.m3u8',
-         'http://e.com/c/20241201120000.m3u8'),
+         'http://e.com/c/20241201200000.m3u8'),  # local fill (mirrors KODI)
         ('http://e.com/c/{localtime}.m3u8',
          'http://e.com/c/20241201200000.m3u8'),  # +8
         ('http://e.com/c/{start_ms}-{end_ms}.m3u8',
@@ -91,7 +91,7 @@ def test_build_catchup_url():
          'http://e.com/c/2024-12-01/20-20.ts'),
         # --- New: VLC-style  {name:fmt}
         ('http://e.com/c/{utc:YmdHMS}-{utcend:YmdHMS}.ts',
-         'http://e.com/c/20241201120000-20241201123000.ts'),
+         'http://e.com/c/20241201200000-20241201203000.ts'),  # local fill (mirrors KODI)
         # local variant
         ('http://e.com/c/{lutc:YmdHMS}-{lutcend:YmdHMS}.ts',
          'http://e.com/c/20241201200000-20241201203000.ts'),
@@ -147,7 +147,7 @@ http://c.com/live.m3u8
     print('  B:', ub)
     print('  C:', uc)
     assert '20241201200000-20241201203000' in ua
-    assert '20241201120000-20241201123000' in ub
+    assert '20241201200000-20241201203000' in ub
     assert '?start=1733054400&end=1733056200' in uc
     print('  PASS')
 

@@ -4,18 +4,16 @@ PVR channel browsing, EPG lookup, and catch-up TV.
 Supports Player abstraction for KODI and local mpv playback.
 """
 
-import argparse
-import json
-import sys
 import re
-import os
 from datetime import datetime, timedelta, timezone
 
-from aiplayer.kodi_api import KodiAPI
-from aiplayer.m3u_catchup import parse_m3u, find_channel as m3u_find_channel, build_catchup_url, discover_m3u
+from aiplayer.m3u_catchup import parse_m3u, find_channel as m3u_find_channel, build_catchup_url
 from aiplayer.m3u_catchup import (parse_xmltv, get_x_tvg_url, find_program_in_xmltv,
                          _read_text as m3u_read_text)
-from aiplayer.player import Player, PlayerMode
+from aiplayer.player import resolve_kodi_api
+
+LOCAL_TZ = timezone(timedelta(hours=8))
+from aiplayer.config import load_config, epg_config_hint
 
 
 def get_all_channels(api):
@@ -61,7 +59,6 @@ def find_channel_by_name(channels, name):
     return None
 
 
-
 _CN_NUMS = {'零':0,'〇':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10}
 def _cn2num(s):
     s = s.strip()
@@ -88,25 +85,25 @@ def _cn2num(s):
 def parse_time(time_str, default_tz='utc'):
     if not time_str:
         return None
-    local_tz = timezone(timedelta(hours=8))
+    local_tz = LOCAL_TZ
     default = timezone.utc if default_tz == 'utc' else local_tz
     s = time_str.strip()
     sl = s.lower()
 
-    if sl in ('now', '鐜板湪', '褰撳墠'):
+    if sl in ('now', '现在', '当前'):
         return datetime.now(default)
-    if sl in ('today', '浠婂ぉ'):
+    if sl in ('today', '今天'):
         return datetime.now(default).replace(hour=0, minute=0, second=0, microsecond=0)
-    if sl in ('yesterday', '鏄ㄥぉ'):
+    if sl in ('yesterday', '昨天'):
         return (datetime.now(default) - timedelta(days=1)).replace(
             hour=0, minute=0, second=0, microsecond=0)
-    if sl in ('tomorrow', '鏄庡ぉ'):
+    if sl in ('tomorrow', '明天'):
         return (datetime.now(default) + timedelta(days=1)).replace(
             hour=0, minute=0, second=0, microsecond=0)
-    if sl in ('day_before_yesterday', '鍓嶅ぉ'):
+    if sl in ('day_before_yesterday', '前天'):
         return (datetime.now(default) - timedelta(days=2)).replace(
             hour=0, minute=0, second=0, microsecond=0)
-    if sl in ('day_after_tomorrow', '鍚庡ぉ'):
+    if sl in ('day_after_tomorrow', '后天'):
         return (datetime.now(default) + timedelta(days=2)).replace(
             hour=0, minute=0, second=0, microsecond=0)
 
@@ -128,7 +125,7 @@ def parse_time(time_str, default_tz='utc'):
         except ValueError:
             continue
 
-    # Chinese time: '8点, '鍗佺偣', '鍗佺偣涓夊崄分, '8点半'
+    # Chinese time: '8点30分', '十点', '十点三十分', '8点半'
     import re
     m = re.match(r'^(\d{1,2})点(\d{1,2})分$', s)
     if m:
@@ -211,7 +208,7 @@ def find_program_at(epg, target_dt):
 
 
 def find_program_in_epg(epg, date_str, time_str):
-    local_tz = timezone(timedelta(hours=8))
+    local_tz = LOCAL_TZ
     target_date = parse_time(date_str, default_tz='local') if date_str else None
     target_time = parse_time(time_str, default_tz='local') if time_str else None
     if target_date is None and target_time is None:
@@ -241,29 +238,96 @@ def find_program_in_epg(epg, date_str, time_str):
     return None
 
 
-def _play_catchup_from_http(player, channel, date_str, time_str, m3u_url, local_tz):
-    """Play catch-up using HTTP m3u + HTTP EPG. Routes playback through player."""
-    try:
-        m3u_text = m3u_read_text(m3u_url)
-    except Exception as e:
-        print(f'Failed to fetch m3u: {m3u_url} ({e})')
-        return False
-    print(f'M3U: {m3u_url}')
+def _resolve_epg_source(m3u_text=None, epg_param=None):
+    """Resolve EPG source: CLI --epg > m3u x-tvg-url > config iptv.epg.
 
-    epg_url = get_x_tvg_url(m3u_text)
+    Returns an http(s) URL or local file path, or None."""
+    if epg_param:
+        return epg_param
+    if m3u_text:
+        url = get_x_tvg_url(m3u_text)
+        if url:
+            return url
+    return load_config().get('iptv', {}).get('epg', '') or None
+
+
+def _fetch_m3u_source(m3u):
+    """Fetch m3u text; prints error and returns None on failure."""
+    try:
+        return m3u_read_text(m3u)
+    except Exception as e:
+        print(f'Failed to fetch m3u: {m3u} ({e})')
+        return None
+
+
+def _resolve_epg_or_hint(m3u_text, epg):
+    """Resolve EPG source; prints hint and returns None when missing."""
+    epg_url = _resolve_epg_source(m3u_text, epg)
     if not epg_url:
-        from urllib.parse import urljoin
-        base = m3u_url.rsplit('/', 1)[0] + '/'
-        for candidate in ('iptv-epg.xml.gz', 'iptv-epg.xml', 'epg.xml.gz', 'epg.xml'):
-            guess = urljoin(base, candidate)
-            try:
-                m3u_read_text(guess)
-                epg_url = guess
-                break
-            except Exception:
-                continue
+        print(epg_config_hint())
+    return epg_url
+
+
+def _parse_epg_source(epg_url):
+    """Parse XMLTV; prints error and returns None on failure."""
+    try:
+        return parse_xmltv(epg_url)
+    except Exception as e:
+        print(f'Failed to parse EPG: {epg_url} ({e})')
+        return None
+
+
+def _find_pvr_channel(api, channel, suggest=True):
+    """Resolve a PVR channel by name; prints error and returns None on failure."""
+    channels = get_all_channels(api)
+    if not channels:
+        return None
+    target = find_channel_by_name(channels, channel)
+    if not target:
+        print(f"Channel '{channel}' not found.")
+        if suggest:
+            print("Did you mean one of:")
+            for ch in channels[:8]:
+                print(f"  - {ch.get('label', '?')}")
+        return None
+    return target
+
+
+def _xmltv_candidates(label, tvg_id, epg_channels):
+    """Ordered candidate channel ids for a channel in an XMLTV index.
+
+    Starts from tvg_id (if any) then label, then adds every XMLTV channel
+    whose id/display-name matches either (order-preserving, unique).
+    """
+    candidates = []
+
+    def add(cid):
+        if cid and cid not in candidates:
+            candidates.append(cid)
+
+    if tvg_id:
+        add(tvg_id)
+        for epg_label, epg_name in epg_channels.items():
+            if epg_name == tvg_id or epg_label == tvg_id:
+                add(epg_label)
+    add(label)
+    for epg_label, epg_name in epg_channels.items():
+        if epg_label == label or (epg_name and (
+                epg_name == label or epg_name == tvg_id or
+                label in epg_name or (tvg_id and tvg_id in epg_name))):
+            add(epg_label)
+    return candidates
+
+
+def _play_catchup_from_http(player, channel, date_str, time_str, m3u, epg=None, local_tz=None):
+    """Play catch-up using HTTP m3u + HTTP EPG. Routes playback through player."""
+    m3u_text = _fetch_m3u_source(m3u)
+    if m3u_text is None:
+        return False
+    print(f'M3U: {m3u}')
+
+    epg_url = _resolve_epg_or_hint(m3u_text, epg)
     if not epg_url:
-        print('No EPG URL found.')
         return False
     print(f'EPG: {epg_url}')
 
@@ -279,11 +343,10 @@ def _play_catchup_from_http(player, channel, date_str, time_str, m3u_url, local_
         print(f"Channel '{channel}' has no catchup-source in m3u.")
         return False
 
-    try:
-        epg_channels, programs = parse_xmltv(epg_url)
-    except Exception as e:
-        print(f'Failed to parse EPG: {epg_url} ({e})')
+    parsed = _parse_epg_source(epg_url)
+    if parsed is None:
         return False
+    epg_channels, programs = parsed
     print(f'EPG channels: {len(epg_channels)}  programs: {len(programs)}')
 
     target_local_dt = None
@@ -316,13 +379,7 @@ def _play_catchup_from_http(player, channel, date_str, time_str, m3u_url, local_
         print('Need --date and/or --time.')
         return False
 
-    candidates = [tvg_id, label] if tvg_id else [label]
-    for epg_label, epg_name in epg_channels.items():
-        if (epg_label == label or
-                (epg_name and (epg_name == label or epg_name == tvg_id or
-                               label in epg_name or tvg_id in epg_name))):
-            if epg_label not in candidates:
-                candidates.append(epg_label)
+    candidates = _xmltv_candidates(label, tvg_id, epg_channels)
     program = None
     for cid in candidates:
         if not cid:
@@ -354,58 +411,44 @@ def _play_catchup_from_http(player, channel, date_str, time_str, m3u_url, local_
     return True
 
 
-def _play_live_channel(player, channel_url, channel_label):
-    """Play a live TV channel URL through the player abstraction."""
-    print(f"\nTuning to: {channel_label}")
-    print(f"Stream URL: {channel_url}")
-    if player:
-        player.play_url(channel_url)
-    return True
-
-
-def play_catchup(player, channel, date_str, time_str, m3u_path=None, m3u_url=None):
+def play_catchup(player, channel, date_str, time_str, m3u=None, epg=None):
     """Play catch-up TV. Routes through player abstraction."""
-    local_tz = timezone(timedelta(hours=8))
+    local_tz = LOCAL_TZ
 
-    if m3u_url:
-        return _play_catchup_from_http(player, channel, date_str, time_str, m3u_url, local_tz)
+    if m3u and re.match(r'^https?://', m3u, re.IGNORECASE):
+        return _play_catchup_from_http(player, channel, date_str, time_str, m3u, epg, local_tz)
 
-    api = None
-    if isinstance(player, Player):
-        if player.kodi:
-            api = player.kodi
-    elif isinstance(player, KodiAPI):
-        api = player
+    api = resolve_kodi_api(player)
 
     if api:
-        channels = get_all_channels(api)
-        if not channels:
-            return False
-        target_channel = find_channel_by_name(channels, channel)
+        target_channel = _find_pvr_channel(api, channel, suggest=False)
         if not target_channel:
-            print(f"Channel '{channel}' not found.")
             return False
         channel_id = target_channel['channelid']
         print(f"Found channel: {target_channel.get('label', 'Unknown')} (ID: {channel_id})")
 
-        epg = get_epg_for_channel(api, channel_id)
-        if not epg:
-            print(f"No EPG data available for channel '{channel}'.")
-            return False
-        program = find_program_in_epg(epg, date_str, time_str)
+        pvr_epg_data = get_epg_for_channel(api, channel_id)
+        if not pvr_epg_data:
+            patch_m3u = m3u or load_config().get('iptv', {}).get('m3u', '')
+            if not patch_m3u:
+                print(f"No EPG data available for channel '{channel}'.")
+                print("Catch-up patch needs an m3u: pass --m3u or set iptv.m3u in config.")
+                return False
+            print("PVR EPG unavailable - falling back to m3u/XMLTV catch-up patch...")
+            return _play_catchup_from_http(player, channel, date_str, time_str, patch_m3u, epg, local_tz)
+        program = find_program_in_epg(pvr_epg_data, date_str, time_str)
         if not program:
             print(f"No program found for channel '{channel}' at {date_str} {time_str}.")
             return False
 
         m3u_source_label = None
         m3u_text = None
-        if m3u_path:
+        if m3u:
             try:
-                with open(m3u_path, 'r', encoding='utf-8') as f:
-                    m3u_text = f.read()
-                m3u_source_label = m3u_path
-            except OSError as e:
-                print(f"M3U file not readable: {m3u_path} ({e})")
+                m3u_text = m3u_read_text(m3u)
+                m3u_source_label = m3u
+            except Exception as e:
+                print(f"M3U not readable: {m3u} ({e})")
                 return False
         else:
             broadcast_id = program.get('broadcastid')
@@ -445,29 +488,17 @@ def play_catchup(player, channel, date_str, time_str, m3u_path=None, m3u_url=Non
             api.player_open_item({'file': url})
         return True
     else:
-        print("No KODI available for PVR-based catch-up. Use --m3u-url instead.")
+        print("No KODI available for PVR-based catch-up. Use --m3u instead.")
         return False
 
 
 def show_current_program(player, channel):
     """Play a live TV channel and show current EPG info."""
-    api = None
-    if isinstance(player, Player):
-        if player.kodi:
-            api = player.kodi
-    elif isinstance(player, KodiAPI):
-        api = player
+    api = resolve_kodi_api(player)
 
     if api:
-        channels = get_all_channels(api)
-        if not channels:
-            return False
-        target_channel = find_channel_by_name(channels, channel)
+        target_channel = _find_pvr_channel(api, channel)
         if not target_channel:
-            print(f"Channel '{channel}' not found.")
-            print("Did you mean one of:")
-            for ch in channels[:8]:
-                print(f"  - {ch.get('label', '?')}")
             return False
         channel_id = target_channel['channelid']
         label = target_channel.get('label', 'Unknown')
@@ -484,7 +515,7 @@ def show_current_program(player, channel):
                 st = parse_time(current.get('starttime', ''))
                 et = parse_time(current.get('endtime', ''))
                 if st and et:
-                    local_tz = timezone(timedelta(hours=8))
+                    local_tz = LOCAL_TZ
                     st_local = st.astimezone(local_tz).strftime('%Y-%m-%d %H:%M')
                     et_local = et.astimezone(local_tz).strftime('%H:%M')
                     print(f"  Time: {st_local} - {et_local} (local)")
@@ -502,10 +533,9 @@ def show_current_program(player, channel):
         return False
 
 
-
 def _show_all_epg_kodi(api):
     """Show currently-playing program for ALL PVR channels (KODI mode)."""
-    local_tz = timezone(timedelta(hours=8))
+    local_tz = LOCAL_TZ
     now_local = datetime.now(local_tz)
     now_utc = datetime.now(timezone.utc)
 
@@ -538,48 +568,41 @@ def _show_all_epg_kodi(api):
     return True
 
 
-def show_epg(player=None, channel=None, date_str='', time_str='', m3u_url=None):
-    """Browse EPG. Supports both KODI PVR EPG and HTTP m3u+XMLTV EPG."""
-    if m3u_url:
+def show_epg(player=None, channel=None, date_str='', time_str='', m3u=None, epg=None):
+    """Browse EPG. Supports KODI PVR EPG and m3u+XMLTV (URL or local file)."""
+    if m3u:
         if channel:
-            return _show_epg_from_http(player, channel, date_str, time_str, m3u_url)
+            return _show_epg_from_http(player, channel, date_str, time_str, m3u, epg)
         else:
-            return _show_all_epg_from_http(player, m3u_url)
+            return _show_all_epg_from_http(player, m3u, epg)
 
-    api = None
-    if isinstance(player, Player):
-        if player.kodi:
-            api = player.kodi
-    elif isinstance(player, KodiAPI):
-        api = player
+    api = resolve_kodi_api(player)
 
     if not api:
-        print("KODI API required for PVR EPG. Use --m3u-url for HTTP EPG.")
+        print("KODI API required for PVR EPG. Use --m3u for m3u/EPG lookup.")
         return False
 
     if channel is None:
         return _show_all_epg_kodi(api)
 
-    channels = get_all_channels(api)
-    if not channels:
-        return False
-    target_channel = find_channel_by_name(channels, channel)
+    target_channel = _find_pvr_channel(api, channel)
     if not target_channel:
-        print(f"Channel '{channel}' not found.")
-        print("Did you mean one of:")
-        for ch in channels[:8]:
-            print(f"  - {ch.get('label', '?')}")
         return False
     channel_id = target_channel['channelid']
     label = target_channel.get('label', 'Unknown')
     print(f"\nChannel: {label} (ID: {channel_id})")
 
-    epg = get_epg_for_channel(api, channel_id)
-    if not epg:
-        print("No EPG data available.")
-        return False
+    pvr_epg_data = get_epg_for_channel(api, channel_id)
+    if not pvr_epg_data:
+        patch_m3u = m3u or load_config().get('iptv', {}).get('m3u', '')
+        if not patch_m3u:
+            print("No EPG data available.")
+            print("EPG patch needs an m3u: pass --m3u or set iptv.m3u in config.")
+            return False
+        print("PVR EPG unavailable - falling back to m3u/XMLTV EPG patch...")
+        return _show_epg_from_http(player, channel, date_str, time_str, patch_m3u, epg)
 
-    local_tz = timezone(timedelta(hours=8))
+    local_tz = LOCAL_TZ
     now_local = datetime.now(local_tz)
 
     if date_str and time_str:
@@ -593,7 +616,7 @@ def show_epg(player=None, channel=None, date_str='', time_str='', m3u_url=None):
             print(f"Invalid time: {time_str}")
             return False
         target = target.replace(hour=t.hour, minute=t.minute, second=0, microsecond=0)
-        program = find_program_in_epg(epg, date_str, time_str)
+        program = find_program_in_epg(pvr_epg_data, date_str, time_str)
         print(f"EPG at {target:%Y-%m-%d %H:%M} (local):")
         if program:
             _print_program(program, local_tz)
@@ -610,7 +633,7 @@ def show_epg(player=None, channel=None, date_str='', time_str='', m3u_url=None):
         day_end = day + timedelta(days=1)
         day_utc_start = day.astimezone(timezone.utc)
         day_utc_end = day_end.astimezone(timezone.utc)
-        day_progs = [p for p in epg if _prog_overlaps(p, day_utc_start, day_utc_end)]
+        day_progs = [p for p in pvr_epg_data if _prog_overlaps(p, day_utc_start, day_utc_end)]
         if not day_progs:
             print(f"No EPG for {day:%Y-%m-%d}.")
             return True
@@ -623,8 +646,8 @@ def show_epg(player=None, channel=None, date_str='', time_str='', m3u_url=None):
     window = timedelta(hours=3)
     win_utc_start = now_local.astimezone(timezone.utc) - window
     win_utc_end = now_local.astimezone(timezone.utc) + window
-    current = find_program_at(epg, now_local.astimezone(timezone.utc))
-    nearby = [p for p in epg if _prog_overlaps(p, win_utc_start, win_utc_end)]
+    current = find_program_at(pvr_epg_data, now_local.astimezone(timezone.utc))
+    nearby = [p for p in pvr_epg_data if _prog_overlaps(p, win_utc_start, win_utc_end)]
     if not nearby:
         print("No EPG available around current time.")
         return True
@@ -636,12 +659,10 @@ def show_epg(player=None, channel=None, date_str='', time_str='', m3u_url=None):
     return True
 
 
-def _show_epg_from_http(player, channel, date_str, time_str, m3u_url):
+def _show_epg_from_http(player, channel, date_str, time_str, m3u, epg=None):
     """Browse EPG from HTTP m3u + XMLTV (no KODI needed)."""
-    try:
-        m3u_text = m3u_read_text(m3u_url)
-    except Exception as e:
-        print(f'Failed to fetch m3u: {m3u_url} ({e})')
+    m3u_text = _fetch_m3u_source(m3u)
+    if m3u_text is None:
         return False
 
     entries = parse_m3u(m3u_text)
@@ -652,35 +673,17 @@ def _show_epg_from_http(player, channel, date_str, time_str, m3u_url):
     label = m3u_entry.get('label') or m3u_entry.get('tvg_name') or channel
     tvg_id = m3u_entry.get('tvg_id') or ''
 
-    epg_url = get_x_tvg_url(m3u_text)
+    epg_url = _resolve_epg_or_hint(m3u_text, epg)
     if not epg_url:
-        from urllib.parse import urljoin
-        base = m3u_url.rsplit('/', 1)[0] + '/'
-        for candidate in ('iptv-epg.xml.gz', 'iptv-epg.xml', 'epg.xml.gz', 'epg.xml'):
-            guess = urljoin(base, candidate)
-            try:
-                m3u_read_text(guess)
-                epg_url = guess
-                break
-            except Exception:
-                continue
-    if not epg_url:
-        print('No EPG URL found.')
         return False
 
-    try:
-        epg_channels, programs = parse_xmltv(epg_url)
-    except Exception as e:
-        print(f'Failed to parse EPG: {e}')
+    parsed = _parse_epg_source(epg_url)
+    if parsed is None:
         return False
+    epg_channels, programs = parsed
 
-    local_tz = timezone(timedelta(hours=8))
-    candidates = [tvg_id, label] if tvg_id else [label]
-    for epg_label, epg_name in epg_channels.items():
-        if (epg_label == label or
-                (epg_name and (epg_name == label or label in epg_name))):
-            if epg_label not in candidates:
-                candidates.append(epg_label)
+    local_tz = LOCAL_TZ
+    candidates = _xmltv_candidates(label, tvg_id, epg_channels)
 
     channel_progs = []
     for cid in candidates:
@@ -747,16 +750,10 @@ def _show_epg_from_http(player, channel, date_str, time_str, m3u_url):
     return True
 
 
-
-def _show_all_epg_from_http(player, m3u_url):
+def _show_all_epg_from_http(player, m3u, epg=None):
     """Show currently-playing program for ALL channels in the m3u (no KODI needed)."""
-    import urllib.request
-    from datetime import datetime, timezone, timedelta
-
-    try:
-        m3u_text = m3u_read_text(m3u_url)
-    except Exception as e:
-        print(f'Failed to fetch m3u: {m3u_url} ({e})')
+    m3u_text = _fetch_m3u_source(m3u)
+    if m3u_text is None:
         return False
 
     entries = parse_m3u(m3u_text)
@@ -764,29 +761,16 @@ def _show_all_epg_from_http(player, m3u_url):
         print("No channels found in m3u.")
         return False
 
-    epg_url = get_x_tvg_url(m3u_text)
+    epg_url = _resolve_epg_or_hint(m3u_text, epg)
     if not epg_url:
-        from urllib.parse import urljoin
-        base = m3u_url.rsplit('/', 1)[0] + '/'
-        for candidate in ('iptv-epg.xml.gz', 'iptv-epg.xml', 'epg.xml.gz', 'epg.xml'):
-            guess = urljoin(base, candidate)
-            try:
-                m3u_read_text(guess)
-                epg_url = guess
-                break
-            except Exception:
-                continue
-    if not epg_url:
-        print('No EPG URL found.')
         return False
 
-    try:
-        epg_channels, programs = parse_xmltv(epg_url)
-    except Exception as e:
-        print(f'Failed to parse EPG: {e}')
+    parsed = _parse_epg_source(epg_url)
+    if parsed is None:
         return False
+    epg_channels, programs = parsed
 
-    local_tz = timezone(timedelta(hours=8))
+    local_tz = LOCAL_TZ
     now_utc = datetime.now(timezone.utc)
     now_local = datetime.now(local_tz)
 
@@ -797,18 +781,7 @@ def _show_all_epg_from_http(player, m3u_url):
         label = entry.get('label') or entry.get('tvg_name') or '?'
         tvg_id = entry.get('tvg_id') or ''
 
-        candidates = []
-        if tvg_id:
-            candidates.append(tvg_id)
-            for epg_label, epg_name in epg_channels.items():
-                if epg_name == tvg_id or epg_label == tvg_id:
-                    if epg_label not in candidates:
-                        candidates.append(epg_label)
-        candidates.append(label)
-        for epg_label, epg_name in epg_channels.items():
-            if epg_name == label or epg_label == label:
-                if epg_label not in candidates:
-                    candidates.append(epg_label)
+        candidates = _xmltv_candidates(label, tvg_id, epg_channels)
 
         found = None
         for cid in candidates:
@@ -850,126 +823,3 @@ def _prog_overlaps(program, utc_start, utc_end):
     if not (st and et):
         return False
     return st < utc_end and et > utc_start
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description='TV channel browsing, EPG lookup, and catch-up',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=(
-            'Examples:\n'
-            '  ./pvr_epg.py --action channels\n'
-            '  ./pvr_epg.py --action epg --channel "CCTV1"\n'
-            '  ./pvr_epg.py --action play --channel "CCTV1"\n'
-            '  ./pvr_epg.py --action catchup --channel "CCTV1" --date yesterday --time 21:00\n'
-            '  ./pvr_epg.py --action catchup --channel "CCTV1" --date yesterday --time 21:00 --m3u-url http://.../iptv.m3u\n'
-            '  # Local mode (no KODI):\n'
-            '  ./pvr_epg.py --action epg --channel "CCTV1" --m3u-url http://.../iptv.m3u --local\n'
-            '  ./pvr_epg.py --action play --channel "CCTV1" --m3u-url http://.../iptv.m3u --local\n'
-        ),
-    )
-    parser.add_argument('--host', default='127.0.0.1', help='KODI host IP')
-    parser.add_argument('--port', type=int, default=9090, help='KODI port')
-    parser.add_argument('--username', default='', help='KODI username')
-    parser.add_argument('--password', default='', help='KODI password')
-    parser.add_argument('--protocol', choices=['tcp', 'http', 'auto'], default='auto', help='Connection protocol')
-    parser.add_argument('--action', choices=['channels', 'epg', 'catchup', 'play'], required=True,
-                        help='Action to perform')
-    parser.add_argument('--channel', default='', help='Channel name')
-    parser.add_argument('--date', default='', help='Date (yesterday/today/YYYY-MM-DD or now)')
-    parser.add_argument('--time', default='', help='Time (HH:MM or HH:MM:SS)')
-    parser.add_argument('--m3u', default='', help='Path to local m3u file')
-    parser.add_argument('--m3u-url', default='', help='URL to IPTV m3u (HTTP)')
-    parser.add_argument('--local', action='store_true', help='Use local mpv mode (no KODI)')
-
-    args = parser.parse_args()
-
-    player = None
-    if args.local:
-        player = Player(mode=PlayerMode.LOCAL)
-        print("Using local mpv player (no KODI)")
-    else:
-        api = KodiAPI(args.host, args.port, args.username, args.password, protocol=args.protocol)
-        version = api.get_version()
-        if not version or 'result' not in version:
-            print(f"Cannot connect to KODI at {args.host}:{args.port}")
-
-            if args.m3u_url:
-                print("Falling back to local mode with m3u URL...")
-                player = Player(mode=PlayerMode.LOCAL)
-            else:
-                sys.exit(1)
-        else:
-            print(f"Connected to KODI v{version['result'].get('version', 'unknown')}")
-            player = api
-
-    if args.action == 'channels':
-        if args.m3u_url:
-            entries = m3u_find_channel(parse_m3u(m3u_read_text(args.m3u_url)), '')  # just to check
-            from aiplayer.m3u_catchup import parse_m3u as _parse_m3u
-            text = m3u_read_text(args.m3u_url)
-            entries = _parse_m3u(text)
-            print(f"\nFound {len(entries)} channels in m3u:")
-            for i, e in enumerate(entries, 1):
-                name = e.get('label') or e.get('tvg_name') or '?'
-                print(f"{i}. {name}")
-            sys.exit(0)
-        api = player.kodi if isinstance(player, Player) else player
-        channels = get_all_channels(api)
-        if channels:
-            print(f"\nFound {len(channels)} channels:")
-            for i, ch in enumerate(channels, 1):
-                print(f"{i}. {ch.get('label', 'Unknown')} (ID: {ch.get('channelid', 'N/A')}) [{ch.get('group', 'Unknown')}]")
-        else:
-            print("No channels found.")
-        sys.exit(0 if channels else 1)
-
-    elif args.action == 'epg':
-        if not args.channel:
-            print("Channel name required for EPG lookup.")
-            sys.exit(1)
-        if args.m3u_url:
-            success = _show_epg_from_http(player, args.channel, args.date, args.time, args.m3u_url)
-        else:
-            success = show_epg(player, args.channel, args.date, args.time)
-        sys.exit(0 if success else 1)
-
-    elif args.action == 'play':
-        if not args.channel:
-            print("Channel name required to play.")
-            sys.exit(1)
-        if args.m3u_url:
-            api = player.kodi if isinstance(player, Player) and player.kodi else None
-            if not api:
-                from aiplayer.m3u_catchup import parse_m3u as _parse_m3u
-                text = m3u_read_text(args.m3u_url)
-                entries = _parse_m3u(text)
-                m3u_entry = m3u_find_channel(entries, args.channel)
-                if m3u_entry:
-                    url = m3u_entry.get('stream_url', '')
-                    if url:
-                        success = _play_live_channel(player, url, args.channel)
-                        sys.exit(0 if success else 1)
-                print(f"Channel '{args.channel}' not in m3u.")
-                sys.exit(1)
-            success = show_current_program(player, args.channel)
-        else:
-            success = show_current_program(player, args.channel)
-        sys.exit(0 if success else 1)
-
-    elif args.action == 'catchup':
-        if not args.channel or not args.date or not args.time:
-            print("Channel, date, and time required for catch-up.")
-            sys.exit(1)
-        success = play_catchup(player, args.channel, args.date, args.time,
-                              m3u_path=args.m3u or None,
-                              m3u_url=args.m3u_url or None)
-        sys.exit(0 if success else 1)
-
-    else:
-        print(f"Unknown action: {args.action}")
-        sys.exit(1)
-
-
-if __name__ == '__main__':
-    main()

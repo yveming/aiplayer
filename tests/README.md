@@ -1,6 +1,6 @@
 # Tests
 
-Offline + diagnostic test suite for the KODI Control Skill.
+Offline test suite for aiplayer (KODI + local mpv unified player).
 
 ## Layout
 
@@ -9,16 +9,18 @@ Offline + diagnostic test suite for the KODI Control Skill.
 | `test_movie_smoke.py`           | offline     | no    | 6 movie search scenarios (flat file, year dir, parens...)   |
 | `test_music_3level.py`          | offline     | no    | 4 music + 2 helper tests (artist / album / song deep path)  |
 | `test_ordinal.py`               | offline     | no    | 14 `extract_movie_ordinal` + `strip_movie_ordinal` cases    |
-| `test_ordinal_integration.py`   | offline     | no    | 6 cases against a 3-Avatar mock matching real KODI layout   |
+| `test_ordinal_integration.py`   | offline     | no    | 6 cases against a 3-Avatar mock matching real media layout  |
 | `test_pvr_units.py`             | offline     | no    | 10 `parse_time` + 5 `find_channel_by_name` cases            |
-| `diag_kodi_sources.py`          | diagnostic  | YES   | Dump raw KODI `Files.GetSources` for music/movie/video      |
-| `diag_music_tree.py`            | diagnostic  | YES   | Walk `/Public/music/赵传/` to see real music file layout     |
-| `diag_movie_tree.py`            | diagnostic  | YES   | Walk `/Public/movie/` to see real movie file layout         |
-| `diag_pvr_epg.py`               | diagnostic  | YES   | Dump raw `PVR.GetBroadcasts` response for a channel         |
-| `diag_pvr_catchup_scan.py`      | diagnostic  | YES   | Scan all 46 PVR channels for catch-up support               |
+| `test_m3u_catchup.py`           | offline     | no    | m3u parse + catchup URL builder (4 placeholder families)    |
 | `run_all.py`                    | runner      | no    | Run every offline suite + summarise                         |
 | `REAL_KODI_TESTS.md`            | checklist   | YES   | Manual real-KODI test commands (movie / music / tv / pvr)   |
-| `test_e2e_real_kodi.py`         | integration | YES   | Auto smoke-test all 4 sources + 1 PVR action                |
+| `test_e2e_real_kodi.py`         | integration | YES   | Auto smoke-test against a real KODI box                     |
+| `archive/`                      | archived    | YES   | 32 one-off `diag_*.py` probes (see `archive/README.md`)     |
+
+Offline suites never hit the network: online metadata (Douban) only
+activates on empty search results, which the mocks never produce, and
+can be force-disabled with `"metadata": {"enabled": false}` in
+`~/.config/aiplayer/config.json`.
 
 ## Running
 

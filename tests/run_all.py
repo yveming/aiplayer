@@ -20,6 +20,7 @@ SUITES = [
     ('movie ordinal e2e',     'test_ordinal_integration.py', '6 cases against 3-Avatar mock: 阿凡达三/一/2/3/第三部'),
     ('pvr unit',              'test_pvr_units.py',           'parse_time x10 + find_channel_by_name x5'),
     ('m3u catchup',           'test_m3u_catchup.py',         'm3u parse + URL builder covering strftime/VLC/seconds placeholders'),
+    ('tv patch/scoping',      'test_tv_patch.py',            'KODI no-EPG catchup/epg patch + m3u_for_tv scoping matrix'),
 ]
 
 # Real-KODI suite - skipped by default
@@ -88,7 +89,7 @@ def main():
     if args.e2e:
         suites.append(E2E_SUITE)
 
-    print('KODI Control Skill - offline test suite'
+    print('aiplayer - offline test suite'
           + (' (+e2e)' if args.e2e else ''))
     print('=' * 70)
     total_p = 0

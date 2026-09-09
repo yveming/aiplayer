@@ -5,54 +5,142 @@ Auto-discovers KODI or falls back to local mpv playback with HTTP m3u/EPG for TV
 """
 
 import argparse
-import json
-import re
 import sys
 import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from aiplayer.player import Player, PlayerMode
+from aiplayer.player import Player, PlayerMode, resolve_kodi_api
 from aiplayer.discover import discover_player
+from aiplayer.config import load_config
+
+
+def _load_m3u_channels(m3u_source, announce=False):
+    """Fetch + parse an m3u source and print the numbered channel list.
+
+    Returns the parsed entries.  `announce` adds the "Fetching m3u" line
+    (used by the tv action when announcing a fetch).
+    """
+    from aiplayer.m3u_catchup import parse_m3u as _parse_m3u, _read_text as m3u_read
+    if announce:
+        print(f"Fetching m3u: {m3u_source}")
+    entries = _parse_m3u(m3u_read(m3u_source))
+    print(f"\nFound {len(entries)} channels:")
+    for i, e in enumerate(entries, 1):
+        name = e.get('label') or e.get('tvg_name') or '?'
+        print(f"{i}. {name}")
+    return entries
+
+
+def _find_m3u_entry(m3u_source, channel):
+    """Fetch an m3u source and return the matching entry (or None)."""
+    from aiplayer.m3u_catchup import parse_m3u as _parse_m3u, find_channel as m3u_find
+    from aiplayer.m3u_catchup import _read_text as m3u_read
+    print(f"Fetching m3u: {m3u_source}")
+    return m3u_find(_parse_m3u(m3u_read(m3u_source)), channel)
+
+
+def _m3u_for_tv(args_m3u, m3u_cfg, kodi_mode):
+    """Resolve the m3u source for TV actions (channel/epg/catchup).
+
+    Explicit --m3u always wins.  Without it, config iptv.m3u is used in
+    local mode only - KODI mode ignores it so PVR actions are never
+    hijacked by the config.
+    """
+    if args_m3u is not None:
+        return args_m3u
+    return None if kodi_mode else m3u_cfg
+
+
+def _fmt_hms(seconds):
+    """Format seconds as [H:]MM:SS."""
+    mm, ss = divmod(int(seconds), 60)
+    hh, mm = divmod(mm, 60)
+    return f"{hh}:{mm:02d}:{ss:02d}" if hh else f"{mm}:{ss:02d}"
+
+
+EPILOG = """actions:
+  media    movie | video (TV episodes, SxxEyy) | music
+  live TV  tv (play/list channels) | epg (guide) | catchup (needs --date --time)
+  files    playfile | enqueue | playfiles
+  control  pause | play | playpause | next | prev | stop | restart |
+           volume_up | volume_down | mute | status | nowplaying
+
+examples:
+  aiplayer video "黑暗物质第三季第四集" --json    # episodes
+  aiplayer movie "阿凡达"                          # movie
+  aiplayer tv "CCTV1"                              # live TV (config-driven)
+  aiplayer catchup "CCTV1" --date yesterday --time 21:00"""
 
 
 def main():
+    cfg = load_config()
+    kodi_cfg = cfg.get('kodi', {})
+    iptv_cfg = cfg.get('iptv', {})
+    mpv_cfg = cfg.get('mpv', {})
     parser = argparse.ArgumentParser(
         description='aiplayer - Unified media player (KODI + local mpv)',
+        usage='aiplayer [flags] <action> [query] [action-flags]',
+        epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('action', nargs='?', default='auto',
-                        choices=['auto', 'movie', 'tv', 'music', 'channel', 'catchup', 'epg',
+    parser.add_argument('action', nargs='?', default=None, metavar='action',
+                        choices=['movie', 'video', 'tv', 'music', 'catchup', 'epg',
                                  'pause', 'play', 'playpause', 'next', 'prev', 'stop',
                                  'restart', 'volume_up', 'volume_down', 'mute',
-                                 'channels', 'status', 'nowplaying', 'playfile', 'enqueue', 'playfiles'],
-                        help='Action to perform')
-    parser.add_argument('query', nargs='*', default=[], help='Search query or file paths')
+                                 'status', 'nowplaying', 'playfile', 'enqueue', 'playfiles'],
+                        help='Action to perform (required) - see "actions" below')
+    parser.add_argument('query', nargs='*', default=[], metavar='query',
+                        help='Search query or file paths')
 
-    parser.add_argument('--host', default='', help='KODI host IP')
-    parser.add_argument('--port', type=int, default=None, help='KODI port')
-    parser.add_argument('--username', default='', help='KODI username')
-    parser.add_argument('--password', default='', help='KODI password')
-    parser.add_argument('--protocol', choices=['tcp', 'http', 'auto'], default='auto')
+    g_kodi = parser.add_argument_group('KODI connection')
+    g_kodi.add_argument('--host', default=kodi_cfg.get('host', ''),
+                        help='KODI host IP (default from config)')
+    g_kodi.add_argument('--port', type=int, default=kodi_cfg.get('port') or None,
+                        help='KODI port')
+    g_kodi.add_argument('--username', default=kodi_cfg.get('username', ''),
+                        help='KODI username')
+    g_kodi.add_argument('--password', default=kodi_cfg.get('password', ''),
+                        help='KODI password')
+    _cfg_protocol = kodi_cfg.get('protocol') or 'auto'
+    g_kodi.add_argument('--protocol', choices=['tcp', 'http', 'auto'],
+                        default=_cfg_protocol if _cfg_protocol in ('tcp', 'http', 'auto') else 'auto',
+                        help='Connection protocol')
+    g_kodi.add_argument('--auto', action='store_true',
+                        help='Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv')
 
-    parser.add_argument('--artist', default='', help='Artist name (music)')
-    parser.add_argument('--album', default='', help='Album name (music)')
-    parser.add_argument('--song', default='', help='Song name (music)')
-    parser.add_argument('--shuffle', action='store_true', help='Shuffle playback (music)')
-    parser.add_argument('--json', action='store_true', help='Output search results as JSON (for AI, no interactive prompt)')
+    g_iptv = parser.add_argument_group('IPTV')
+    g_iptv.add_argument('--m3u', default=None,
+                        help='IPTV m3u: URL or file path (default: config iptv.m3u, local mode only)')
+    g_iptv.add_argument('--epg', default=None,
+                        help='XMLTV EPG (priority: --epg > m3u x-tvg-url > config iptv.epg)')
+    g_iptv.add_argument('--date', default='',
+                        help='Date for catch-up/EPG (yesterday/today/YYYY-MM-DD)')
+    g_iptv.add_argument('--time', default='', help='Time for catch-up/EPG (HH:MM)')
 
-    parser.add_argument('--date', default='', help='Date for catch-up/EPG (yesterday/today/YYYY-MM-DD)')
-    parser.add_argument('--time', default='', help='Time for catch-up/EPG (HH:MM)')
-    parser.add_argument('--m3u', default='', help='Path to local m3u file')
-    parser.add_argument('--m3u-url', default='', help='URL to IPTV m3u (HTTP)')
+    g_music = parser.add_argument_group('music')
+    g_music.add_argument('--artist', default='', help='Artist name filter')
+    g_music.add_argument('--album', default='', help='Album name filter')
+    g_music.add_argument('--song', default='', help='Song name filter')
+    g_music.add_argument('--shuffle', action='store_true', help='Shuffle playback order')
 
-    parser.add_argument('--debug', action='store_true', help='Show debug output')
-    parser.add_argument('--max-depth', type=int, default=4, help='Max recursion depth for directory search')
-    parser.add_argument('--local', action='store_true', help='Force local mpv mode (skip KODI discovery)')
-    parser.add_argument('--mpv-path', default='', help='Path to mpv executable')
-    parser.add_argument('--prefer-local', action='store_true', help='Prefer local mode even if KODI available')
+    g_gen = parser.add_argument_group('general')
+    g_gen.add_argument('--json', action='store_true',
+                       help='Search actions print JSON, never auto-play (for AI)')
+    g_gen.add_argument('--debug', action='store_true', help='Show debug output')
+    g_gen.add_argument('--max-depth', type=int, default=4, help='Directory recursion depth')
+    g_gen.add_argument('--mpv-path', default=mpv_cfg.get('path', ''),
+                       help='Path to mpv executable (default from config)')
 
     args = parser.parse_args()
+    if args.action is None:
+        print("No action provided. Run 'aiplayer --help' for the action list.")
+        sys.exit(1)
+    m3u_explicit = args.m3u is not None
+    m3u_cfg = iptv_cfg.get('m3u', '')
+    m3u_source = args.m3u if m3u_explicit else m3u_cfg
+    # KODI mode ignores config m3u unless --m3u is given explicitly (no wrong-action hijacking)
+    m3u_for_tv = _m3u_for_tv(args.m3u, m3u_cfg, bool(args.host))
 
     # Determine player
     player = None
@@ -60,11 +148,7 @@ def main():
     if args.mpv_path:
         local_config['mpv_path'] = args.mpv_path
 
-    if args.local:
-        # --local: skip discovery, go straight to local mode
-        player = Player(mode=PlayerMode.LOCAL, local_config=local_config)
-        print("Mode: local mpv")
-    elif args.host:
+    if args.host:
         # User specified a KODI host directly
         player = Player(
             mode=PlayerMode.KODI,
@@ -77,9 +161,9 @@ def main():
             },
         )
         print(f"Mode: KODI ({args.host}:{args.port or 9090})")
-    else:
-        # Auto-discover
-        discovery = discover_player(prefer_local=args.prefer_local)
+    elif args.auto:
+        # --auto: auto-discover KODI, fall back to local
+        discovery = discover_player()
         if discovery['mode'] == 'kodi':
             inst = discovery['instances'][0]
             player = Player(
@@ -97,95 +181,82 @@ def main():
             player = Player(mode=PlayerMode.LOCAL, local_config=local_config)
             print("Mode: local mpv (no KODI found)")
         else:
-            if args.m3u_url or args.m3u:
+            if m3u_source:
                 player = Player(mode=PlayerMode.LOCAL, local_config=local_config)
                 print("Mode: local mpv (no KODI, using m3u)")
             else:
-                print("No player available. Use --host to specify KODI or --m3u-url for TV.")
+                print("No player available. Use --host to specify KODI, --auto to discover, or --m3u (URL or file path) for TV.")
                 sys.exit(1)
+    else:
+        # Default: local mpv playback (skip discovery)
+        player = Player(mode=PlayerMode.LOCAL, local_config=local_config)
+        print("Mode: local mpv")
 
     action = args.action
     query_list = args.query
     query = ' '.join(query_list) if query_list else ''
 
-    if action == 'auto':
-        if args.m3u_url:
-            action = 'channel'
-        elif query:
-            if args.artist or args.song or args.album:
-                action = 'music'
-            elif re.search(r'[Ss]\d{1,2}[Ee]\d{1,2}', query) or \
-                 re.search(r'\d{1,2}\s*[xX]\s*\d{1,2}', query) or \
-                 re.search(r'[季集]', query):
-                action = 'tv'
-            else:
-                action = 'movie'
-        else:
-            print("No query provided. Specify a search term or action.")
-            sys.exit(1)
-
     from aiplayer.search_play import play_movie, play_tv_episode, play_music
-    from aiplayer.playback_control import control_playback, control_volume
     from aiplayer.pvr_epg import show_current_program, play_catchup, show_epg, get_all_channels
 
     if action == 'movie':
         success = play_movie(player, query, debug=args.debug, max_depth=args.max_depth, json_output=args.json)
-    elif action == 'tv':
+    elif action == 'video':
         success = play_tv_episode(player, query, debug=args.debug, max_depth=args.max_depth, json_output=args.json)
     elif action == 'music':
         success = play_music(player, query, args.artist, args.album, args.song,
                             args.shuffle, debug=args.debug, max_depth=args.max_depth, json_output=args.json)
-    elif action == 'channel':
-        if not query:
-            if args.m3u_url:
-                from aiplayer.m3u_catchup import parse_m3u as _parse_m3u
-                from aiplayer.m3u_catchup import _read_text as m3u_read
-                print(f"Fetching m3u: {args.m3u_url}")
-                text = m3u_read(args.m3u_url)
-                entries = _parse_m3u(text)
-                print(f"\nFound {len(entries)} channels:")
-                for i, e in enumerate(entries, 1):
-                    name = e.get('label') or e.get('tvg_name') or '?'
-                    print(f"{i}. {name}")
-                success = True
-            else:
-                print("Channel name required.")
-                success = False
-        elif args.m3u_url:
-            from aiplayer.m3u_catchup import parse_m3u as _parse_m3u, find_channel as m3u_find
-            from aiplayer.m3u_catchup import _read_text as m3u_read
-            print(f"Fetching m3u: {args.m3u_url}")
-            text = m3u_read(args.m3u_url)
-            entries = _parse_m3u(text)
-            m3u_entry = m3u_find(entries, query)
-            if m3u_entry and m3u_entry.get('stream_url'):
-                url = m3u_entry['stream_url']
-                print(f"Stream URL: {url}")
-                print("Launching mpv...")
-                result = player.play_url(url)
-                if isinstance(result, dict) and 'error' in result:
-                    print(f"Playback error: {result['error']}")
-                    success = False
+    elif action == 'tv':
+        if query:
+            if m3u_for_tv:
+                m3u_entry = _find_m3u_entry(m3u_for_tv, query)
+                if m3u_entry and m3u_entry.get('stream_url'):
+                    url = m3u_entry['stream_url']
+                    print(f"Stream URL: {url}")
+                    print("Launching mpv...")
+                    result = player.play_url(url)
+                    if isinstance(result, dict) and 'error' in result:
+                        print(f"Playback error: {result['error']}")
+                        success = False
+                    else:
+                        print(f"Playing: {query}")
+                        success = True
                 else:
-                    print(f"Playing: {query}")
-                    success = True
+                    print(f"Channel '{query}' not in m3u.")
+                    success = False
             else:
-                print(f"Channel '{query}' not in m3u.")
-                success = False
+                success = show_current_program(player, query)
+        elif m3u_for_tv:
+            _load_m3u_channels(m3u_for_tv, announce=True)
+            success = True
         else:
-            success = show_current_program(player, query)
+            api = resolve_kodi_api(player)
+            if api:
+                channels = get_all_channels(api)
+                if channels:
+                    print(f"\nFound {len(channels)} channels:")
+                    for i, ch in enumerate(channels, 1):
+                        print(f"{i}. {ch.get('label', 'Unknown')} (ID: {ch.get('channelid', 'N/A')})")
+                    success = True
+                else:
+                    print("No channels found.")
+                    success = False
+            else:
+                print("Channel name required, or pass --m3u / set iptv.m3u in config to list channels.")
+                success = False
     elif action == 'catchup':
         if not args.date or not args.time:
             print("--date and --time required for catch-up.")
             sys.exit(1)
         success = play_catchup(player, query, args.date, args.time,
-                              m3u_path=args.m3u or None,
-                              m3u_url=args.m3u_url or None)
+                              m3u=m3u_for_tv or None,
+                              epg=args.epg or None)
     elif action == 'epg':
-        if not query and not args.m3u_url:
-            print("Channel name required for EPG (or use --m3u-url).")
+        if not query and not m3u_for_tv:
+            print("Channel name required for EPG (or use --m3u).")
             sys.exit(1)
-        success = show_epg(player, query or None, args.date, args.time, m3u_url=args.m3u_url or None)
+        success = show_epg(player, query or None, args.date, args.time,
+                           m3u=m3u_for_tv or None, epg=args.epg or None)
     elif action == 'playfile':
         if not query:
             print("File path required.")
@@ -218,31 +289,6 @@ def main():
         player.playlist_play_index(0)
         print(f"Playing {len(query_list)} file(s)")
         success = True
-    elif action == 'channels':
-        if args.m3u_url:
-            from aiplayer.m3u_catchup import parse_m3u as _parse_m3u, _read_text as m3u_read
-            text = m3u_read(args.m3u_url)
-            entries = _parse_m3u(text)
-            print(f"\nFound {len(entries)} channels:")
-            for i, e in enumerate(entries, 1):
-                name = e.get('label') or e.get('tvg_name') or '?'
-                print(f"{i}. {name}")
-            success = True
-        else:
-            api = player.kodi if hasattr(player, 'kodi') and player.kodi else None
-            if api:
-                channels = get_all_channels(api)
-                if channels:
-                    print(f"\nFound {len(channels)} channels:")
-                    for i, ch in enumerate(channels, 1):
-                        print(f"{i}. {ch.get('label', 'Unknown')} (ID: {ch.get('channelid', 'N/A')})")
-                    success = True
-                else:
-                    print("No channels found.")
-                    success = False
-            else:
-                print("KODI required for PVR channels.")
-                success = False
     elif action in ('status', 'nowplaying'):
         info = player.status()
         if not info:
@@ -258,26 +304,18 @@ def main():
             pos = info.get("time-pos")
             dur = info.get("duration")
             if pos is not None and dur:
-                mm, ss = divmod(int(pos), 60)
-                hh, mm = divmod(mm, 60)
-                pos_str = f"{hh}:{mm:02d}:{ss:02d}" if hh else f"{mm}:{ss:02d}"
-                dur_int = int(dur)
-                dmm, dss = divmod(dur_int, 60)
-                dhh, dmm = divmod(dmm, 60)
-                dur_str = f"{dhh}:{dmm:02d}:{dss:02d}" if dhh else f"{dmm}:{dss:02d}"
-                remain = dur - pos
-                rmm, rss = divmod(int(remain), 60)
-                rhh, rmm = divmod(rmm, 60)
-                remain_str = f"{rhh}:{rmm:02d}:{rss:02d}" if rhh else f"{rmm}:{rss:02d}"
+                pos_str = _fmt_hms(pos)
+                dur_str = _fmt_hms(dur)
+                remain_str = _fmt_hms(dur - pos)
                 print(f"Playing: {title}")
                 print(f"  {pos_str} / {dur_str}  ({remain_str} remaining)")
             else:
                 print(f"Playing: {title}")
         success = True
     elif action in ('pause', 'play', 'playpause', 'next', 'prev', 'stop', 'restart'):
-        success = control_playback(player, action)
+        success = player.control_playback(action)
     elif action in ('volume_up', 'volume_down', 'mute'):
-        success = control_volume(player, action)
+        success = player.control_volume(action)
     else:
         print(f"Unknown action: {action}")
         sys.exit(1)

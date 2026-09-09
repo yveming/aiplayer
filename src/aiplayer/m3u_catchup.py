@@ -293,6 +293,8 @@ def build_catchup_url(template, start_utc, end_utc, local_tz=None,
 
     start_utc / end_utc are tz-aware datetimes in UTC.  Supports every
     placeholder format commonly seen in m3u `catchup-source` lines.
+    All format placeholders are filled with box-local wall clock time
+    (mirrors KODI pvr.iptvsimple's actual behaviour), even {utc:}-named ones.
     """
     if not template:
         return None
@@ -326,9 +328,9 @@ def build_catchup_url(template, start_utc, end_utc, local_tz=None,
     url = url.replace('{timestamp_ms}', str(start_sec * 1000))
 
     # ── Family 2: YYYYMMDDHHMMSS strings ──
-    url = url.replace('{utctime}', start_utc_str)
-    url = url.replace('{utcstart}', start_utc_str)
-    url = url.replace('{utcend}', end_utc_str)
+    url = url.replace('{utctime}', start_local_str)
+    url = url.replace('{utcstart}', start_local_str)
+    url = url.replace('{utcend}', end_local_str)
     url = url.replace('{localtime}', start_local_str)
     url = url.replace('{localstart}', start_local_str)
     url = url.replace('{localend}', end_local_str)
@@ -362,11 +364,10 @@ def build_catchup_url(template, start_utc, end_utc, local_tz=None,
             return str(duration_sec)
         else:
             return m.group(0)
-        # Most VLC names default to local time unless explicitly UTC.
-        if name.startswith('utc') or name == 'end':
-            dtu = dt                              # UTC
-        else:
-            dtu = dt.astimezone(local_tz)          # local
+        # Mirror KODI pvr.iptvsimple's actual behaviour: ALL format
+        # placeholders are filled with box-local wall clock time, even the
+        # {utc:}-named ones (field-verified against real IPTV backends).
+        dtu = dt.astimezone(local_tz)
         try:
             return dtu.strftime(_cvt_strftime(fmt))
         except ValueError:

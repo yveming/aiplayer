@@ -11,6 +11,21 @@ import json
 import sys
 import socket
 
+def is_local_ip(host):
+    """True when host is one of this machine's own addresses."""
+    local_ips = ['127.0.0.1', 'localhost', '::1']
+    if host in local_ips:
+        return True
+    try:
+        host_name = socket.gethostname()
+        for info in socket.getaddrinfo(host_name, None):
+            if info[4][0] == host:
+                return True
+    except Exception:
+        pass
+    return False
+
+
 class KodiAPI:
     def __init__(self, host, port=None, username='', password='', protocol='auto'):
         """
@@ -32,7 +47,7 @@ class KodiAPI:
         # Determine protocol
         if protocol == 'auto':
             # Local IPs use TCP, remote use HTTP
-            if self._is_local_ip(host):
+            if is_local_ip(host):
                 self.protocol = 'tcp'
             else:
                 self.protocol = 'http'
@@ -53,24 +68,6 @@ class KodiAPI:
         
         print(f"Connected to KODI (protocol: {self.protocol}, port: {self.port})")
     
-    def _is_local_ip(self, host):
-        """Check if host is local (same machine as this agent)"""
-        local_ips = ['127.0.0.1', 'localhost', '::1']
-        
-        if host in local_ips:
-            return True
-        
-        try:
-            # Get all local IPs of this agent machine
-            host_name = socket.gethostname()
-            local_ip_list = socket.getaddrinfo(host_name, None)
-            for ip_info in local_ip_list:
-                if ip_info[4][0] == host:
-                    return True
-        except:
-            pass
-        
-        return False
     
     def _request(self, method, params=None):
         """Send JSON-RPC request to KODI"""

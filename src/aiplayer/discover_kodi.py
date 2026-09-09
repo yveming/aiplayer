@@ -4,12 +4,13 @@ Discover KODI instances via SSDP/UPNP/DLNA and Zeroconf/mDNS
 """
 
 import socket
-import threading
 import time
 import json
 import sys
 import requests
 from xml.etree import ElementTree
+
+from aiplayer.kodi_api import is_local_ip as _is_local_ip
 
 try:
     from zeroconf import Zeroconf, ServiceBrowser, ServiceListener
@@ -280,37 +281,3 @@ def discover_kodi(credentials=None):
     
     return kodi_instances
 
-def _is_local_ip(ip):
-    """Check if IP belongs to this machine"""
-    local_ips = ['127.0.0.1', 'localhost', '::1']
-    if ip in local_ips:
-        return True
-    try:
-        hostname = socket.gethostname()
-        for info in socket.getaddrinfo(hostname, None):
-            if info[4][0] == ip:
-                return True
-    except:
-        pass
-    return False
-
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(description='Discover KODI instances')
-    parser.add_argument('-c', '--credential', action='append', metavar='USER:PASS',
-                        help='KODI credential (user:pass), can be specified multiple times')
-    args = parser.parse_args()
-    
-    credentials = None
-    if args.credential:
-        credentials = []
-        for c in args.credential:
-            parts = c.split(':', 1)
-            if len(parts) == 2:
-                credentials.append((parts[0], parts[1]))
-    
-    instances = discover_kodi(credentials)
-    if instances:
-        print("\n" + json.dumps(instances, indent=2))
-    else:
-        print("\n[]")
