@@ -1,183 +1,160 @@
 # Real-KODI Test Commands
 
-Manual test commands for the user's actual KODI server at
-`192.168.100.11:9090` (Sony TV, JSON-RPC over TCP, KODI v21.3,
-JSON-RPC API 13.5). Run from the repo root or adjust paths.
+Manual test commands against the user's actual KODI servers. Run with the
+installed tool (`aiplayer`, after `uv tool install .`) or `uv run aiplayer`
+from the repo root.
+
+| Box     | Address             | Protocol | Auth        | Catch-up                                          |
+|---------|---------------------|----------|-------------|---------------------------------------------------|
+| 11 box  | 192.168.100.11:9090 | TCP      | none        | NO via broadcastid (-32602) - use `--m3u <URL>`   |
+| Sony TV | 192.168.100.43:8080 | HTTP     | kodi/hermes | YES (broadcastid)                                 |
 
 TCP does **not** require `--username` / `--password`.
+KODI under test: v21.3, JSON-RPC API 13.5.
 
-## Auto-discovery
+Defaults (host/port/credentials) can be stored in
+`~/.config/aiplayer/config.json` (`kodi` section) so the commands below
+work without `--host`/`--port`.
 
-```
-# Quick: discover any KODI on the LAN
-python aiplayer/scripts/discover_kodi.py
-```
-
-## Movie Search (Requirement #2)
+## Connection check / auto-discovery
 
 ```
-# Ordinal - Chinese
-python aiplayer/scripts/search_play.py --host 192.168.100.11 --port 9090 --protocol tcp --type movie --query "阿凡达三" --debug
-# Ordinal - Chinese 第N部
-python aiplayer/scripts/search_play.py --host 192.168.100.11 --port 9090 --protocol tcp --type movie --query "阿凡达第三部" --debug
-# Ordinal - Arabic
-python aiplayer/scripts/search_play.py --host 192.168.100.11 --port 9090 --protocol tcp --type movie --query "阿凡达 2" --debug
-# No ordinal - all 3 Avatars
-python aiplayer/scripts/search_play.py --host 192.168.100.11 --port 9090 --protocol tcp --type movie --query "阿凡达" --debug
+aiplayer --host 192.168.100.11 --port 9090 --protocol tcp channels
+aiplayer --auto status          # SSDP/mDNS discovery, slow (~5s)
+```
+
+Expected: `Mode: KODI (192.168.100.11:9090)` + channel list.
+
+## Movie Search
+
+```
+# Ordinal - Chinese / 第N部 / Arabic / none (all 3 Avatars)
+aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达三" --debug
+aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达第三部" --debug
+aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达 2" --debug
+aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达" --debug
 ```
 
 Expected: KODI returns `result: "OK"` and the right Avatar file plays.
 
-## Music Search (Requirement - artist / album / song)
+Multi-language: Chinese queries find English-named files and vice versa
+via Douban alias expansion (needs network; silently skipped offline).
+
+## Music Search (artist / album / song)
 
 ```
-python aiplayer/scripts/search_play.py --host 192.168.100.11 --port 9090 --protocol tcp --type music --artist "赵传" --debug
-python aiplayer/scripts/search_play.py --host 192.168.100.11 --port 9090 --protocol tcp --type music --artist "赵传" --album "我是一只小小鸟" --debug
+aiplayer --host 192.168.100.11 --port 9090 music --artist "赵传" --debug
+aiplayer --host 192.168.100.11 --port 9090 music --artist "赵传" --album "我是一只小小鸟" --debug
 ```
 
-The `--song "我是一只小小鸟"` form is for files named with the song
-title. If your music files are track-numbered (e.g. `01.mp3`), the
-search has nothing to match and the user has to navigate by album.
+The `--song` form matches files named with the song title. Track-numbered
+files (`01.mp3`) have nothing to match - navigate by album instead.
 
-## TV Episode Search (Requirement #3)
+## TV Episode Search
 
 ```
-# Chinese 第N季第M集
-python aiplayer/scripts/search_play.py --host 192.168.100.11 --port 9090 --protocol tcp --type tv --query "黑暗物质第三季第四集" --debug
-# Standard S03E04
-python aiplayer/scripts/search_play.py --host 192.168.100.11 --port 9090 --protocol tcp --type tv --query "黑暗物质 S03E04" --debug
-# 3x04 alt format
-python aiplayer/scripts/search_play.py --host 192.168.100.11 --port 9090 --protocol tcp --type tv --query "黑暗物质 3x04" --debug
+aiplayer --host 192.168.100.11 --port 9090 tv "黑暗物质第三季第四集" --debug
+aiplayer --host 192.168.100.11 --port 9090 tv "黑暗物质 S03E04" --debug
+aiplayer --host 192.168.100.11 --port 9090 tv "黑暗物质 3x04" --debug
 ```
 
 Expected output (verified):
+
 ```
 [debug] Searched 'video' (nfs://192.168.100.2/Public/video/): 1 candidate match(es)
-Playing from video: Dark Matter / Season 3 / 黑暗物质.Dark.Matter.S03E04.720p.HDTV.x264.双语字幕精校版-深影字幕组
+Playing from video: Dark Matter / Season 3 / 黑暗物质.Dark.Matter.S03E04.720p...
 {"id": 164, "jsonrpc": "2.0", "result": "OK"}
 ```
 
-## PVR Live TV (Requirement #4)
-
-The 11 box is fine for live TV (no auth needed):
+## PVR Live TV + Channels
 
 ```
-python aiplayer/scripts/pvr_epg.py --host 192.168.100.11 --port 9090 --protocol tcp --action play --channel "湖南卫视"
+aiplayer --host 192.168.100.11 --port 9090 channels
+aiplayer --host 192.168.100.11 --port 9090 channel "湖南卫视"
 ```
 
 Expected: prints `Found channel`, current program, and KODI tunes in.
+Same works on the Sony box with `--protocol http --username kodi --password hermes`.
 
-Sony TV (HTTP + auth) works the same way:
+## PVR Catch-up
 
-```
-python aiplayer/scripts/pvr_epg.py --host 192.168.100.43 --port 8080 --protocol http --username kodi --password hermes --action play --channel "湖南卫视"
-```
-
-## PVR Catch-up (Requirement #5)
-
-The user's IPTV setup uses **two** KODI boxes:
-
-| Box           | Address                          | Protocol | Auth | Catch-up |
-|---------------|----------------------------------|----------|------|----------|
-| 11 box        | 192.168.100.11:9090              | TCP      | no   | NO (PVR client returns -32602 on broadcastid) |
-| Sony TV       | 192.168.100.43:8080              | HTTP     | kodi/hermes | YES (PVR IPTV Simple Client builds URL from m3u) |
-
-The user's m3u mixes two placeholder families channel-by-channel:
+The user's IPTV m3u mixes two placeholder families channel-by-channel:
 - Legacy strftime: `${(b)yyyyMMddHHmmss}-${(e)yyyyMMddHHmmss}`
 - VLC shorthand: `{utc:YmdHMS}-{utcend:YmdHMS}`
+
+`m3u_catchup.py` supports four families (KODI native seconds/strings,
+iptvsimple strftime, VLC shorthand).
 
 ### Mode 1: broadcastid (Sony TV only)
 
 ```
-python aiplayer/scripts/pvr_epg.py --host 192.168.100.43 --port 8080 --protocol http --username kodi --password hermes --action catchup --channel "湖南卫视" --date "yesterday" --time "18:30"
+aiplayer --host 192.168.100.43 --port 8080 --protocol http --username kodi --password hermes \
+    catchup "湖南卫视" --date yesterday --time 18:30
 ```
 
-Verified: KODI returns `result: "OK"`. PVR client parses the m3u
-template and constructs the URL.
+Verified: KODI returns `result: "OK"`; PVR client builds the URL from the m3u.
 
-### Mode 2: self-built URL (both boxes, requires --m3u)
+### Mode 2: self-built URL (`--m3u`, works on both boxes)
 
-We parse the m3u file ourselves, find the channel's `catchup-source`
-template, substitute placeholders with the broadcast's start/end
-times, and call `Player.Open({file: <url>})`. This works on the
-**11 box** because it bypasses the PVR client entirely.
+Parse the m3u ourselves, substitute the channel's `catchup-source`
+template, and `Player.Open({file: <url>})`. Bypasses the PVR client
+entirely - required on the 11 box where `Player.Open({broadcastid})`
+returns -32602.
 
-```
-# 1. Make the m3u reachable. Easiest: copy it to the NFS share
-copy \\192.168.100.2\Public\iptv.m3u  G:\Public\iptv.m3u
-#    (or wherever the NFS export lives - adjust path)
-
-# 2. Run catchup with --m3u
-python aiplayer/scripts/pvr_epg.py --host 192.168.100.11 --port 9090 --protocol tcp --action catchup --channel "湖南卫视" --date "yesterday" --time "18:30" --m3u "G:\Public\iptv.m3u"
-```
-
-`m3u_catchup.py` (new in v0.05) supports all four placeholder
-families seen in real m3u files:
-1. KODI native seconds: `{start}` `{end}` `{duration}` `{timestamp}` `{utc}`
-2. KODI native strings: `{utctime}` `{utcstart}` `{utcend}` `{localtime}` ...
-3. iptvsimple strftime: `${(b)yyyyMMddHHmmss}` `${(e)yyyy-MM-dd}` ...
-4. VLC shorthand: `{utc:YmdHMS}` `{utcend:YmdHMS}` `{lutc:YmdHMS}` ...
-
-## Self-Contained HTTP Catch-up (v0.05a, no --m3u file needed)
-
-Same metadata, but the m3u and EPG are fetched directly from the
-IPTV backend (m3u's `#EXTM3U` carries `x-tvg-url=".../iptv-epg.xml.gz"`).
-Bypasses KODI PVR.GetChannels / PVR.GetBroadcasts entirely - useful on
-boxes whose PVR client can't be reached over JSON-RPC (e.g. 11 box
-where `Player.Open({broadcastid})` returns -32602).
+`--m3u` accepts an http(s) URL **or** a local file path (default from
+config `iptv.m3u`):
 
 ```
-# 11 box - HTTP m3u + EPG, no PVR calls
-python aiplayer/scripts/pvr_epg.py --host 192.168.100.11 --port 9090 --protocol tcp \
-    --action catchup --channel "湖南卫视" --date "yesterday" --time "18:30" \
-    --m3u-url "http://192.168.100.2:8000/iptv/iptv-10.m3u" --use-http-epg
+# URL
+aiplayer --host 192.168.100.11 --port 9090 catchup "湖南卫视" \
+    --date yesterday --time 18:30 \
+    --m3u "http://192.168.100.2:8000/iptv/iptv-10.m3u"
 
-# Override the EPG URL (else read from x-tvg-url)
-python aiplayer/scripts/pvr_epg.py --host 192.168.100.11 --port 9090 --protocol tcp \
-    --action catchup --channel "湖南卫视" --date "yesterday" --time "18:30" \
-    --m3u-url "http://192.168.100.2:8000/iptv/iptv-10.m3u" --use-http-epg \
-    --epg-url "http://192.168.100.2:8000/iptv/iptv-epg.xml.gz"
+# Local file (m3u must be readable from this machine)
+aiplayer --host 192.168.100.11 --port 9090 catchup "湖南卫视" \
+    --date yesterday --time 18:30 --m3u "G:\Public\iptv.m3u"
 ```
 
-Verified on 11 box (2026-06-08): 湖南卫视 yesterday 18:30 →
-URL `rtsp://118.123.55.74/.../...smil?playseek=20260607180000-20260607183000`
-→ KODI accepted (`Player.Open` result: "OK") and `Player.GetItem` shows
-`file` = same URL → playing.
-
-The m3u and EPG gz are fetched by `m3u_catchup._read_text` (HTTP) and
-`m3u_catchup.parse_xmltv` (XMLTV, gunzip-aware). Channel id match uses
-m3u's `tvg-id` against XMLTV's `channel id`.
-
-## PVR Channel List
+EPG XMLTV resolution order: `--epg` > m3u `x-tvg-url` > config
+`iptv.epg`. Override with `--epg` when the m3u carries no `x-tvg-url`:
 
 ```
-python aiplayer/scripts/pvr_epg.py --host 192.168.100.11 --port 9090 --protocol tcp --action channels
+aiplayer --host 192.168.100.11 --port 9090 catchup "湖南卫视" \
+    --date yesterday --time 18:30 \
+    --m3u "http://192.168.100.2:8000/iptv/iptv-10.m3u" \
+    --epg "http://192.168.100.2:8000/iptv/iptv-epg.xml.gz"
 ```
+
+Verified on 11 box (2026-06-08): 湖南卫视 yesterday 18:30 → URL
+`rtsp://118.123.55.74/.../...smil?playseek=20260607180000-20260607183000`
+→ KODI `Player.Open` result "OK", `Player.GetItem` shows the same URL.
 
 ## Playback Control
 
 ```
-python aiplayer/scripts/playback_control.py --host 192.168.100.11 --port 9090 --protocol tcp --action pause
-python aiplayer/scripts/playback_control.py --host 192.168.100.11 --port 9090 --protocol tcp --action resume
-python aiplayer/scripts/playback_control.py --host 192.168.100.11 --port 9090 --protocol tcp --action volume-up
-python aiplayer/scripts/playback_control.py --host 192.168.100.11 --port 9090 --protocol tcp --action volume-down
+aiplayer --host 192.168.100.11 --port 9090 pause
+aiplayer --host 192.168.100.11 --port 9090 play
+aiplayer --host 192.168.100.11 --port 9090 next
+aiplayer --host 192.168.100.11 --port 9090 prev
+aiplayer --host 192.168.100.11 --port 9090 stop
+aiplayer --host 192.168.100.11 --port 9090 status
+aiplayer --host 192.168.100.11 --port 9090 volume_up
+aiplayer --host 192.168.100.11 --port 9090 volume_down
+aiplayer --host 192.168.100.11 --port 9090 mute
 ```
 
-## Diagnostics (when something breaks)
+Control commands act on whichever mode the *last play command* used -
+pass the same `--host`/`--auto` flags (or none for default local mode).
+
+## EPG Browsing
 
 ```
-# Dump raw source paths
-python tests/diag_kodi_sources.py
-
-# Dump /Public/music/赵传/ tree
-python tests/diag_music_tree.py
-
-# Dump /Public/movie/ tree
-python tests/diag_movie_tree.py
-
-# Dump raw PVR.GetBroadcasts for 湖南卫视
-python tests/diag_pvr_epg.py
-
-# Scan all PVR channels for catch-up
-python tests/diag_pvr_catchup_scan.py
+aiplayer --host 192.168.100.11 --port 9090 epg "湖南卫视" --date today
+aiplayer epg "湖南卫视" --m3u "http://192.168.100.2:8000/iptv/iptv-10.m3u" --date yesterday
 ```
+
+## When something breaks
+
+The old `diag_*.py` probes were archived to `tests/archive/` (they use
+outdated CLI flags). For raw responses, use the current CLI with
+`--debug`, or write a quick probe against `KodiAPI` directly.

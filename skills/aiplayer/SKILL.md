@@ -2,7 +2,7 @@
 name: aiplayer
 description: >
   Control media playback using KODI (via JSON-RPC) or local mpv player.
-  Auto-discovers KODI instances or falls back to local directories for movies/TV/music.
+  Defaults to local mpv playback. Pass --auto to auto-discover KODI or --host to connect directly.
   For live TV, uses HTTP m3u/EPG when no KODI is available.
 ---
 
@@ -18,64 +18,89 @@ aiplayer unifies KODI remote control and local mpv playback under one interface:
 ## Architecture
 
 ```
-aiplayer.py (entry point, aiplayer/scripts/)
-  +-- player.py  (Player abstraction: KODI vs local mpv)
+aiplayer (entry point, installed as a uv tool)
+  +-- player.py  (Player abstraction: KODI vs local mpv; playback control)
   |     +-- KodiAPI (kodi_api.py)     JSON-RPC to KODI
   |     +-- MpvPlayer (local_player.py)  mpv IPC control
   +-- discover.py  discover KODI or detect local media dirs
   +-- search_play.py  search & play (KODI library + remote/local dirs)
-  +-- playback_control.py  pause/resume/skip/volume
   +-- pvr_epg.py  TV channels/EPG/catch-up
   +-- m3u_catchup.py  m3u parser + URL builder + XMLTV EPG
+  +-- metadata.py  Douban alias/filmography expansion (optional, online)
+  +-- config.py  config loader (~/.config/aiplayer/config.json, auto-generated on first run)
 ```
 
-All scripts under `aiplayer/scripts/`.
+Installed as a standalone tool with `uv tool install .` and run as `aiplayer`. Inside the project: `uv run aiplayer`.
 
 ---
 
 ## Command Format
 
 ```
-python aiplayer/scripts/aiplayer.py [connection-flags] <action> [query] [action-flags]
+aiplayer [connection-flags] <action> [query] [action-flags]
 ```
 
 ---
 
-## How AI Agents Must Use This
+## How AI Agents Must Use This (read in order)
 
-1. **If you know the KODI boxes.** Never auto-discover. Always use `--host` with known addresses.
-2. **Always use `--host`** for all KODI calls (fast, no discovery).
-3. **Use `--local`** only when user says no KODI or the commands don't need a speaker/TV.
-4. **Playback control** (pause, skip, volume, stop, status) works in whichever mode the *last play command* used. You must use the same `--host` or `--local` flags.
-   - Example: last played via KODI → control commands also need `--host ...`
-   - Example: last played via `--local` → control commands need `--local`
+1. **Read the config first**: `~/.config/aiplayer/config.json`. It stores the KODI connection,
+   IPTV m3u/EPG, media roots, and mpv path. This is the primary source of truth - when it is
+   filled in, most commands need NO extra flags. CLI flags override config.
+2. **Fill gaps once, then persist**: if `kodi.host`, `media.*`, or `iptv.m3u/epg` are empty
+   when an action needs them, ask the user **once** and write the values into config.json
+   (keep the JSON valid). Never ask again on later runs.
+3. **Always specify the action** - there is no action inference; a bare query is an argparse
+   error. `movie` = movies, `video` = episodes (SxxEyy), `music`, `tv` = live TV, `epg`,
+   `catchup`, plus playback control and file actions.
+4. **Connection flags**: when config `kodi.host` is set, KODI commands need NO
+   `--host/--port/...` at all. Pass `--host` only to use a *different* box than config.
+   Local mode is the default when config has no host and no `--host` is given.
+   `--auto` (SSDP/mDNS, ~5s) only when the user explicitly asks.
+5. **IPTV m3u/EPG scoping**: config `iptv.m3u` applies in local mode automatically; in KODI
+   mode pass `--m3u` explicitly or PVR actions stay on KODI. When KODI returns no EPG,
+   `catchup`/`epg` fall back to the m3u/XMLTV patch (config or `--m3u`/`--epg`) automatically.
+6. **Playback control** (pause/skip/volume/status) works in whichever mode the *last play
+   command* used - same `--host` (or none for local mode).
+7. **Search with `--json`, play with `playfile`/`playfiles`**: `--json` NEVER auto-plays; it
+   prints a JSON array (see "Parsing --json output"). Interactive prompts exist for humans only.
 
 ---
 
-## Connection Flags (choose ONE group)
+## Configuration File
 
-### Group A: KODI mode (use known addresses)
+Location: `~/.config/aiplayer/config.json` - auto-generated with defaults on first run
+(any entry point: `aiplayer`, `uv run aiplayer`, `python -m aiplayer`).
+First run prints `Config created: ...` - that is normal, keep going.
 
+- **Precedence**: CLI flags > config file > built-in defaults
+- **Empty value = not configured** (the tool prints a hint instead of guessing)
+- `kodi.host/port/username/password/protocol`: KODI connection defaults -
+  **when host is set, KODI commands need no connection flags at all**
+- `media.movie/video/music`: local media root directories (**no built-in defaults**;
+  local search prints a hint when empty)
+- `iptv.m3u`: IPTV m3u - http(s):// URL or local file path. **Local mode only**;
+  KODI mode requires explicit `--m3u`
+- `iptv.epg`: XMLTV EPG fallback (priority: `--epg` > m3u `x-tvg-url` > config `iptv.epg`)
+- `mpv.path`: mpv executable path (set it when `mpv` is not on PATH)
+- `metadata`: online Douban expansion - `enabled` (default true), `timeout` seconds
+  (default 5). Multi-language alias search + actor/director filmography fallback; fails
+  silently when offline. Set `enabled: false` for fully offline use.
+
+Typical example (local media + one KODI box + IPTV):
+
+```json
+{
+  "kodi":  {"host": "192.168.100.11", "port": 9090, "username": "", "password": "", "protocol": "tcp"},
+  "iptv":  {"m3u": "http://192.168.100.2:8000/iptv/iptv.m3u", "epg": ""},
+  "mpv":   {"path": ""},
+  "media": {"movie": ["G:\\movie"], "video": ["G:\\video"], "music": ["G:\\music"]}
+}
 ```
---host <IP> --port <PORT> --protocol <tcp|http> [--username <USER> --password <PASS>]
-```
 
-To list channels and verify connection:
-```
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp channels
-```
-
-### Group B: Local mpv mode (no KODI, files on disk + m3u TV)
-
-```
---local
-```
-
-No discovery needed. Media searched from G:\movie, G:\video, G:\music for windows and /mnt/media/{movie,video,music} for Linux . TV requires `--m3u-url`.
-
-### Group C: Auto-discover (DON'T use — slow)
-
-Omitting both `--host` and `--local` triggers SSDP/mDNS. Takes ~5s. Only use once to find KODI address, then switch to Group A.
+With this config, `aiplayer tv "CCTV1"` talks to the KODI box, `aiplayer movie "阿凡达"`
+searches local dirs, and `aiplayer catchup "CCTV1" --date yesterday --time 21:00` uses the
+configured m3u - **zero connection flags**.
 
 ---
 
@@ -84,12 +109,11 @@ Omitting both `--host` and `--local` triggers SSDP/mDNS. Takes ~5s. Only use onc
 | Action | Description | Requires query? | Local/KODI |
 |--------|-------------|-----------------|------------|
 | `movie` | Search and play a movie | yes | both |
-| `tv` | Search and play a TV episode (S03E04) | yes | both |
+| `video` | Search and play a TV episode (S03E04) | yes | both |
 | `music` | Search and play music (with `--artist`/`--album`/`--song`) | optional | both |
-| `channel` | Play a live TV channel | yes to play; no to list | both |
-| `channels` | List all available channels | no | both |
+| `tv` | Play a live TV channel; no query = list channels | yes to play; no to list | both |
 | `epg` | Browse EPG for a channel | yes | both |
-| `catchup` | Play catch-up TV | yes | both |
+| `catchup` | Play catch-up TV (needs `--date`/`--time`) | yes | both |
 | `pause` | Toggle pause | no | both |
 | `play` | Resume playback | no | both |
 | `playpause` | Toggle play/pause | no | both |
@@ -112,212 +136,198 @@ Omitting both `--host` and `--local` triggers SSDP/mDNS. Takes ~5s. Only use onc
 
 | Flag | Type | Used with | Description |
 |------|------|-----------|-------------|
-| `--host` | IP | KODI mode | KODI IP address |
+| `--host` | IP | KODI mode | KODI IP (omit when config kodi.host is set) |
 | `--port` | int | `--host` | KODI port (default 9090 or 8080) |
 | `--protocol` | tcp/http/auto | `--host` | Connection protocol |
 | `--username` | str | `--host` http | HTTP auth username |
 | `--password` | str | `--host` http | HTTP auth password |
-| `--local` | flag | standalone | Force local mpv mode |
-| `--m3u-url` | URL | channel/catchup/channels/epg | HTTP m3u playlist URL |
-| `--m3u` | filepath | catchup | Local m3u file path |
+| `--auto` | flag | standalone | Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv |
+| `--m3u` | URL or path | tv/catchup/epg | IPTV m3u (config iptv.m3u = local mode only; KODI mode needs it explicitly) |
+| `--epg` | URL or path | epg/catchup | XMLTV EPG (priority: --epg > m3u x-tvg-url > config iptv.epg) |
 | `--artist` | str | music | Artist name filter |
 | `--album` | str | music | Album name filter |
 | `--song` | str | music | Song name filter |
 | `--shuffle` | flag | music | Random playback order |
 | `--date` | str | catchup, epg | Date keyword or YYYY-MM-DD |
 | `--time` | str | catchup | Time keyword or HH:MM |
+| `--json` | flag | search actions | JSON array output, never auto-plays (for AI) |
 | `--debug` | flag | any | Verbose debug output |
-| `--mpv-path` | path | --local | mpv executable path |
+| `--mpv-path` | path | local mode | mpv executable path |
 | `--max-depth` | int | search | Directory recursion depth |
-| `--prefer-local` | flag | auto | Prefer local over KODI |
 
 ---
 
-## Action Reference (all patterns)
+## Action Reference
+
+Examples assume the config from the Configuration File section is filled in
+(kodi.host + media roots + iptv.m3u). Override forms are shown for one-off
+overrides only.
 
 ### movie — Search and play movies
 
 ```
-# KODI
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp movie "Avatar"
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp movie "阿凡达"
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol http --username kodi --password hermes movie "Interstellar"
+# config-driven (recommended)
+aiplayer movie "阿凡达"
+aiplayer movie "Avatar" --json
 
-# local
-python aiplayer/scripts/aiplayer.py --local movie "Avatar"
-python aiplayer/scripts/aiplayer.py --local movie "阿凡达"
+# temporary override (different box than config)
+aiplayer --host 192.168.100.11 --port 9090 --protocol http --username kodi --password hermes movie "Interstellar"
 ```
 
-Keywords: `放电影`, `电影`, `movie`
+Keywords: `看电影`, `电影`, `movie`
 
-### tv — Search and play TV episodes
+### video — Search and play TV episodes
 
-Query must contain season/episode info (S03E04, 3x04, 第三季第四集).
+Query must contain season/episode info (S03E04, 3x04, 第N季第M集).
+Chinese queries find English-named files and vice versa via Douban alias
+expansion (see Important Notes).
 
 ```
-# KODI
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp tv "Dark Matter S03E04"
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp tv "黑暗物质 第三季第四集"
+# config-driven
+aiplayer video "黑暗物质第三季第四集"
+aiplayer video "Dark Matter S03E04" --json
 
-# local
-python aiplayer/scripts/aiplayer.py --local tv "Dark Matter S03E04"
+# temporary override
+aiplayer --host 192.168.100.11 --port 9090 video "Dark Matter S03E04"
 ```
 
-Keywords: `放视频`, `放电视`, `视频`, `电视`, `tv`, `episode`
+Keywords: `看视频`, `电视剧`, `视频`, `连续`, `video`, `episode`
 
 ### music — Search and play music
 
 Uses `--artist`, `--album`, `--song` flags (all optional). `--shuffle` for random.
 
 ```
-# KODI
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp music --artist "赵传"
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp music --artist "赵传" --album "我是一只小小鸟" --song "我是一只小小鸟" --shuffle
-
-# local
-python aiplayer/scripts/aiplayer.py --local music --artist "赵传"
-python aiplayer/scripts/aiplayer.py --local music "我是一只小小鸟"
+# config-driven
+aiplayer music --artist "赵传"
+aiplayer music --artist "赵传" --album "我是一只小小鸟" --song "我是一只小小鸟" --shuffle
+aiplayer music "我是一只小小鸟" --json
 ```
 
-Music selection: enter `1`, `1,3,5`, `1-5`, `a`/`all`, `q`.
+Interactive selection (`1`, `1,3,5`, `1-5`, `a`/`all`, `q`) is for humans only -
+AI agents use `--json` + `playfiles` instead (see Parsing --json output).
 
-Keywords: `放音乐`, `音乐`, `music`, `song`
+Keywords: `听音乐`, `音乐`, `music`, `song`
 
-### channel — Live TV
+### tv — Live TV (play / list channels)
 
 ```
-# KODI PVR
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp channel "CCTV1"
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp channel "湖南卫视"
-
-# KODI + m3u helper (CoreELEC box catchup broken)
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp channel "CCTV1" --m3u-url http://192.168.100.2:8000/iptv/iptv.m3u
-
-# local mpv
-python aiplayer/scripts/aiplayer.py --local channel "CCTV1" --m3u-url http://192.168.100.2:8000/iptv/iptv.m3u
+# play a channel (KODI PVR when kodi.host is set; m3u stream in local mode)
+aiplayer tv "CCTV1"
+aiplayer tv "湖南卫视"
 
 # list channels (no query)
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp channel
-python aiplayer/scripts/aiplayer.py --local channel --m3u-url http://192.168.100.2:8000/iptv/iptv.m3u
+aiplayer tv
+
+# temporary override: use a different m3u
+aiplayer tv "CCTV1" --m3u http://192.168.100.2:8000/iptv/iptv.m3u
 ```
 
-Keywords: `放电视`, `电视`, `live`, `channel`, `频道`
+In KODI mode without `--m3u`, PVR is used. In local mode, config `iptv.m3u` is used.
 
-### channels — List all channels
-
-```
-# KODI
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp channels
-
-# m3u
-python aiplayer/scripts/aiplayer.py --local channels --m3u-url http://192.168.100.2:8000/iptv/iptv.m3u
-```
+Keywords: `看电视`, `直播`, `live`, `tv`, `频道`
 
 ### epg — Browse EPG
 
 ```
-# KODI
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp epg "CCTV1"
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp epg "CCTV1" --date today
+# config-driven
+aiplayer epg "CCTV1"
+aiplayer epg "CCTV1" --date today
+aiplayer epg "CCTV1" --date yesterday
 
-# HTTP m3u EPG
-python aiplayer/scripts/aiplayer.py --local epg "CCTV1" --m3u-url http://192.168.100.2:8000/iptv/iptv.m3u --date yesterday
+# temporary override
+aiplayer epg "CCTV1" --m3u http://192.168.100.2:8000/iptv/iptv.m3u --date yesterday
 ```
 
-Keywords: `节目表`, `epg`, `节目单`
+Keywords: `节目单`, `epg`, `节目表`
 
 ### catchup — TV catch-up / 回看
 
-Requires `--date` and `--time`. Date/time accepts Chinese keywords (昨天/前天/八点/八点半).
+Requires `--date` and `--time`. Date keywords: yesterday/today/tomorrow/昨天/前天/明天/后天. Time: HH:MM or Chinese like 9点30分/十点半.
 
 ```
-# KODI + m3u (CoreELEC box)
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp catchup "CCTV1" --m3u-url http://192.168.100.2:8000/iptv/iptv.m3u --date yesterday --time 21:00
+# config-driven (m3u/epg from config; local mode)
+aiplayer catchup "CCTV1" --date yesterday --time 21:00
 
-# Sony TV (broadcastid, no --m3u-url)
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol http --username kodi --password hermes catchup "CCTV1" --date yesterday --time "晚上9点"
+# KODI Sony box (broadcastid; config m3u is ignored in KODI mode)
+aiplayer --host 192.168.100.43 --port 8080 --protocol http --username kodi --password hermes catchup "CCTV1" --date yesterday --time "晚上9点"
 
-# local + m3u
-python aiplayer/scripts/aiplayer.py --local catchup "CCTV1" --m3u-url http://192.168.100.2:8000/iptv/iptv.m3u --date 前天 --time "十点"
+# KODI box without catch-up support: pass --m3u explicitly (or the config
+# m3u/epg patch kicks in automatically when KODI returns no EPG)
+aiplayer --host 192.168.100.11 --port 9090 catchup "CCTV1" --date yesterday --time 21:00 --m3u http://192.168.100.2:8000/iptv/iptv.m3u
 ```
 
 Keywords: `回看`, `电视回看`, `catchup`
 
 ### Playback control
 
-Must use same connection flags as last play command.
+Same connection flags as the last play command (config kodi.host -> no flags for KODI).
 
 ```
-# KODI
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp pause
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp next
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp prev
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp restart
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp stop
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp volume_up
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp volume_down
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp mute
-python aiplayer/scripts/aiplayer.py --host <IP> --port <PORT> --protocol tcp status
-
-# local
-python aiplayer/scripts/aiplayer.py --local pause
-python aiplayer/scripts/aiplayer.py --local next
-python aiplayer/scripts/aiplayer.py --local prev
-python aiplayer/scripts/aiplayer.py --local stop
-python aiplayer/scripts/aiplayer.py --local status
+aiplayer pause / play / playpause / next / prev / stop / restart
+aiplayer volume_up / volume_down / mute
+aiplayer status / nowplaying
 ```
 
-Keywords: `暂停`→pause, `继续`/`播放`→play, `下一首`/`下一集`→next, `上一首`/`上一集`→prev, `重来`/`从头开始`→restart, `停止`→stop, `大声点`→volume_up, `小声点`→volume_down, `静音`→mute, `当前播放`/`进度`→status
+Keywords: `暂停`(pause), `继续`/`播放`(play), `下一首`/`下一集`(next), `上一首`/`上一集`(prev), `重播`/`从头开始`(restart), `停止`(stop), `大声点`(volume_up), `小声点`(volume_down), `静音`(mute), `当前播放`/`状态`(status)
 
 ---
 
-## Ask user for IPTV backend
+## Parsing --json output (for AI)
 
-Example IPTV backend: http://192.168.100.2:8000/iptv/iptv.m3u (52 channels, RTP multicast)
+Search actions (`movie`/`video`/`music` with `--json`) print a JSON array and never play.
+Field shapes:
+
+```jsonc
+// KODI library matches
+[{"index": 1, "file": "...", "label": "Title", "year": 2009}]
+
+// directory matches (local dirs / KODI file sources)
+[{"index": 1, "file": "...", "label": "basename", "display": "a / b / c", "type": "file|directory", "source": "root"}]
+
+// music
+[{"index": 1, "file": "...", "label": "Song", "artist": "...", "album": "..."}]
+```
+
+Exit codes: `0` = success (played, or JSON emitted), `1` = no match / runtime failure,
+`2` = command-line error (bad action or arguments).
+
+Two-round playfiles pattern (no branching needed):
+
+```bash
+# Round 1: search
+aiplayer music 我是一只小小鸟 --json
+# -> [{"index":1,"file":"G:/music/我恨.flac","label":"我恨"},...]
+
+# Round 2: play everything found in one command
+aiplayer playfiles "G:/music/我恨.flac" "G:/music/另一首.flac"
+# -> "Playing 2 file(s)"
+```
+
+`playfiles` clears the playlist, appends all paths, and starts at index 0 - so there is
+no need to branch between `playfile` and `enqueue`.
+
+---
+
+## Ask user for missing config (once, then persist)
+
+If `kodi.host`, `media.*`, or `iptv.m3u/epg` are missing when an action needs them, ask the
+user once and write the values into `~/.config/aiplayer/config.json` (keep the JSON valid)
+instead of asking again on later runs. Example IPTV backend:
+http://192.168.100.2:8000/iptv/iptv.m3u
 
 ---
 
 ## Important Notes
 
-- **Discovery is slow (~5s)**: Never auto-discover. Use known `--host` addresses.
-- **Always pass `--host` (or `--local`)**: Every single call needs connection flags.
-- **Same flags for control**: Pause/skip/volume/status must use same `--host`/`--local` as last play.
-- **CoreELEC box catch-up**: PVR catch-up returns -32602. Always use `--m3u-url` with CoreELEC box for catch-up. `--host` for playback, `--m3u-url` only for URL building.
-- **Sony TV catch-up**: Uses broadcastid from PVR. No `--m3u-url` needed.
-- **Music selection**: `a`/`all`, `q`, `1`, `1,3,5`, `1-5`, `1 3 5`.
-- **Local media roots**: `G:\movie`, `G:\video`, `G:\music` (Windows); `/mnt/media/{movie,video,music}/` (Linux)
-- **mpv IPC**: `\\.\pipe\mpv-pipe` (Windows); `/tmp/mpv-socket` (Linux)
-- **mpv instance reuse**: New cmds reuse existing mpv. Old playback continues if `q` or no results.
-- **AI agent workflow**: Search with `--json` to get file paths, then `playfile`/`enqueue` to play:
-- **AI agent workflow alternative**: Search with `--json` to get file paths, then `playfiles "file1" "file2" "file3" "..."` to play:
-  ```
-  aiplayer.py --local music 林忆莲 --json
-  → 解析 JSON，取 index=4 的 file 路径
-  aiplayer.py --local playfile /path/to/伤痕.flac
-  aiplayer.py --local enqueue /path/to/至少还有你.flac
-  ```
+- **Discovery is slow (~5s)**: never `--auto` unless the user asks; prefer config `kodi.host` or `--host`.
+- **CoreELEC/11-box catch-up**: PVR catch-up returns -32602. Either pass `--m3u` explicitly, or let the automatic m3u/XMLTV patch use config `iptv.m3u`/`iptv.epg`.
+- **Sony TV catch-up**: broadcastid from PVR works; config m3u is ignored in KODI mode, so catchup stays on broadcastid.
+- **m3u scoping**: config `iptv.m3u` applies in local mode only; in KODI mode pass `--m3u` explicitly (PVR actions are never hijacked). When KODI returns no EPG, `catchup`/`epg` fall back to the m3u/XMLTV patch automatically (config or `--m3u`/`--epg`).
+- **Catchup time filling**: catchup placeholders (incl. `{utc:}`-named ones) are filled with box-local wall clock - mirrors KODI pvr.iptvsimple's actual behaviour (field-verified: the backend interprets playseek as local time).
+- **Local media roots**: from config "media" section (no built-in defaults).
+- **Online metadata (Douban)**: when a movie/video search finds nothing, Douban expands the query into alias titles (zh<->en) and retries; person names fall back to filmography. Unofficial endpoints - failures degrade silently to local-only search. Music search never goes online.
+- **mpv IPC**: `\\.\pipe\mpv-pipe` (Windows); `/tmp/mpv-socket` (Linux). New commands reuse a running mpv; old playback continues if the search ends with `q` or no results.
 - **Time zones**: EPG/KODI PVR = UTC. User inputs = +8 local.
 - **No plugin/virtual sources**: `plugin://`, `videodb://` rejected.
-- **mpv path**: `d:\tools\mpv\mpv.exe` (Windows); `mpv` in PATH (Linux).
-
-
-## AI Agent Workflow
-
-### Two-round playfiles pattern (zero branch)
-
-```bash
-# Round 1: Search with JSON
-python aiplayer/scripts/aiplayer.py --local music 林忆莲 --json
-# → [{"index":1,"file":"G:/music/伤痕.flac","label":"伤痕"},...]
-
-# Round 2: Play all files in one command (no count check needed)
-python aiplayer/scripts/aiplayer.py --local playfiles "G:/music/伤痕.flac" "G:/music/至少还有你.flac"
-# → "Playing 2 file(s)"
-```
-
-The `playfiles` action internally:
-1. Clears current playlist
-2. Appends all given paths
-3. Starts playback from index 0
-
-This eliminates the need for the AI to check "is there more than 1?" and branch between `playfile` vs `enqueue`.
+- **mpv not found**: install mpv (Windows: `winget install mpv-player.mpv-CI.MSVC`) or set `mpv.path` in config.

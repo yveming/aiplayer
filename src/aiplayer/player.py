@@ -12,6 +12,23 @@ class PlayerMode:
     LOCAL = "local"
 
 
+def resolve_kodi_api(player):
+    """Extract KodiAPI from a Player instance; player itself if already
+    a KodiAPI; None otherwise."""
+    if player is None:
+        return None
+    if isinstance(player, KodiAPI):
+        return player
+    if hasattr(player, 'kodi') and player.kodi:
+        return player.kodi
+    return None
+
+
+def is_local_player(player):
+    """True when player is a local (mpv) Player instance."""
+    return player is not None and getattr(player, 'mode', None) == PlayerMode.LOCAL
+
+
 class Player:
     def __init__(self, mode, kodi_config=None, local_config=None):
         self.mode = mode
@@ -142,47 +159,26 @@ class Player:
             return False
 
         if action in ('pause', 'play', 'playpause'):
-            result = self.kodi.player_play_pause(player_id)
-            ok = result.get('result') == 'OK'
-            print(f"Play/Pause: {'OK' if ok else 'failed'}")
-            if ok:
-                title = self.current_file()
-                if title:
-                    print(f"  Now: {title}")
-            return ok
+            label, call = 'Play/Pause', lambda: self.kodi.player_play_pause(player_id)
         elif action == 'next':
-            result = self.kodi.player_go_to(player_id, 'next')
-            ok = result.get('result') == 'OK'
-            print(f"Next: {'OK' if ok else 'failed'}")
-            if ok:
-                title = self.current_file()
-                if title:
-                    print(f"  Now: {title}")
-            return ok
+            label, call = 'Next', lambda: self.kodi.player_go_to(player_id, 'next')
         elif action == 'prev':
-            result = self.kodi.player_go_to(player_id, 'previous')
-            ok = result.get('result') == 'OK'
-            print(f"Prev: {'OK' if ok else 'failed'}")
-            if ok:
-                title = self.current_file()
-                if title:
-                    print(f"  Now: {title}")
-            return ok
+            label, call = 'Prev', lambda: self.kodi.player_go_to(player_id, 'previous')
         elif action == 'stop':
-            result = self.kodi.player_stop(player_id)
-            ok = result.get('result') == 'OK'
-            print(f"Stop: {'OK' if ok else 'failed'}")
-            return ok
+            label, call = 'Stop', lambda: self.kodi.player_stop(player_id)
         elif action == 'restart':
-            result = self.kodi.player_seek(player_id, 'beginning')
-            ok = result.get('result') == 'OK'
-            print(f"Restart: {'OK' if ok else 'failed'}")
-            if ok:
-                title = self.current_file()
-                if title:
-                    print(f"  Now: {title}")
-            return ok
-        return False
+            label, call = 'Restart', lambda: self.kodi.player_seek(player_id, 'beginning')
+        else:
+            return False
+
+        result = call()
+        ok = result.get('result') == 'OK'
+        print(f"{label}: {'OK' if ok else 'failed'}")
+        if ok and action != 'stop':
+            title = self.current_file()
+            if title:
+                print(f"  Now: {title}")
+        return ok
 
     def _local_playback(self, action):
         labels = {'pause': 'Pause', 'play': 'Play', 'playpause': 'Play/Pause',
@@ -190,23 +186,18 @@ class Player:
                   'stop': 'Stop', 'restart': 'Restart'}
         label = labels.get(action, action)
 
-        if action == 'pause':
-            r = self.local.set_pause(True)
-        elif action == 'play':
-            r = self.local.set_pause(False)
-        elif action == 'playpause':
-            r = self.local.play_pause()
-        elif action == 'next':
-            r = self.local.go_to('next')
-        elif action == 'prev':
-            r = self.local.go_to('previous')
-        elif action == 'stop':
-            r = self.local.stop()
-        elif action == 'restart':
-            r = self.local.seek('beginning')
-        else:
+        calls = {
+            'pause': lambda: self.local.set_pause(True),
+            'play': lambda: self.local.set_pause(False),
+            'playpause': self.local.play_pause,
+            'next': lambda: self.local.go_to('next'),
+            'prev': lambda: self.local.go_to('previous'),
+            'stop': self.local.stop,
+            'restart': lambda: self.local.seek('beginning'),
+        }
+        if action not in calls:
             return False
-
+        r = calls[action]()
         ok = r.get('error') in (None, 'success')
         print(f"{label}: {'OK' if ok else 'failed - ' + str(r.get('error', 'unknown'))}")
         if ok and action != 'stop':

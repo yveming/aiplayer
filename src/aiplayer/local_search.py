@@ -9,6 +9,8 @@ import re
 from pathlib import Path
 from difflib import SequenceMatcher
 
+from aiplayer.config import load_config, media_config_hint
+
 VIDEO_EXTENSIONS = ('.mkv', '.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.ts', '.mpg', '.mpeg', '.iso', '.img')
 AUDIO_EXTENSIONS = ('.mp3', '.flac', '.wav', '.ogg', '.m4a', '.aac', '.wma', '.ape', '.cue')
 
@@ -131,125 +133,130 @@ def _normalize_for_match(s):
     return s.lower()
 
 
-DEFAULT_MEDIA_ROOTS = {
-    'movie': [r'G:\movie', '/mnt/media/movie', '/media/movie', '/mnt/movie'],
-    'video': [r'G:\video', '/mnt/media/video', '/media/video', '/mnt/video'],
-    'music': [r'G:\music', '/mnt/media/music', '/media/music', '/mnt/music'],
-}
-
-
 def _get_media_roots(media_type='movie'):
-    dirs = DEFAULT_MEDIA_ROOTS.get(media_type, [])
+    """Return configured media roots (media.<type> in config.json) that exist on disk."""
+    dirs = load_config().get('media', {}).get(media_type, [])
     results = []
     for d in dirs:
-        p = Path(d)
+        p = Path(d).expanduser()
         if p.is_dir():
             results.append(p)
     return results
 
 
 def find_local_media_roots():
-    """Discover existing local media directories by probing common paths."""
+    """Return configured media roots per type that exist on disk."""
+    cfg_media = load_config().get('media', {})
     found = {'movie': [], 'video': [], 'music': []}
-    for media_type, dirs in DEFAULT_MEDIA_ROOTS.items():
-        for d in dirs:
-            p = Path(d)
+    for media_type in found:
+        for d in cfg_media.get(media_type, []):
+            p = Path(d).expanduser()
             if p.is_dir():
                 found[media_type].append(p)
     return found
 
 
-def search_local_directory(root_path, query, extensions=None, max_depth=4, debug=False,
-                           video_mode=False, query_info=None):
-    """Recursively search a local directory for files matching query.
+def _walk_entries(root, max_depth=4, extensions=None):
+    """Yield entry dicts (dirs then files) under root, depth-limited.
 
-    Same matching logic as search_play.search_remote_directory but
-    uses local filesystem (os.walk / Path.rglob).
+    Shared by search_local_directory and list_local_entries so the walk
+    and depth-limiting logic lives in one place.  Entries have the shape
+    label/display/file/type/depth/sXXeYY (no 'source').
     """
-    matches = []
-    query_norm = _normalize_for_match(query)
-    if not query_norm:
-        return matches
-
-    if video_mode and query_info:
-        show_norm = _normalize_for_match(query_info.get('show') or '')
-        target_sXXeYY = query_info.get('sXXeYY')
-    else:
-        show_norm = query_norm
-        target_sXXeYY = None
-
-    show_fallback = _strip_path_particles(
-        query if not (video_mode and query_info)
-        else (query_info.get('show') or '')
-    ).replace(' ', '').lower()
-
-    if not show_norm:
-        return matches
-
-    root = Path(root_path)
+    root = Path(root)
     if not root.is_dir():
-        return matches
-
+        return
     for dirpath, dirnames, filenames in os.walk(root):
         rel = Path(dirpath).relative_to(root)
         depth = len(rel.parts) if str(rel) != '.' else 0
         if depth > max_depth:
             dirnames.clear()
             continue
-
-        path_stack = list(rel.parts) if str(rel) != '.' else []
-
-        # Check directory itself
-        dir_label = os.path.basename(dirpath)
-        full_norm = _normalize_for_match(''.join(path_stack)) if path_stack else ''
-        full_fallback = _strip_path_particles(''.join(path_stack)).replace(' ', '').lower() if path_stack else ''
-        dir_matched = (show_norm and full_norm and show_norm in full_norm) or \
-                      (show_fallback and full_fallback and show_fallback in full_fallback)
-
-        if dir_matched and path_stack:
-            matches.append({
-                'label': dir_label,
-                'display': ' / '.join(path_stack),
+        stack = list(rel.parts) if str(rel) != '.' else []
+        if stack:
+            dlabel = os.path.basename(dirpath)
+            yield {
+                'label': dlabel,
+                'display': ' / '.join(stack),
                 'file': dirpath,
                 'type': 'directory',
                 'depth': depth,
-                'sXXeYY': extract_sXXeYY(dir_label),
-            })
-
+                'sXXeYY': extract_sXXeYY(dlabel),
+            }
         for fname in filenames:
-            label_no_ext = os.path.splitext(fname)[0]
-            full_stack = path_stack + [label_no_ext]
-            full_norm = _normalize_for_match(''.join(full_stack))
-            full_fallback = _strip_path_particles(''.join(full_stack)).replace(' ', '').lower()
-
-            if show_norm not in full_norm and show_fallback not in full_fallback:
+            base, ext = os.path.splitext(fname)
+            if extensions and ext.lower() not in extensions:
                 continue
-
-            fpath = os.path.join(dirpath, fname)
-            f_ext = os.path.splitext(fname)[1].lower()
-            if extensions and f_ext not in extensions:
-                continue
-
-            matches.append({
-                'label': label_no_ext,
-                'display': ' / '.join(full_stack),
-                'file': fpath,
+            fstack = stack + [base]
+            yield {
+                'label': base,
+                'display': ' / '.join(fstack),
+                'file': os.path.join(dirpath, fname),
                 'type': 'file',
                 'depth': depth,
-                'sXXeYY': extract_sXXeYY(label_no_ext),
-            })
+                'sXXeYY': extract_sXXeYY(base),
+            }
 
-    if video_mode and target_sXXeYY:
-        filtered = []
-        for m in matches:
-            sx = m.get('sXXeYY')
-            if m['type'] == 'file':
-                if sx == target_sXXeYY:
-                    filtered.append(m)
-            else:
-                if sx is None:
-                    filtered.append(m)
-        matches = filtered
+
+def list_local_entries(media_type='movie', max_depth=4):
+    """Walk configured media roots once and return all entries (files+dirs)."""
+    roots = _get_media_roots(media_type)
+    extensions = VIDEO_EXTENSIONS if media_type in ('movie', 'tv', 'video') else AUDIO_EXTENSIONS
+    entries = []
+    for root in roots:
+        for entry in _walk_entries(root, max_depth=max_depth, extensions=extensions):
+            entry['source'] = str(root)
+            entries.append(entry)
+    return entries
+
+
+def build_query_ctx(query, video_mode=False, query_info=None):
+    """Normalized matching context shared by local and remote directory search.
+
+    Returns (show_norm, show_fallback, target_sXXeYY).  show_norm is ''
+    when the query has no matchable characters.
+    """
+    query_norm = _normalize_for_match(query)
+    if video_mode and query_info:
+        show_norm = _normalize_for_match(query_info.get('show') or '')
+        target_sXXeYY = query_info.get('sXXeYY')
+    else:
+        show_norm = query_norm
+        target_sXXeYY = None
+    show_fallback = _strip_path_particles(
+        query if not (video_mode and query_info)
+        else (query_info.get('show') or '')
+    ).replace(' ', '').lower()
+    return show_norm, show_fallback, target_sXXeYY
+
+
+def match_entries(entries, ctx):
+    """Filter/annotate/sort entry dicts against a query context.
+
+    entries: iterable of {label, display, file, type, depth, sXXeYY}
+    ctx: (show_norm, show_fallback, target_sXXeYY) from build_query_ctx
+    """
+    show_norm, show_fallback, target_sXXeYY = ctx
+    matches = []
+    if not show_norm:
+        return matches
+    for entry in entries:
+        joined = entry['display'].replace(' / ', '')
+        full_norm = _normalize_for_match(joined)
+        full_fallback = _strip_path_particles(joined).replace(' ', '').lower()
+        if entry['type'] == 'directory':
+            if (show_norm and full_norm and show_norm in full_norm) or \
+                    (show_fallback and full_fallback and show_fallback in full_fallback):
+                matches.append(entry)
+        else:
+            if show_norm not in full_norm and show_fallback not in full_fallback:
+                continue
+            matches.append(entry)
+
+    if target_sXXeYY:
+        matches = [m for m in matches
+                   if (m['type'] == 'file' and m.get('sXXeYY') == target_sXXeYY)
+                   or (m['type'] == 'directory' and m.get('sXXeYY') is None)]
 
     matches.sort(key=lambda m: (
         0 if m['type'] == 'directory' else 1,
@@ -259,10 +266,41 @@ def search_local_directory(root_path, query, extensions=None, max_depth=4, debug
     return matches
 
 
+def collect_matches(matches, extensions, source_label):
+    """Filter matches by extension and tag each with its source label."""
+    out = []
+    for m in matches:
+        if m['type'] == 'file' and extensions:
+            if os.path.splitext(m['file'])[1].lower() not in extensions:
+                continue
+        m['source'] = source_label
+        out.append(m)
+    return out
+
+
+def search_local_directory(root_path, query, extensions=None, max_depth=4, debug=False,
+                           video_mode=False, query_info=None):
+    """Recursively search a local directory for files matching query."""
+    ctx = build_query_ctx(query, video_mode=video_mode, query_info=query_info)
+    if not ctx[0]:
+        return []
+    root = Path(root_path)
+    if not root.is_dir():
+        return []
+    return match_entries(_walk_entries(root, max_depth=max_depth, extensions=extensions), ctx)
+
+
 def search_all_local_sources(query, media_type='video', debug=False,
                              video_mode=False, query_info=None, max_depth=4):
     """Search all local media directories for matching files."""
     roots = _get_media_roots(media_type)
+    if not roots:
+        configured = load_config().get('media', {}).get(media_type, [])
+        if configured:
+            print(f"Configured media directories not found: {configured}")
+        else:
+            print(media_config_hint())
+        return []
     all_matches = []
 
     extensions = VIDEO_EXTENSIONS if media_type in ('movie', 'tv', 'video') else AUDIO_EXTENSIONS
@@ -277,13 +315,7 @@ def search_all_local_sources(query, media_type='video', debug=False,
         )
         if debug:
             print(f"  [debug] Searched '{root}': {len(matches)} candidate(s)")
-        for m in matches:
-            if m['type'] == 'file' and extensions:
-                ext = os.path.splitext(m['file'])[1].lower()
-                if ext not in extensions:
-                    continue
-            m['source'] = str(root)
-            all_matches.append(m)
+        all_matches.extend(collect_matches(matches, extensions, str(root)))
 
     return all_matches
 

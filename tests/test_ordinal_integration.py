@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Integration test: ordinal movie search against a 3-Avatar movie structure
-that mirrors what the user has on G:\\movie\\阿凡达\\.
+that mirrors a typical configured media root (config.json "media" section).
 
 Layout:
   nfs://192.168.100.2/Public/movie/
