@@ -1,6 +1,7 @@
 [project]
 name = "aiplayer"
 version = "0.1"
+license = { text = "MIT" }
 description = "Unified media player (KODI + local mpv)"
 requires-python = ">=3.10"
 dependencies = [
