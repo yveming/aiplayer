@@ -10,9 +10,11 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from aiplayer.player import Player, PlayerMode, resolve_kodi_api
+from aiplayer.player import PlayerMode, resolve_kodi_api
+from aiplayer.player_factory import create_player
 from aiplayer.discover import discover_player
 from aiplayer.config import load_config
+from aiplayer.m3u_catchup import parse_m3u as _parse_m3u, find_channel as m3u_find, _read_text as m3u_read
 
 
 def _load_m3u_channels(m3u_source, announce=False):
@@ -21,7 +23,6 @@ def _load_m3u_channels(m3u_source, announce=False):
     Returns the parsed entries.  `announce` adds the "Fetching m3u" line
     (used by the tv action when announcing a fetch).
     """
-    from aiplayer.m3u_catchup import parse_m3u as _parse_m3u, _read_text as m3u_read
     if announce:
         print(f"Fetching m3u: {m3u_source}")
     entries = _parse_m3u(m3u_read(m3u_source))
@@ -34,8 +35,6 @@ def _load_m3u_channels(m3u_source, announce=False):
 
 def _find_m3u_entry(m3u_source, channel):
     """Fetch an m3u source and return the matching entry (or None)."""
-    from aiplayer.m3u_catchup import parse_m3u as _parse_m3u, find_channel as m3u_find
-    from aiplayer.m3u_catchup import _read_text as m3u_read
     print(f"Fetching m3u: {m3u_source}")
     return m3u_find(_parse_m3u(m3u_read(m3u_source)), channel)
 
@@ -150,8 +149,8 @@ def main():
 
     if args.host:
         # User specified a KODI host directly
-        player = Player(
-            mode=PlayerMode.KODI,
+        player = create_player(
+            PlayerMode.KODI,
             kodi_config={
                 "host": args.host,
                 "port": args.port,
@@ -166,8 +165,8 @@ def main():
         discovery = discover_player()
         if discovery['mode'] == 'kodi':
             inst = discovery['instances'][0]
-            player = Player(
-                mode=PlayerMode.KODI,
+            player = create_player(
+                PlayerMode.KODI,
                 kodi_config={
                     'host': inst['ip'],
                     'port': inst['port'],
@@ -178,18 +177,18 @@ def main():
             )
             print(f"Mode: KODI ({inst['ip']}:{inst['port']})")
         elif discovery['mode'] == 'local':
-            player = Player(mode=PlayerMode.LOCAL, local_config=local_config)
+            player = create_player(PlayerMode.LOCAL, local_config=local_config)
             print("Mode: local mpv (no KODI found)")
         else:
             if m3u_source:
-                player = Player(mode=PlayerMode.LOCAL, local_config=local_config)
+                player = create_player(PlayerMode.LOCAL, local_config=local_config)
                 print("Mode: local mpv (no KODI, using m3u)")
             else:
                 print("No player available. Use --host to specify KODI, --auto to discover, or --m3u (URL or file path) for TV.")
                 sys.exit(1)
     else:
         # Default: local mpv playback (skip discovery)
-        player = Player(mode=PlayerMode.LOCAL, local_config=local_config)
+        player = create_player(PlayerMode.LOCAL, local_config=local_config)
         print("Mode: local mpv")
 
     action = args.action
