@@ -38,8 +38,8 @@ winget install mpv-player.mpv-CI.MSVC
 # 在项目目录内安装为全局 uv 工具（安装后任意位置可用 aiplayer 命令）
 uv tool install .
 
-# 升级到本地最新代码
-uv tool install . --force
+# 代码更新后升级
+uv tool upgrade aiplayer
 ```
 
 也可以不安装、在项目目录内直接运行：
@@ -59,8 +59,7 @@ uv run aiplayer <参数>
 npx skills add ./skills/aiplayer
 ```
 
-**注意**：技能文件是静态拷贝。更新本仓库后需重新安装才能同步；
-`uv tool install . --force` 只更新 `aiplayer` 命令本身，不会更新技能文件。
+**注意**：技能文件是静态拷贝。更新本仓库后需重新安装才能同步。
 
 ## 使用方法
 
