@@ -1,8 +1,7 @@
 # aiplayer
 
-统一媒体播放控制工具：一台命令同时驾驭 **KODI**（JSON-RPC）与**本地 mpv**，
-支持本地媒体库搜索、IPTV 直播/回看（m3u + XMLTV EPG），并可选接入豆瓣
-元数据实现跨语言片名与演员/导演搜索。
+统一媒体播放控制工具：同时支持 **KODI**（JSON-RPC）与**本地 mpv**，
+支持本地媒体库搜索/播放、IPTV 直播/回看（m3u + XMLTV EPG）。
 
 - **KODI 模式**：媒体库/目录搜索、播放控制、PVR 频道、EPG、回看
 - **本地模式（默认）**：mpv 播放本地文件（CIFS/NFS 挂载目录）
@@ -18,16 +17,16 @@
 
 ## 安装 mpv
 
-**Windows**（PowerShell）：
-
-```powershell
-winget install mpv-player.mpv-CI.MSVC
-```
-
 **Debian / Ubuntu**：
 
 ```bash
 sudo apt update && sudo apt install mpv
+```
+
+**Windows**（PowerShell）：
+
+```powershell
+winget install mpv-player.mpv-CI.MSVC
 ```
 
 若 mpv 不在 PATH 中，请在配置文件里用 `mpv.path` 指定可执行文件完整路径
@@ -54,15 +53,14 @@ uv run aiplayer <参数>
 ## AI Skill 安装
 
 `skills/aiplayer/SKILL.md` 是给 AI 代理（opencode、Claude Code、Hermes Agent等）使用
-的技能说明，安装后代理会自动掌握 `aiplayer` 的动作、参数与注意事项，无需每次口头解释。
+的技能说明。
 
 ```bash
 npx skills add ./skills/aiplayer
 ```
 
-**注意**：技能文件是静态拷贝。更新本仓库后需重新复制才能同步；
+**注意**：技能文件是静态拷贝。更新本仓库后需重新安装才能同步；
 `uv tool install . --force` 只更新 `aiplayer` 命令本身，不会更新技能文件。
-其他 AI 工具按其技能目录约定放置同名文件即可。
 
 ## 使用方法
 
@@ -82,7 +80,8 @@ aiplayer [连接参数] <动作> [查询词] [动作参数]
 
 **动作**：必填。`movie` 电影 | `video` 剧集 | `music` 音乐 | `tv` 电视直播/频道 |
 `epg` 节目单 | `catchup` 回看 | `playfile`/`playfiles`/`enqueue` 文件播放 |
-其余为播放控制。不做任何自动推断。
+其余为播放控制；`stop` 会停止播放并退出本地 mpv 进程（下次播放重新启动），
+mpv 未运行时这些动作提示 Nothing playing。不做任何自动推断。
 
 ```bash
 # 电影 / 剧集 / 音乐（本地模式）
@@ -150,7 +149,7 @@ aiplayer movie "阿凡达" --json
 }
 ```
 
-### 豆瓣元数据
+### 支持多语言自动匹配，以及按演员、导演搜索
 
 电影/剧集搜索**无结果时**自动触发（不增加正常路径延迟）：
 
@@ -177,28 +176,27 @@ python tests/test_movie_smoke.py
 
 1. **媒体目录必须配置**：`media.*` 没有内置默认路径，未配置时本地搜索会
    打印配置提示。
-2. **mpv 找不到**：查找顺序为 配置 `mpv.path` / `--mpv-path` → PATH 中的
-   `mpv` → 报错。Windows 用 winget 安装后若提示找不到，把 mpv.exe 完整
-   路径写进 `mpv.path`。
+2. **mpv 找不到**：查找顺序为 `--mpv-path` > 配置 `mpv.path` > PATH 中的
+   `mpv` > 报错。Windows 用 winget 安装后若提示找不到，把 mpv.exe 完整
+   路径写进 `mpv.path`（或启动时传 `--mpv-path`）。
 3. **mpv 实例复用**：本地播放通过 mpv JSON IPC 控制
    （Windows 命名管道 `\\.\pipe\mpv-pipe`，Linux `/tmp/mpv-socket`），
-   新命令复用已运行的 mpv 实例。
+   新命令复用已运行的 mpv 实例；`stop` 后进程退出，下次播放重新启动。
 4. **播放控制跟随模式**：pause/next/volume 等作用于"最近一次播放"的模式，
    需带与播放时相同的 `--host`/`--auto` 参数（默认本地模式则不带）。
-5. **EPG 时区**：KODI PVR/EPG 内部为 UTC，命令行输入按东八区理解。
-6. **回看兼容性**：部分盒子 PVR broadcastid 回看返回 -32602（如 CoreELEC），
+5. **回看兼容性**：部分盒子 PVR broadcastid 回看返回 -32602（如 CoreELEC），
    请使用 `--m3u <URL>` 自建回看 URL。
-7. **EPG 来源优先级**：`--epg` > m3u 的 `x-tvg-url` > 配置 `iptv.epg`；
+6. **EPG 来源优先级**：`--epg` > 配置 `iptv.epg` > m3u 的 `x-tvg-url`；
    三者都没有时程序会提示配置。
-8. **Windows 控制台乱码**：中文输出异常时先执行 `chcp 65001` 或设置
+7. **Windows 控制台乱码**：中文输出异常时先执行 `chcp 65001` 或设置
    `PYTHONIOENCODING=utf-8`。
-9. **`--json` 模式**：搜索结果以 JSON 数组输出且无交互提示，供 AI/脚本
+8. **`--json` 模式**：搜索结果以 JSON 数组输出且无交互提示，供 AI/脚本
    消费；**永不直接播放**（单命中也返回单元素数组），用 `playfile`/`playfiles`/`enqueue` 二次播放。
-10. **自动发现很慢**：`--auto` 触发 SSDP/mDNS（约 5 秒），日常请用配置或
+9. **自动发现很慢**：`--auto` 触发 SSDP/mDNS（约 5 秒），日常请用配置或
     `--host` 直连。
-11. **config m3u 作用域**：`iptv.m3u` 仅在本地模式自动生效；KODI 模式需显式 `--m3u`，
+10. **config m3u 作用域**：`iptv.m3u` 仅在本地模式自动生效；KODI 模式需显式 `--m3u`，
     否则 PVR 动作（tv/epg/catchup）不会被劫持。KODI 不回 EPG 时，`catchup`/`epg`
     会自动用 m3u/XMLTV（config 或 `--m3u`/`--epg`）打补丁。
 
-12. **catchup 占位符时区**：`catchup-source` 模板占位符（含 `{utc:}` 命名）统一按本地时间填充，
+11. **catchup 占位符时区**：`catchup-source` 模板占位符（含 `{utc:}` 命名）统一按本地时间填充，
     与 KODI iptvsimple 的实际行为一致（实测后端 playseek 按本地解释）。

@@ -198,6 +198,9 @@ class Player:
         if action not in calls:
             return False
         r = calls[action]()
+        if isinstance(r, dict) and r.get('error') == 'not running':
+            print("Nothing playing.")
+            return True
         ok = r.get('error') in (None, 'success')
         print(f"{label}: {'OK' if ok else 'failed - ' + str(r.get('error', 'unknown'))}")
         if ok and action != 'stop':
@@ -240,6 +243,9 @@ class Player:
         else:
             return False
 
+        if isinstance(r, dict) and r.get('error') == 'not running':
+            print("Nothing playing.")
+            return True
         ok = r.get('error') in (None, 'success')
         print(f"{label}: {'OK' if ok else 'failed - ' + str(r.get('error', 'unknown'))}")
         return ok

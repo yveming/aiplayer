@@ -12,6 +12,8 @@ Offline test suite for aiplayer (KODI + local mpv unified player).
 | `test_ordinal_integration.py`   | offline     | no    | 6 cases against a 3-Avatar mock matching real media layout  |
 | `test_pvr_units.py`             | offline     | no    | 10 `parse_time` + 5 `find_channel_by_name` cases            |
 | `test_m3u_catchup.py`           | offline     | no    | m3u parse + catchup URL builder (4 placeholder families)    |
+| `test_local_player_reuse.py`   | offline     | no*   | 6 reuse cases: fresh MpvPlayer instances must reuse one mpv (no per-play spawn) |
+| `test_priority_order.py`      | offline     | no    | CLI > config > derived priority: EPG source resolution + mpv path chain |
 | `run_all.py`                    | runner      | no    | Run every offline suite + summarise                         |
 | `REAL_KODI_TESTS.md`            | checklist   | YES   | Manual real-KODI test commands (movie / music / tv / pvr)   |
 | `test_e2e_real_kodi.py`         | integration | YES   | Auto smoke-test against a real KODI box                     |
