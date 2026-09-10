@@ -136,6 +136,25 @@ def main():
     check('final stop terminates again', final == before,
           'before=%d now=%d' % (before, final))
 
+    p4 = MpvPlayer()
+    p4.play(wav1)
+    p4.play(wav2)
+    r6 = p4.stop()
+    check('stop after play+replace success', r6.get('error') in (None, 'success'), str(r6))
+    time.sleep(0.5)
+    after_replace = count_mpv()
+    check('stop after play+replace terminates mpv', after_replace == before,
+          'before=%d now=%d' % (before, after_replace))
+
+    if sys.platform != 'win32':
+        victim = subprocess.Popen(['sleep', '30'])
+        MpvPlayer()._terminate_pid(victim.pid)
+        time.sleep(0.4)
+        check('escalation kills a stuck process', victim.poll() is not None,
+              'pid=%d' % victim.pid)
+        if victim.poll() is None:
+            victim.kill()
+
     print()
     print('TOTAL: %d passed, %d failed' % (passed, failed))
     return 0 if failed == 0 else 1
