@@ -19,9 +19,10 @@ aiplayer unifies KODI remote control and local mpv playback under one interface:
 
 ```
 aiplayer (entry point, installed as a uv tool)
-  +-- player.py  (Player abstraction: KODI vs local mpv; playback control)
-  |     +-- KodiAPI (kodi_api.py)     JSON-RPC to KODI
-  |     +-- MpvPlayer (local_player.py)  mpv IPC control
+  +-- player.py  (abstraction: PlayerMode, Player ABC, resolve helpers)
+  |     +-- player_kodi.py  KodiBackend -> KodiAPI (kodi_api.py)        JSON-RPC to KODI
+  |     +-- player_mpv.py   MpvBackend  -> MpvPlayer (local_player.py)  mpv IPC control
+  |     +-- player_factory.py  create_player() assembles the backend
   +-- discover.py  discover KODI or detect local media dirs
   +-- search_play.py  search & play (KODI library + remote/local dirs)
   +-- pvr_epg.py  TV channels/EPG/catch-up

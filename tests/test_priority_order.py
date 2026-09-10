@@ -10,7 +10,8 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 
 import aiplayer.pvr_epg as pvr_epg
-from aiplayer.player import Player, PlayerMode
+from aiplayer.player import PlayerMode
+from aiplayer.player_factory import create_player
 
 passed = failed = 0
 
@@ -47,7 +48,7 @@ try:
 finally:
     pvr_epg.load_config = real_load_config
 
-p = Player(mode=PlayerMode.LOCAL, local_config={'mpv_path': 'C:/fake/mpv.exe'})
+p = create_player(PlayerMode.LOCAL, local_config={'mpv_path': 'C:/fake/mpv.exe'})
 check('mpv_path from local_config used verbatim',
       p.local.mpv_path == 'C:/fake/mpv.exe')
 

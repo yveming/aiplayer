@@ -14,6 +14,11 @@ from aiplayer.player import \
     resolve_kodi_api as _resolve_api, is_local_player as _is_local_player
 from aiplayer import local_search
 
+try:
+    from aiplayer.metadata import expand_titles, person_filmography
+except Exception:
+    expand_titles = person_filmography = None
+
 VIDEO_EXTENSIONS = local_search.VIDEO_EXTENSIONS
 AUDIO_EXTENSIONS = local_search.AUDIO_EXTENSIONS
 CHINESE_NUMERALS = local_search.CHINESE_NUMERALS
@@ -261,8 +266,9 @@ def _parse_multi_selection(choice, total):
 
 def _metadata_candidates(query, debug=False):
     """Expand query into Douban alias titles (best-effort, original excluded)."""
+    if expand_titles is None:
+        return []
     try:
-        from aiplayer.metadata import expand_titles
         aliases = expand_titles(query, debug=debug)
     except Exception as e:
         if debug:
@@ -273,8 +279,9 @@ def _metadata_candidates(query, debug=False):
 
 def _person_work_titles(query, debug=False):
     """Candidate work titles (Chinese + original) when query is a person."""
+    if person_filmography is None:
+        return []
     try:
-        from aiplayer.metadata import person_filmography
         works = person_filmography(query, debug=debug)
     except Exception as e:
         if debug:
