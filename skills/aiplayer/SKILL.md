@@ -31,7 +31,7 @@ aiplayer (entry point, installed as a uv tool)
   +-- config.py  config loader (~/.config/aiplayer/config.json, auto-generated on first run)
 ```
 
-Installed as a standalone tool with `uv tool install .` and run as `aiplayer`. Update with `uv tool upgrade aiplayer`. Inside the project: `uv run aiplayer`.
+Installed as a standalone tool with `uv tool install .` and run as `aiplayer`. Update with `uv tool install . --upgrade`. Inside the project: `uv run aiplayer`.
 
 ---
 
