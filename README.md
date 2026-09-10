@@ -39,7 +39,7 @@ winget install mpv-player.mpv-CI.MSVC
 uv tool install .
 
 # 代码更新后升级
-uv tool upgrade aiplayer
+uv tool install . --upgrade
 ```
 
 也可以不安装、在项目目录内直接运行：
