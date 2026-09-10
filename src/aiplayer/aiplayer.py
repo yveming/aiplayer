@@ -64,7 +64,7 @@ EPILOG = """actions:
   live TV  tv (play/list channels) | epg (guide) | catchup (needs --date --time)
   files    playfile | enqueue | playfiles
   control  pause | play | playpause | next | prev | stop | restart |
-           volume_up | volume_down | mute | status | nowplaying
+           volume_up | volume_down | mute | status
 
 examples:
   aiplayer video "黑暗物质第三季第四集" --json    # episodes
@@ -88,7 +88,7 @@ def main():
                         choices=['movie', 'video', 'tv', 'music', 'catchup', 'epg',
                                  'pause', 'play', 'playpause', 'next', 'prev', 'stop',
                                  'restart', 'volume_up', 'volume_down', 'mute',
-                                 'status', 'nowplaying', 'playfile', 'enqueue', 'playfiles'],
+                                 'status', 'playfile', 'enqueue', 'playfiles'],
                         help='Action to perform (required) - see "actions" below')
     parser.add_argument('query', nargs='*', default=[], metavar='query',
                         help='Search query or file paths')
@@ -113,7 +113,7 @@ def main():
     g_iptv.add_argument('--m3u', default=None,
                         help='IPTV m3u: URL or file path (default: config iptv.m3u, local mode only)')
     g_iptv.add_argument('--epg', default=None,
-                        help='XMLTV EPG (priority: --epg > m3u x-tvg-url > config iptv.epg)')
+                        help='XMLTV EPG (priority: --epg > config iptv.epg > m3u x-tvg-url)')
     g_iptv.add_argument('--date', default='',
                         help='Date for catch-up/EPG (yesterday/today/YYYY-MM-DD)')
     g_iptv.add_argument('--time', default='', help='Time for catch-up/EPG (HH:MM)')
@@ -289,7 +289,7 @@ def main():
         player.playlist_play_index(0)
         print(f"Playing {len(query_list)} file(s)")
         success = True
-    elif action in ('status', 'nowplaying'):
+    elif action == 'status':
         info = player.status()
         if not info:
             print("Nothing playing.")

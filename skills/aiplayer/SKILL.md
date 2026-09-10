@@ -119,7 +119,7 @@ configured m3u - **zero connection flags**.
 | `playpause` | Toggle play/pause | no | both |
 | `next` | Next track/station | no | both |
 | `prev` | Previous track/station | no | both |
-| `stop` | Stop playback | no | both |
+| `stop` | Stop playback and exit local mpv (respawns on next play) | no | both |
 | `restart` | Restart current track | no | both |
 | `volume_up` | Volume +10% | no | both |
 | `volume_down` | Volume -10% | no | both |
@@ -327,7 +327,7 @@ http://192.168.100.2:8000/iptv/iptv.m3u
 - **Catchup time filling**: catchup placeholders (incl. `{utc:}`-named ones) are filled with box-local wall clock - mirrors KODI pvr.iptvsimple's actual behaviour (field-verified: the backend interprets playseek as local time).
 - **Local media roots**: from config "media" section (no built-in defaults).
 - **Online metadata (Douban)**: when a movie/video search finds nothing, Douban expands the query into alias titles (zh<->en) and retries; person names fall back to filmography. Unofficial endpoints - failures degrade silently to local-only search. Music search never goes online.
-- **mpv IPC**: `\\.\pipe\mpv-pipe` (Windows); `/tmp/mpv-socket` (Linux). New commands reuse a running mpv; old playback continues if the search ends with `q` or no results.
+- **mpv IPC**: `\\.\pipe\mpv-pipe` (Windows); `/tmp/mpv-socket` (Linux). New commands reuse a running mpv; `stop` exits the process (next play starts a fresh one). Old playback continues if the search ends with `q` or no results.
 - **Time zones**: EPG/KODI PVR = UTC. User inputs = +8 local.
 - **No plugin/virtual sources**: `plugin://`, `videodb://` rejected.
 - **mpv not found**: install mpv (Windows: `winget install mpv-player.mpv-CI.MSVC`) or set `mpv.path` in config.

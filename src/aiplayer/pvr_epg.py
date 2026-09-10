@@ -239,16 +239,19 @@ def find_program_in_epg(epg, date_str, time_str):
 
 
 def _resolve_epg_source(m3u_text=None, epg_param=None):
-    """Resolve EPG source: CLI --epg > m3u x-tvg-url > config iptv.epg.
+    """Resolve EPG source: CLI --epg > config iptv.epg > m3u x-tvg-url.
 
     Returns an http(s) URL or local file path, or None."""
     if epg_param:
         return epg_param
+    configured = load_config().get('iptv', {}).get('epg', '')
+    if configured:
+        return configured
     if m3u_text:
         url = get_x_tvg_url(m3u_text)
         if url:
             return url
-    return load_config().get('iptv', {}).get('epg', '') or None
+    return None
 
 
 def _fetch_m3u_source(m3u):

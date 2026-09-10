@@ -18,6 +18,10 @@ import time
 
 MPV_IPC_PATH = "/tmp/mpv-socket" if sys.platform != "win32" else r"\\.\pipe\mpv-pipe"
 
+
+_K32 = None
+
+
 def _find_mpv():
     p = shutil.which("mpv")
     if p:
@@ -27,54 +31,108 @@ def _find_mpv():
     )
 
 
+def _extract_reply(resp):
+    """Extract the command reply from buffered IPC output.
+
+    Returns (reply, done): done=True once a complete non-event JSON line
+    has been parsed. Incomplete trailing lines and mpv event lines are
+    skipped so the caller can keep reading.
+    """
+    for line in resp.decode("utf-8", errors="replace").split("\n")[:-1]:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            obj = json.loads(line)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            continue
+        if isinstance(obj, dict) and "event" in obj:
+            continue
+        return obj, True
+    return {}, False
+
+
+def _win_kernel32():
+    global _K32
+    if _K32 is None:
+        import ctypes.wintypes as wt
+        k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        k32.CreateFileW.restype = wt.HANDLE
+        k32.CreateFileW.argtypes = [wt.LPCWSTR, wt.DWORD, wt.DWORD,
+                                    wt.LPVOID, wt.DWORD, wt.DWORD, wt.HANDLE]
+        k32.WriteFile.restype = wt.BOOL
+        k32.WriteFile.argtypes = [wt.HANDLE, wt.LPCVOID, wt.DWORD,
+                                  ctypes.POINTER(wt.DWORD), wt.LPVOID]
+        k32.ReadFile.restype = wt.BOOL
+        k32.ReadFile.argtypes = [wt.HANDLE, wt.LPVOID, wt.DWORD,
+                                 ctypes.POINTER(wt.DWORD), wt.LPVOID]
+        k32.CloseHandle.restype = wt.BOOL
+        k32.CloseHandle.argtypes = [wt.HANDLE]
+        _K32 = (k32, wt)
+    return _K32
+
+
+def _win_cmd(ipc_path, data, timeout=10):
+    """Send one command over the mpv named pipe and read the reply."""
+    k32, wt = _win_kernel32()
+    invalid = ctypes.c_void_p(-1).value
+    handle = k32.CreateFileW(ipc_path, 0xC0000000, 3, None, 3, 0, None)
+    if handle is None or handle == invalid:
+        return {"error": f"Cannot open named pipe {ipc_path}"}
+    try:
+        written = wt.DWORD(0)
+        if not k32.WriteFile(handle, data, len(data), ctypes.byref(written), None):
+            return {"error": f"WriteFile failed (winerror {ctypes.get_last_error()})"}
+        if written.value != len(data):
+            return {"error": f"WriteFile short write ({written.value}/{len(data)})"}
+        buf = ctypes.create_string_buffer(65536)
+        read = wt.DWORD(0)
+        resp = b""
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            if not k32.ReadFile(handle, buf, 65536, ctypes.byref(read), None):
+                break
+            if read.value == 0:
+                time.sleep(0.05)
+                continue
+            resp += buf.raw[:read.value]
+            reply, done = _extract_reply(resp)
+            if done:
+                return reply
+        if not resp:
+            return {"error": f"No response from mpv IPC at {ipc_path}"}
+        reply, _ = _extract_reply(resp + b"\n")
+        return reply
+    finally:
+        k32.CloseHandle(handle)
+
+
 def _cmd(ipc_path, command):
     """Send a JSON command to mpv IPC and return the response."""
     payload = json.dumps({"command": command}) + "\n"
     data = payload.encode("utf-8")
-    is_win = sys.platform == "win32"
     try:
-        if is_win:
-            k32 = ctypes.windll.kernel32
-            handle = k32.CreateFileW(
-                ipc_path,
-                0xC0000000,
-                3,
-                None,
-                3,
-                0,
-                None,
-            )
-            if handle == -1:
-                return {"error": f"Cannot open named pipe {ipc_path}"}
-            written = ctypes.c_ulong(0)
-            k32.WriteFile(handle, data, len(data), ctypes.byref(written), None)
-            buf = ctypes.create_string_buffer(65536)
-            read = ctypes.c_ulong(0)
-            k32.ReadFile(handle, buf, 65536, ctypes.byref(read), None)
-            k32.CloseHandle(handle)
-            raw = buf.raw[:read.value]
-            text = raw.decode("utf-8", errors="replace")
-            return json.loads(text) if text.strip() else {}
-        else:
-            s = _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM)
-            s.settimeout(10)
-            s.connect(ipc_path)
-            s.sendall(data)
-            resp = b""
-            while True:
-                chunk = s.recv(4096)
-                if not chunk:
-                    break
-                resp += chunk
-                try:
-                    result = json.loads(resp.decode())
-                    break
-                except (json.JSONDecodeError, UnicodeDecodeError):
-                    continue
-            s.close()
-            return result if resp else {}
+        if sys.platform == "win32":
+            return _win_cmd(ipc_path, data)
+        s = _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM)
+        s.settimeout(10)
+        s.connect(ipc_path)
+        s.sendall(data)
+        resp = b""
+        reply, done = {}, False
+        while not done:
+            chunk = s.recv(4096)
+            if not chunk:
+                break
+            resp += chunk
+            reply, done = _extract_reply(resp)
+        s.close()
+        if not done and resp:
+            reply, _ = _extract_reply(resp + b"\n")
+        return reply
     except Exception as e:
         return {"error": str(e)}
+
 
 
 class MpvPlayer:
@@ -87,18 +145,22 @@ class MpvPlayer:
     def _ensure_running(self):
         if self._running:
             return True
-        self._cleanup_stale_socket()
         r = _cmd(self.ipc_path, ["get_property", "idle"])
         if r.get("error") in (None, "success"):
-            r2 = _cmd(self.ipc_path, ["get_property", "mpv-version"])
-            if r2.get("error") in (None, "success"):
-                self._running = True
-                return True
-            self._kill_previous()
+            self._running = True
+            return True
+        self._cleanup_stale_socket()
         self._start()
         self._wait_for_server(timeout=5)
         self._running = True
         return True
+
+    def _probe(self):
+        """Return True when an mpv IPC endpoint answers; refresh _running."""
+        r = _cmd(self.ipc_path, ["get_property", "idle"])
+        ok = r.get("error") in (None, "success")
+        self._running = ok
+        return ok
 
     def _cleanup_stale_socket(self):
         if sys.platform != "win32" and os.path.exists(self.ipc_path):
@@ -106,18 +168,6 @@ class MpvPlayer:
                 os.unlink(self.ipc_path)
             except OSError:
                 pass
-
-    def _kill_previous(self):
-        if sys.platform == "win32":
-            import subprocess
-            r = subprocess.run(["taskkill", "/f", "/im", "mpv.exe"], capture_output=True, text=True)
-            if r.returncode == 0:
-                time.sleep(1)
-        else:
-            import subprocess
-            r = subprocess.run(["pkill", "-9", "mpv"], capture_output=True, text=True)
-            if r.returncode == 0:
-                time.sleep(1)
 
     def _start(self):
         args = [self.mpv_path, "--idle=yes", "--keep-open=yes",
@@ -154,22 +204,35 @@ class MpvPlayer:
 
     def play_pause(self):
 
-        self._ensure_running()
+        if not self._probe():
+            return {"error": "not running"}
         return self._cmd(["cycle", "pause"])
 
     def stop(self):
 
-        self._ensure_running()
-        return self._cmd(["stop"])
+        if not self._probe():
+            return {"error": "not running"}
+        r = self._cmd(["stop"])
+        self._cmd(["quit"])
+        self._running = False
+        if self.process:
+            try:
+                self.process.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
+            self.process = None
+        return r
 
     def set_pause(self, paused=True):
 
-        self._ensure_running()
+        if not self._probe():
+            return {"error": "not running"}
         return self._cmd(["set_property", "pause", paused])
 
     def go_to(self, direction):
 
-        self._ensure_running()
+        if not self._probe():
+            return {"error": "not running"}
         if direction == "next":
             return self._cmd(["playlist-next"])
         elif direction == "previous":
@@ -178,7 +241,8 @@ class MpvPlayer:
 
     def seek(self, position):
 
-        self._ensure_running()
+        if not self._probe():
+            return {"error": "not running"}
         if position == "beginning":
             return self._cmd(["seek", 0, "absolute-percent"])
         if isinstance(position, (int, float)):
@@ -187,21 +251,24 @@ class MpvPlayer:
 
     def volume_up(self):
 
-        self._ensure_running()
+        if not self._probe():
+            return {"error": "not running"}
         r = self._cmd(["get_property", "volume"])
         v = (r.get("data") or 50) + 10
         return self._cmd(["set_property", "volume", min(100, v)])
 
     def volume_down(self):
 
-        self._ensure_running()
+        if not self._probe():
+            return {"error": "not running"}
         r = self._cmd(["get_property", "volume"])
         v = (r.get("data") or 50) - 10
         return self._cmd(["set_property", "volume", max(0, v)])
 
     def set_volume(self, vol):
 
-        self._ensure_running()
+        if not self._probe():
+            return {"error": "not running"}
         return self._cmd(["set_property", "volume", max(0, min(100, vol))])
 
     def get_properties(self, props):
@@ -243,18 +310,4 @@ class MpvPlayer:
             if r.get("error") in (None, "success"):
                 info[prop] = r.get("data")
         return info
-
-    def quit(self):
-
-        self._ensure_running()
-        if self.process:
-            self._cmd(["quit"])
-            try:
-                self.process.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                self.process.kill()
-            self.process = None
-
-
-
 
