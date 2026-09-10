@@ -10,6 +10,7 @@ import ctypes
 import json
 import os
 import shutil
+import signal
 import socket as _socket
 import subprocess
 import sys
@@ -134,6 +135,20 @@ def _cmd(ipc_path, command):
         return {"error": str(e)}
 
 
+def _pid_alive(pid):
+    if pid is None:
+        return False
+    if sys.platform == "win32":
+        r = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/FO", "CSV", "/NH"],
+                           capture_output=True, text=True, errors="replace")
+        return f'"{pid}"' in (r.stdout or "")
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
 
 class MpvPlayer:
     def __init__(self, mpv_path=None):
@@ -200,6 +215,12 @@ class MpvPlayer:
     def play(self, path):
 
         self._ensure_running()
+        # Do NOT replace this with a bare loadfile "replace": on mpv 0.41 the
+        # PipeWire audio output hangs on process exit after a second replace
+        # (the mpv/ao/pipewire thread spins and quit never returns). Fully
+        # unloading the current file first (stop -> loadfile) re-initializes
+        # the AO cleanly and avoids the hang. See tests/test_local_player_reuse.py.
+        self._cmd(["stop"])
         return self._cmd(["loadfile", path, "replace"])
 
     def play_pause(self):
@@ -212,9 +233,13 @@ class MpvPlayer:
 
         if not self._probe():
             return {"error": "not running"}
+        # Grab the pid before quitting so _ensure_gone can force-exit mpv if
+        # its "quit" hangs (see _ensure_gone).
+        pid = self._get_pid()
         r = self._cmd(["stop"])
         self._cmd(["quit"])
         self._running = False
+        self._ensure_gone(pid)
         if self.process:
             try:
                 self.process.wait(timeout=3)
@@ -222,6 +247,45 @@ class MpvPlayer:
                 self.process.kill()
             self.process = None
         return r
+
+    def _get_pid(self):
+        r = self._cmd(["get_property", "pid"])
+        if r.get("error") == "success" and isinstance(r.get("data"), int):
+            return r["data"]
+        return None
+
+    def _ensure_gone(self, pid, timeout=1.0):
+        """Force-exit mpv if it survives `quit` (mpv/PipeWire exit hang).
+
+        mpv can hang on process exit after a second `loadfile replace`
+        (running thread `mpv/ao/pipewire`), leaving the process alive.
+        SIGTERM reliably terminates it; SIGKILL is the last resort.
+        """
+        if pid is None:
+            return
+        deadline = time.time() + timeout
+        while _pid_alive(pid) and time.time() < deadline:
+            time.sleep(0.15)
+        if _pid_alive(pid):
+            self._terminate_pid(pid)
+
+    def _terminate_pid(self, pid):
+        if sys.platform == "win32":
+            subprocess.run(["taskkill", "/F", "/PID", str(pid)],
+                           capture_output=True, text=True)
+            return
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            return
+        deadline = time.time() + 1.5
+        while _pid_alive(pid) and time.time() < deadline:
+            time.sleep(0.15)
+        if _pid_alive(pid):
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except OSError:
+                pass
 
     def set_pause(self, paused=True):
 
