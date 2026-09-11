@@ -20,6 +20,11 @@ import time
 MPV_IPC_PATH = "/tmp/mpv-socket" if sys.platform != "win32" else r"\\.\pipe\mpv-pipe"
 
 
+_DISPLAY_KEYS = ("DISPLAY", "WAYLAND_DISPLAY", "XAUTHORITY",
+                 "XDG_SESSION_TYPE", "XDG_RUNTIME_DIR",
+                 "DBUS_SESSION_BUS_ADDRESS", "GNOME_SETUP_DISPLAY")
+
+
 _K32 = None
 
 
@@ -149,6 +154,72 @@ def _pid_alive(pid):
         return False
 
 
+def _parse_env_lines(text):
+    env = {}
+    for line in (text or "").splitlines():
+        key, sep, value = line.strip().partition("=")
+        if sep and key in _DISPLAY_KEYS and value:
+            env[key] = value
+    return env
+
+
+def _env_from_systemctl():
+    exe = shutil.which("systemctl")
+    if not exe:
+        return {}
+    try:
+        r = subprocess.run([exe, "--user", "show-environment"],
+                           capture_output=True, text=True,
+                           errors="replace", timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    return _parse_env_lines(r.stdout)
+
+
+def _env_from_proc():
+    if not hasattr(os, "getuid"):
+        return {}
+    compositors = {"gnome-shell", "Xwayland", "mutter", "kwin_wayland",
+                   "plasmashell", "gnome-session-binary"}
+    uid = os.getuid()
+    try:
+        pids = [d for d in os.listdir("/proc") if d.isdigit()]
+    except OSError:
+        return {}
+    for pid in pids:
+        try:
+            if os.stat("/proc/" + pid).st_uid != uid:
+                continue
+            with open("/proc/" + pid + "/comm", "r", errors="replace") as f:
+                if f.read().strip() not in compositors:
+                    continue
+            with open("/proc/" + pid + "/environ", "rb") as f:
+                raw = f.read().decode("utf-8", "replace")
+        except OSError:
+            continue
+        env = _parse_env_lines(raw.replace("\0", "\n"))
+        if env.get("DISPLAY") or env.get("WAYLAND_DISPLAY"):
+            return env
+    return {}
+
+
+def _session_display_env():
+    # Agent daemons (systemd --user services) can start before the desktop
+    # session exports its display variables, leaving mpv without a video
+    # output. Recover them from the user manager, then from session processes.
+    env = _env_from_systemctl()
+    if not (env.get("DISPLAY") or env.get("WAYLAND_DISPLAY")):
+        env = _env_from_proc()
+    return env if (env.get("DISPLAY") or env.get("WAYLAND_DISPLAY")) else {}
+
+
+def _mpv_env():
+    env = dict(os.environ)
+    if env.get("DISPLAY") or env.get("WAYLAND_DISPLAY"):
+        return env
+    env.update(_session_display_env())
+    return env
+
 
 class MpvPlayer:
     def __init__(self, mpv_path=None):
@@ -187,8 +258,12 @@ class MpvPlayer:
     def _start(self):
         args = [self.mpv_path, "--idle=yes", "--keep-open=yes",
                 f"--input-ipc-server={self.ipc_path}", "--no-terminal"]
+        env = _mpv_env()
+        if sys.platform != "win32" and not (env.get("DISPLAY") or env.get("WAYLAND_DISPLAY")):
+            print("Warning: no graphical display environment found; "
+                  "mpv will play audio only.", file=sys.stderr)
         self.process = subprocess.Popen(
-            args,
+            args, env=env,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
 

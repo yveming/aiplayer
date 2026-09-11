@@ -22,6 +22,7 @@ SUITES = [
     ('m3u catchup',           'test_m3u_catchup.py',         'm3u parse + URL builder covering strftime/VLC/seconds placeholders'),
     ('tv patch/scoping',      'test_tv_patch.py',            'KODI no-EPG catchup/epg patch + m3u_for_tv scoping matrix'),
     ('mpv reuse',            'test_local_player_reuse.py',  'fresh MpvPlayer instances reuse one mpv (no per-play spawn)'),
+    ('mpv session env',     'test_mpv_session_env.py',     'display env recovery: systemctl + /proc fallback'),
     ('priority order',       'test_priority_order.py',     'CLI > config > derived: EPG source + mpv path tiers'),
 ]
 
