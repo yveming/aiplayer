@@ -92,6 +92,7 @@ aiplayer music --artist "赵传" --album "我是一只小小鸟"
 aiplayer tv "湖南卫视" --m3u "http://192.168.100.2:8000/iptv/iptv.m3u"
 aiplayer tv --m3u "iptv.m3u"
 aiplayer epg "湖南卫视" --m3u "http://..." --date yesterday
+aiplayer epg --m3u "http://..."                      # 不接频道 = 所有频道当前节目
 aiplayer catchup "湖南卫视" --m3u "http://..." --date yesterday --time 18:30
 
 # KODI 模式

@@ -82,7 +82,7 @@ First run prints `Config created: ...` - that is normal, keep going.
   local search prints a hint when empty)
 - `iptv.m3u`: IPTV m3u - http(s):// URL or local file path. **Local mode only**;
   KODI mode requires explicit `--m3u`
-- `iptv.epg`: XMLTV EPG fallback (priority: `--epg` > m3u `x-tvg-url` > config `iptv.epg`)
+- `iptv.epg`: XMLTV EPG fallback (priority: `--epg` > config `iptv.epg` > m3u `x-tvg-url`)
 - `mpv.path`: mpv executable path (set it when `mpv` is not on PATH)
 - `metadata`: online Douban expansion - `enabled` (default true), `timeout` seconds
   (default 5). Multi-language alias search + actor/director filmography fallback; fails
@@ -113,7 +113,7 @@ configured m3u - **zero connection flags**.
 | `video` | Search and play a TV episode (S03E04) | yes | both |
 | `music` | Search and play music (with `--artist`/`--album`/`--song`) | optional | both |
 | `tv` | Play a live TV channel; no query = list channels | yes to play; no to list | both |
-| `epg` | Browse EPG for a channel | yes | both |
+| `epg` | Browse EPG; no query = current programs of all channels (needs m3u) | optional | both |
 | `catchup` | Play catch-up TV (needs `--date`/`--time`) | yes | both |
 | `pause` | Toggle pause | no | both |
 | `play` | Resume playback | no | both |
@@ -126,7 +126,6 @@ configured m3u - **zero connection flags**.
 | `volume_down` | Volume -10% | no | both |
 | `mute` | Toggle mute | no | both |
 | `status` | Show current playback info | no | both |
-| `nowplaying` | Same as status | no | both |
 | `playfile` | Play/replace a file by path | yes (path) | both |
 | `enqueue` | Append a file to playlist | yes (path) | both |
 | `playfiles` | Clear playlist, play multiple files by path | yes (paths...) | both |
@@ -144,13 +143,13 @@ configured m3u - **zero connection flags**.
 | `--password` | str | `--host` http | HTTP auth password |
 | `--auto` | flag | standalone | Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv |
 | `--m3u` | URL or path | tv/catchup/epg | IPTV m3u (config iptv.m3u = local mode only; KODI mode needs it explicitly) |
-| `--epg` | URL or path | epg/catchup | XMLTV EPG (priority: --epg > m3u x-tvg-url > config iptv.epg) |
+| `--epg` | URL or path | epg/catchup | XMLTV EPG (priority: --epg > config iptv.epg > m3u x-tvg-url) |
 | `--artist` | str | music | Artist name filter |
 | `--album` | str | music | Album name filter |
 | `--song` | str | music | Song name filter |
 | `--shuffle` | flag | music | Random playback order |
 | `--date` | str | catchup, epg | Date keyword or YYYY-MM-DD |
-| `--time` | str | catchup | Time keyword or HH:MM |
+| `--time` | str | catchup, epg | Time keyword or HH:MM |
 | `--json` | flag | search actions | JSON array output, never auto-plays (for AI) |
 | `--debug` | flag | any | Verbose debug output |
 | `--mpv-path` | path | local mode | mpv executable path |
@@ -175,7 +174,7 @@ aiplayer movie "Avatar" --json
 aiplayer --host 192.168.100.11 --port 9090 --protocol http --username kodi --password hermes movie "Interstellar"
 ```
 
-Keywords: `看电影`, `电影`, `movie`
+Keywords: `放电影`, `电影`, `movie`
 
 ### video — Search and play TV episodes
 
@@ -192,7 +191,7 @@ aiplayer video "Dark Matter S03E04" --json
 aiplayer --host 192.168.100.11 --port 9090 video "Dark Matter S03E04"
 ```
 
-Keywords: `看视频`, `电视剧`, `视频`, `连续`, `video`, `episode`
+Keywords: `放视频`, `剧集`, `视频`, `连续`, `video`, `episode`
 
 ### music — Search and play music
 
@@ -208,7 +207,7 @@ aiplayer music "我是一只小小鸟" --json
 Interactive selection (`1`, `1,3,5`, `1-5`, `a`/`all`, `q`) is for humans only -
 AI agents use `--json` + `playfiles` instead (see Parsing --json output).
 
-Keywords: `听音乐`, `音乐`, `music`, `song`
+Keywords: `放音乐`, `音乐`, `music`, `song`
 
 ### tv — Live TV (play / list channels)
 
@@ -226,15 +225,19 @@ aiplayer tv "CCTV1" --m3u http://192.168.100.2:8000/iptv/iptv.m3u
 
 In KODI mode without `--m3u`, PVR is used. In local mode, config `iptv.m3u` is used.
 
-Keywords: `看电视`, `直播`, `live`, `tv`, `频道`
+Keywords: `放电视`, `直播`, `live`, `tv`, `频道`
 
 ### epg — Browse EPG
+
+With a channel: EPG around now, or for `--date`/`--time`. Without a query:
+the current program of every channel (requires `--m3u` or config `iptv.m3u`).
 
 ```
 # config-driven
 aiplayer epg "CCTV1"
 aiplayer epg "CCTV1" --date today
 aiplayer epg "CCTV1" --date yesterday
+aiplayer epg                              # all channels' current programs
 
 # temporary override
 aiplayer epg "CCTV1" --m3u http://192.168.100.2:8000/iptv/iptv.m3u --date yesterday
@@ -267,7 +270,7 @@ Same connection flags as the last play command (config kodi.host -> no flags for
 ```
 aiplayer pause / play / playpause / next / prev / stop / restart
 aiplayer volume_up / volume_down / mute
-aiplayer status / nowplaying
+aiplayer status
 ```
 
 Keywords: `暂停`(pause), `继续`/`播放`(play), `下一首`/`下一集`(next), `上一首`/`上一集`(prev), `重播`/`从头开始`(restart), `停止`(stop), `大声点`(volume_up), `小声点`(volume_down), `静音`(mute), `当前播放`/`状态`(status)
@@ -280,8 +283,11 @@ Search actions (`movie`/`video`/`music` with `--json`) print a JSON array and ne
 Field shapes:
 
 ```jsonc
-// KODI library matches
+// KODI library matches (movie)
 [{"index": 1, "file": "...", "label": "Title", "year": 2009}]
+
+// KODI TV library matches (video)
+[{"index": 1, "file": "...", "label": "Show - S03E04: Title", "showtitle": "Show", "season": 3, "episode": 4}]
 
 // directory matches (local dirs / KODI file sources)
 [{"index": 1, "file": "...", "label": "basename", "display": "a / b / c", "type": "file|directory", "source": "root"}]

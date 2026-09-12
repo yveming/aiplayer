@@ -19,7 +19,7 @@ work without `--host`/`--port`.
 ## Connection check / auto-discovery
 
 ```
-aiplayer --host 192.168.100.11 --port 9090 --protocol tcp channels
+aiplayer --host 192.168.100.11 --port 9090 --protocol tcp tv
 aiplayer --auto status          # SSDP/mDNS discovery, slow (~5s)
 ```
 
@@ -69,8 +69,8 @@ Playing from video: Dark Matter / Season 3 / 黑暗物质.Dark.Matter.S03E04.720
 ## PVR Live TV + Channels
 
 ```
-aiplayer --host 192.168.100.11 --port 9090 channels
-aiplayer --host 192.168.100.11 --port 9090 channel "湖南卫视"
+aiplayer --host 192.168.100.11 --port 9090 tv
+aiplayer --host 192.168.100.11 --port 9090 tv "湖南卫视"
 ```
 
 Expected: prints `Found channel`, current program, and KODI tunes in.
@@ -115,8 +115,8 @@ aiplayer --host 192.168.100.11 --port 9090 catchup "湖南卫视" \
     --date yesterday --time 18:30 --m3u "G:\Public\iptv.m3u"
 ```
 
-EPG XMLTV resolution order: `--epg` > m3u `x-tvg-url` > config
-`iptv.epg`. Override with `--epg` when the m3u carries no `x-tvg-url`:
+EPG XMLTV resolution order: `--epg` > config `iptv.epg` > m3u
+`x-tvg-url`. Override with `--epg` when the m3u carries no `x-tvg-url`:
 
 ```
 aiplayer --host 192.168.100.11 --port 9090 catchup "湖南卫视" \
