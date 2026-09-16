@@ -125,7 +125,7 @@ configured m3u - **zero connection flags**.
 | `volume_up` | Volume +10% | no | both |
 | `volume_down` | Volume -10% | no | both |
 | `mute` | Toggle mute | no | both |
-| `status` | Show current playback info (reports Paused when paused) | no | both |
+| `status` | Show current playback info | no | both |
 | `playfile` | Play/replace a file by path | yes (path) | both |
 | `enqueue` | Append a file to playlist | yes (path) | both |
 | `playfiles` | Clear playlist, play multiple files by path | yes (paths...) | both |
