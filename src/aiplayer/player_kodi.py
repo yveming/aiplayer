@@ -93,6 +93,18 @@ class KodiBackend(Player):
             return False
 
         if action in ('pause', 'play', 'playpause'):
+            # Player.PlayPause is a blind toggle: "play" on a playing player
+            # pauses it, "pause" on a paused one resumes. Check speed first so
+            # play/pause are state-aware; playpause stays an explicit toggle.
+            if action in ('play', 'pause'):
+                props = self.kodi.player_get_properties(player_id, ['speed'])
+                speed = props.get('result', {}).get('speed') if props and 'result' in props else None
+                if action == 'play' and speed not in (None, 0):
+                    print("Play: already playing")
+                    return True
+                if action == 'pause' and speed == 0:
+                    print("Pause: already paused")
+                    return True
             label, call = 'Play/Pause', lambda: self.kodi.player_play_pause(player_id)
         elif action == 'next':
             label, call = 'Next', lambda: self.kodi.player_go_to(player_id, 'next')

@@ -296,7 +296,14 @@ class MpvPlayer:
         # unloading the current file first (stop -> loadfile) re-initializes
         # the AO cleanly and avoids the hang. See tests/test_local_player_reuse.py.
         self._cmd(["stop"])
-        return self._cmd(["loadfile", path, "replace"])
+        r = self._cmd(["loadfile", path, "replace"])
+        # mpv keeps the `pause` property across file loads (pause is not in
+        # the default --reset-on-next-file list), so a player left paused by
+        # a previous session loads the new file frozen at 0:00: status shows
+        # the title but time never advances and there is no sound. An explicit
+        # play request must actually play.
+        self._cmd(["set_property", "pause", False])
+        return r
 
     def play_pause(self):
 
@@ -436,7 +443,11 @@ class MpvPlayer:
     def playlist_play_index(self, index):
 
         self._ensure_running()
-        return self._cmd(["set_property", "playlist-pos", index])
+        r = self._cmd(["set_property", "playlist-pos", index])
+        # Jumping to a playlist entry is an explicit play request; mpv would
+        # otherwise inherit pause=true from the previous playback state.
+        self._cmd(["set_property", "pause", False])
+        return r
 
     def status(self):
         """Get current playback status."""
@@ -444,7 +455,8 @@ class MpvPlayer:
         if r.get("error") not in (None, "success"):
             return {}
         info = {}
-        for prop in ["path", "filename", "time-pos", "duration", "percent-pos", "metadata"]:
+        for prop in ["path", "filename", "time-pos", "duration", "percent-pos",
+                     "pause", "metadata"]:
             r = self._cmd(["get_property", prop])
             if r.get("error") in (None, "success"):
                 info[prop] = r.get("data")
