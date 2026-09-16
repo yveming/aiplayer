@@ -283,11 +283,19 @@ def main():
             print("File paths required.")
             sys.exit(1)
         player.playlist_clear()
-        for path in query_list:
-            player.playlist_append(path)
-        player.playlist_play_index(0)
-        print(f"Playing {len(query_list)} file(s)")
-        success = True
+        # Play the first file instead of only pointing playlist-pos at index 0:
+        # playlist-clear keeps the current entry, so appended files land after
+        # it and index 0 would replay the OLD file (KODI behaves the same).
+        # loadfile replace (local) / Player.Open (KODI) start it for real.
+        r = player.play_file(query_list[0])
+        if isinstance(r, dict) and r.get("error") not in (None, "success"):
+            print(f"Playback error: {r['error']}")
+            success = False
+        else:
+            for path in query_list[1:]:
+                player.playlist_append(path)
+            print(f"Playing {len(query_list)} file(s)")
+            success = True
     elif action == 'status':
         info = player.status()
         if not info:
@@ -300,16 +308,19 @@ def main():
                 title = f"{artist} - {title}"
             if album:
                 title = f"{title}  [{album}]"
+            # Local mpv exposes `pause` directly; KODI exposes speed (0 = paused).
+            paused = info.get("pause") is True or info.get("speed") == 0
+            state = "Paused" if paused else "Playing"
             pos = info.get("time-pos")
             dur = info.get("duration")
             if pos is not None and dur:
                 pos_str = _fmt_hms(pos)
                 dur_str = _fmt_hms(dur)
                 remain_str = _fmt_hms(dur - pos)
-                print(f"Playing: {title}")
+                print(f"{state}: {title}")
                 print(f"  {pos_str} / {dur_str}  ({remain_str} remaining)")
             else:
-                print(f"Playing: {title}")
+                print(f"{state}: {title}")
         success = True
     elif action in ('pause', 'play', 'playpause', 'next', 'prev', 'stop', 'restart'):
         success = player.control_playback(action)
