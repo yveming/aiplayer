@@ -1,0 +1,13 @@
+[Unit]
+Description=Inject 1px mouse move while audio is playing (keep HDMI audio alive)
+After=multi-user.target
+
+[Service]
+Type=simple
+Environment=XDG_RUNTIME_DIR=/run/user/1001
+ExecStart=/usr/bin/python3 /usr/local/bin/audio-keepalive.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
