@@ -4,6 +4,11 @@
 Fresh MpvPlayer instances simulate successive CLI invocations (each starts
 with _running=False, same code path as a new aiplayer process). Requires a
 real mpv on PATH; skips silently when unavailable.
+
+Scope note: this uses audio-only WAVs, so it does NOT exercise the mpv 0.41
+PipeWire exit hang (that needs video + a headless/failing vo). It only proves
+process reuse and that stop() terminates the spawned mpv. The exit hang is
+covered by the opt-in tests/test_mpv_hang_repro.py.
 """
 import io, os, sys, glob, math, shutil, struct, subprocess, tempfile, time, wave
 

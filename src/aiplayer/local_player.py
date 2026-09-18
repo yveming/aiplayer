@@ -290,18 +290,19 @@ class MpvPlayer:
     def play(self, path):
 
         self._ensure_running()
-        # Do NOT replace this with a bare loadfile "replace": on mpv 0.41 the
-        # PipeWire audio output hangs on process exit after a second replace
-        # (the mpv/ao/pipewire thread spins and quit never returns). Fully
-        # unloading the current file first (stop -> loadfile) re-initializes
-        # the AO cleanly and avoids the hang. See tests/test_local_player_reuse.py.
-        self._cmd(["stop"])
         r = self._cmd(["loadfile", path, "replace"])
         # mpv keeps the `pause` property across file loads (pause is not in
-        # the default --reset-on-next-file list), so a player left paused by
-        # a previous session loads the new file frozen at 0:00: status shows
+        # the default --reset-on-next-file list), so a queue left paused by a
+        # previous session - including the pause mpv sets at EOF via
+        # --keep-open-pause - loads the new file frozen at 0:00: status shows
         # the title but time never advances and there is no sound. An explicit
         # play request must actually play.
+        #
+        # Note: on mpv 0.41 the PipeWire audio output can hang on process exit
+        # after a second loadfile replace (mpv/ao/pipewire thread spins and
+        # `quit` never returns). That is an upstream mpv bug; stop() force-exits
+        # the process (see _ensure_gone). A preceding `stop` command does not fix
+        # it, so it is intentionally not sent here.
         self._cmd(["set_property", "pause", False])
         return r
 
