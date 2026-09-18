@@ -23,6 +23,7 @@ SUITES = [
     ('tv patch/scoping',      'test_tv_patch.py',            'KODI no-EPG catchup/epg patch + m3u_for_tv scoping matrix'),
     ('mpv reuse',            'test_local_player_reuse.py',  'fresh MpvPlayer instances reuse one mpv (no per-play spawn)'),
     ('mpv session env',     'test_mpv_session_env.py',     'display env recovery: systemctl + /proc fallback'),
+    ('mpv pause inheritance', 'test_pause_inheritance.py', 'pause reset on new file / playlist jump'),
     ('priority order',       'test_priority_order.py',     'CLI > config > derived: EPG source + mpv path tiers'),
 ]
 
