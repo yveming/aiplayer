@@ -1,0 +1,41 @@
+信宿输入 #24944
+	驱动程序：PipeWire
+	所有者模块：n/a
+	客户端：24943
+	信宿：24883
+	采样规格：float32le 6ch 48000Hz
+	声道映射：front-left,front-right,front-center,lfe,side-left,side-right
+	格式：pcm, format.sample_format = "\"float32ne\""  format.rate = "48000"  format.channels = "6"  format.channel_map = "\"front-left,front-right,front-center,lfe,side-left,side-right\""
+	抑制: 是
+	静音：否
+	音量：front-left: 65536 / 100% / 0.00 dB,   front-right: 65536 / 100% / 0.00 dB,   front-center: 65536 / 100% / 0.00 dB,   lfe: 65536 / 100% / 0.00 dB,   side-left: 65536 / 100% / 0.00 dB,   side-right: 65536 / 100% / 0.00 dB
+	        平衡 0.00
+	缓冲延迟：0 微秒
+	信宿延迟：0 微秒
+	重采样方法：PipeWire
+	属性：
+		media.type = "Audio"
+		media.category = "Playback"
+		node.name = "mpv"
+		device.description = "mpv"
+		application.name = "mpv"
+		application.id = "mpv"
+		application.icon_name = "mpv"
+		node.always-process = "true"
+		node.rate = "1/48000"
+		media.name = "Casino Royale (2006) (1080p BluRay x265 SAMPA) - mpv"
+		stream.is-live = "true"
+		node.want-driver = "true"
+		node.autoconnect = "true"
+		media.class = "Stream/Output/Audio"
+		adapt.follower.spa-node = ""
+		object.register = "false"
+		factory.id = "8"
+		clock.quantum-limit = "8192"
+		factory.mode = "split"
+		audio.adapt.follower = ""
+		library.name = "audioconvert/libspa-audioconvert"
+		client.id = "88"
+		object.id = "77"
+		object.serial = "24944"
+		module-stream-restore.id = "sink-input-by-application-id:mpv"

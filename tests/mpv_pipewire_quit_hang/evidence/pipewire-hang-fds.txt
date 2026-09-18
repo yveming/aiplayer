@@ -1,0 +1,64 @@
+/proc/94894/fd/1: /tmp/opencode/ev/gdb-batch1-0.out 
+/proc/94894/fd/2: /tmp/opencode/ev/gdb-batch1-0.out 
+/proc/94894/fd/3: /tmp/opencode/ev/mpv-batch1-0.log 
+/proc/94894/fd/7: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=2312 (deleted) 
+/proc/94894/fd/8: pipe:[448403] 
+/proc/94894/fd/9: pipe:[448403] 
+/proc/94894/fd/10: pipe:[449489] 
+/proc/94894/fd/11: anon_inode:[eventfd] 
+/proc/94894/fd/12: anon_inode:[eventfd] 
+/proc/94894/fd/13: anon_inode:[eventfd] 
+/proc/94894/fd/14: anon_inode:[eventpoll] 
+/proc/94894/fd/15: anon_inode:[eventfd] 
+/proc/94894/fd/16: anon_inode:[eventfd] 
+/proc/94894/fd/17: anon_inode:[eventfd] 
+/proc/94894/fd/18: socket:[448408] 
+/proc/94894/fd/19: anon_inode:[eventpoll] 
+/proc/94894/fd/20: anon_inode:[eventfd] 
+/proc/94894/fd/21: anon_inode:[eventfd] 
+/proc/94894/fd/22: anon_inode:[eventfd] 
+/proc/94894/fd/23: socket:[449492] 
+/proc/94894/fd/24: anon_inode:[eventfd] 
+/proc/94894/fd/25: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=2312 (deleted) 
+/proc/94894/fd/26: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=2312 (deleted) 
+/proc/94894/fd/27: anon_inode:[eventfd] 
+/proc/94894/fd/28: anon_inode:[eventfd] 
+/proc/94894/fd/29: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=2312 (deleted) 
+/proc/94894/fd/32: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=32832 (deleted) 
+/proc/94894/fd/33: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=32832 (deleted) 
+/proc/94894/fd/34: anon_inode:[eventfd] 
+/proc/94894/fd/37: pipe:[449499] 
+/proc/94894/fd/38: pipe:[449499] 
+/proc/94894/fd/39: pipe:[448426] 
+/proc/94894/fdinfo/1:  pos:	5452 | flags:	0100001 | mnt_id:	29 | ino:	1062575
+/proc/94894/fdinfo/2:  pos:	5452 | flags:	0100001 | mnt_id:	29 | ino:	1062575
+/proc/94894/fdinfo/3:  pos:	126671 | flags:	0100001 | mnt_id:	29 | ino:	1062576
+/proc/94894/fdinfo/7:  pos:	0 | flags:	02100002 | mnt_id:	0 | ino:	74
+/proc/94894/fdinfo/8:  pos:	0 | flags:	02000000 | mnt_id:	15 | ino:	448403
+/proc/94894/fdinfo/9:  pos:	0 | flags:	02000001 | mnt_id:	15 | ino:	448403
+/proc/94894/fdinfo/10:  pos:	0 | flags:	02000001 | mnt_id:	15 | ino:	449489
+/proc/94894/fdinfo/11:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 199 | eventfd-semaphore: 0
+/proc/94894/fdinfo/12:  pos:	0 | flags:	02000002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 290 | eventfd-semaphore: 1
+/proc/94894/fdinfo/13:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                1 | eventfd-id: 291 | eventfd-semaphore: 0
+/proc/94894/fdinfo/14:  pos:	0 | flags:	02000002 | mnt_id:	16 | ino:	57 | tfd:       15 events:       19 data:     555555996370  pos:0 ino:39 sdev:f
+/proc/94894/fdinfo/15:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 345 | eventfd-semaphore: 0
+/proc/94894/fdinfo/16:  pos:	0 | flags:	02000002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 346 | eventfd-semaphore: 1
+/proc/94894/fdinfo/17:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 347 | eventfd-semaphore: 0
+/proc/94894/fdinfo/18:  pos:	0 | flags:	02004002 | mnt_id:	9 | ino:	448408 | scm_fds: 0
+/proc/94894/fdinfo/19:  pos:	0 | flags:	02000002 | mnt_id:	16 | ino:	57 | tfd:       22 events:       19 data:     555555998fa0  pos:0 ino:39 sdev:f | tfd:       20 events:       19 data:     555555a16710  pos:0 ino:39 sdev:f
+/proc/94894/fdinfo/20:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 349 | eventfd-semaphore: 0
+/proc/94894/fdinfo/21:  pos:	0 | flags:	02000002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 350 | eventfd-semaphore: 1
+/proc/94894/fdinfo/22:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 351 | eventfd-semaphore: 0
+/proc/94894/fdinfo/23:  pos:	0 | flags:	02004002 | mnt_id:	9 | ino:	449492 | scm_fds: 0
+/proc/94894/fdinfo/24:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 86 | eventfd-semaphore: 0
+/proc/94894/fdinfo/25:  pos:	0 | flags:	02100002 | mnt_id:	0 | ino:	10641
+/proc/94894/fdinfo/26:  pos:	0 | flags:	02100002 | mnt_id:	0 | ino:	10642
+/proc/94894/fdinfo/27:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 366 | eventfd-semaphore: 0
+/proc/94894/fdinfo/28:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 365 | eventfd-semaphore: 0
+/proc/94894/fdinfo/29:  pos:	0 | flags:	02100002 | mnt_id:	0 | ino:	11504
+/proc/94894/fdinfo/32:  pos:	0 | flags:	02100002 | mnt_id:	0 | ino:	11512
+/proc/94894/fdinfo/33:  pos:	0 | flags:	02100002 | mnt_id:	0 | ino:	11513
+/proc/94894/fdinfo/34:  pos:	0 | flags:	02004002 | mnt_id:	16 | ino:	57 | eventfd-count:                0 | eventfd-id: 19 | eventfd-semaphore: 0
+/proc/94894/fdinfo/37:  pos:	0 | flags:	02000000 | mnt_id:	15 | ino:	449499
+/proc/94894/fdinfo/38:  pos:	0 | flags:	02000001 | mnt_id:	15 | ino:	449499
+/proc/94894/fdinfo/39:  pos:	0 | flags:	02000001 | mnt_id:	15 | ino:	448426

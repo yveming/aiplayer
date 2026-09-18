@@ -1,0 +1,5 @@
+mpv                      state=S wchan=futex_wait_queue syscall=202 0x7680d37fe990 0x109 0x1a665 0x0 0x0 0xffffffff 0x7ffc84a655f0 0x76810e898e51
+log                      state=S wchan=futex_wait_queue syscall=202 0x62732d76e2f4 0x189 0x0 0x0 0x0 0xffffffff 0x7681027701a0 0x76810e898e51
+worker                   state=S wchan=futex_wait_queue syscall=202 0x62732d76df9c 0x189 0x0 0x0 0x0 0xffffffff 0x7680d3ffe1b0 0x76810e898e51
+mpv/ao/pipewire          state=R wchan=0 syscall=running
+data-loop.0              state=S wchan=ep_poll syscall=232 0xe 0x7680d2ffbea0 0x20 0xffffffff 0x0 0x62732d8864d0 0x7680d2ffbe70 0x76810e92a2d2

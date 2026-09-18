@@ -1,0 +1,7 @@
+S   ID  QUANT   RATE    WAIT    BUSY   W/Q   B/Q  ERR FORMAT           NAME 
+C   29      0      0    ---     ---   ---   ---     0                  Dummy-Driver
+C   30      0      0    ---     ---   ---   ---     0                  Freewheel-Driver
+C   39      0      0    ---     ---   ---   ---     0                  Midi-Bridge
+C   79      0      0    ---     ---   ---   ---     0                  alsa_output.pci-0000_02_00.0.analog-stereo
+C   43      0      0    ---     ---   ---   ---     0                  alsa_input.pci-0000_02_00.0.analog-stereo.99
+C   77      0      0    ---     ---   ---   ---     0                  mpv

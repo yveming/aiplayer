@@ -1,0 +1,1475 @@
+Reading symbols from mpv...
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+(No debugging symbols found in mpv)
+(gdb) (gdb) (gdb) (gdb) Starting program: /usr/bin/mpv --idle=yes --keep-open=yes --input-ipc-server=/tmp/opencode/run-gdbpulse-0.sock --no-terminal --no-config --log-file=/tmp/opencode/ev/mpv-gdbpulse-0.log --ao=pulse
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7fffe6fff6c0 (LWP 101283)]
+[New Thread 0x7fffe67fe6c0 (LWP 101284)]
+[New Thread 0x7fffe5ffd6c0 (LWP 101285)]
+[New Thread 0x7fffe57fc6c0 (LWP 101286)]
+[New Thread 0x7fffe4ffb6c0 (LWP 101287)]
+[New Thread 0x7fffcffff6c0 (LWP 101288)]
+[New Thread 0x7fffcf7fe6c0 (LWP 101289)]
+[New Thread 0x7fffceffd6c0 (LWP 101290)]
+[New Thread 0x7fffce7fc6c0 (LWP 101291)]
+[New Thread 0x7fffcdffb6c0 (LWP 101292)]
+[New Thread 0x7fffcd7fa6c0 (LWP 101293)]
+[Thread 0x7fffcffff6c0 (LWP 101288) exited]
+[New Thread 0x7fffcffff6c0 (LWP 101294)]
+[Thread 0x7fffcffff6c0 (LWP 101294) exited]
+[New Thread 0x7fffcffff6c0 (LWP 101295)]
+[Thread 0x7fffcffff6c0 (LWP 101295) exited]
+[New Thread 0x7fffcffff6c0 (LWP 101296)]
+[New Thread 0x7fffccff96c0 (LWP 101297)]
+[New Thread 0x7fffaffff6c0 (LWP 101298)]
+[New Thread 0x7fffaf7fe6c0 (LWP 101299)]
+[New Thread 0x7fffaeffd6c0 (LWP 101300)]
+[New Thread 0x7fffad1ff6c0 (LWP 101301)]
+[New Thread 0x7fffac9fe6c0 (LWP 101302)]
+[Thread 0x7fffac9fe6c0 (LWP 101302) exited]
+[Thread 0x7fffad1ff6c0 (LWP 101301) exited]
+[Thread 0x7fffaeffd6c0 (LWP 101300) exited]
+[Thread 0x7fffaf7fe6c0 (LWP 101299) exited]
+[New Thread 0x7fffaf7fe6c0 (LWP 101303)]
+[Thread 0x7fffaf7fe6c0 (LWP 101303) exited]
+[Thread 0x7fffaffff6c0 (LWP 101298) exited]
+[New Thread 0x7fffaffff6c0 (LWP 101304)]
+[New Thread 0x7fffaf7fe6c0 (LWP 101305)]
+[New Thread 0x7fffaeffd6c0 (LWP 101306)]
+[New Thread 0x7fffad1ff6c0 (LWP 101307)]
+[New Thread 0x7fffac9fe6c0 (LWP 101308)]
+[Thread 0x7fffac9fe6c0 (LWP 101308) exited]
+[Thread 0x7fffaeffd6c0 (LWP 101306) exited]
+[Thread 0x7fffad1ff6c0 (LWP 101307) exited]
+[Thread 0x7fffaf7fe6c0 (LWP 101305) exited]
+[New Thread 0x7fffaf7fe6c0 (LWP 101309)]
+[Thread 0x7fffaf7fe6c0 (LWP 101309) exited]
+[Thread 0x7fffaffff6c0 (LWP 101304) exited]
+[New Thread 0x7fffaffff6c0 (LWP 101310)]
+[Thread 0x7fffaffff6c0 (LWP 101310) exited]
+[New Thread 0x7fffaffff6c0 (LWP 101311)]
+[Thread 0x7fffaffff6c0 (LWP 101311) exited]
+[New Thread 0x7fffaffff6c0 (LWP 101312)]
+[Thread 0x7fffaffff6c0 (LWP 101312) exited]
+[New Thread 0x7fffaffff6c0 (LWP 101313)]
+[Thread 0x7fffaffff6c0 (LWP 101313) exited]
+[New Thread 0x7fffaffff6c0 (LWP 101314)]
+[Thread 0x7fffaffff6c0 (LWP 101314) exited]
+[New Thread 0x7fffaffff6c0 (LWP 101315)]
+[Thread 0x7fffaffff6c0 (LWP 101315) exited]
+[New Thread 0x7fffaffff6c0 (LWP 101316)]
+[Thread 0x7fffaffff6c0 (LWP 101316) exited]
+[New Thread 0x7fffaffff6c0 (LWP 101317)]
+[New Thread 0x7fffaf7fe6c0 (LWP 101318)]
+[New Thread 0x7fffaeffd6c0 (LWP 101319)]
+[Thread 0x7fffaeffd6c0 (LWP 101319) exited]
+[Thread 0x7fffcffff6c0 (LWP 101296) exited]
+[New Thread 0x7fffcffff6c0 (LWP 101320)]
+[Thread 0x7fffcffff6c0 (LWP 101320) exited]
+[New Thread 0x7fffcffff6c0 (LWP 101321)]
+[New Thread 0x7fffaeffd6c0 (LWP 101322)]
+[New Thread 0x7fffad1ff6c0 (LWP 101323)]
+[New Thread 0x7fffac9fe6c0 (LWP 101324)]
+[New Thread 0x7fffa7fff6c0 (LWP 101325)]
+[New Thread 0x7fffa77fe6c0 (LWP 101326)]
+[New Thread 0x7fff9b7ff6c0 (LWP 101327)]
+[Thread 0x7fff9b7ff6c0 (LWP 101327) exited]
+[Thread 0x7fffa77fe6c0 (LWP 101326) exited]
+[Thread 0x7fffa7fff6c0 (LWP 101325) exited]
+[Thread 0x7fffac9fe6c0 (LWP 101324) exited]
+[New Thread 0x7fffac9fe6c0 (LWP 101328)]
+[Thread 0x7fffac9fe6c0 (LWP 101328) exited]
+[Thread 0x7fffaeffd6c0 (LWP 101322) exited]
+[New Thread 0x7fffaeffd6c0 (LWP 101329)]
+[New Thread 0x7fffac9fe6c0 (LWP 101330)]
+[New Thread 0x7fffa7fff6c0 (LWP 101331)]
+[New Thread 0x7fffa77fe6c0 (LWP 101332)]
+[New Thread 0x7fff9b7ff6c0 (LWP 101333)]
+[Thread 0x7fff9b7ff6c0 (LWP 101333) exited]
+[Thread 0x7fffa77fe6c0 (LWP 101332) exited]
+[Thread 0x7fffa7fff6c0 (LWP 101331) exited]
+[Thread 0x7fffac9fe6c0 (LWP 101330) exited]
+[New Thread 0x7fffac9fe6c0 (LWP 101334)]
+[Thread 0x7fffac9fe6c0 (LWP 101334) exited]
+[Thread 0x7fffaeffd6c0 (LWP 101329) exited]
+[New Thread 0x7fffaeffd6c0 (LWP 101335)]
+[Thread 0x7fffaeffd6c0 (LWP 101335) exited]
+[New Thread 0x7fffaeffd6c0 (LWP 101336)]
+[Thread 0x7fffaeffd6c0 (LWP 101336) exited]
+[New Thread 0x7fffaeffd6c0 (LWP 101337)]
+[Thread 0x7fffaeffd6c0 (LWP 101337) exited]
+[New Thread 0x7fffaeffd6c0 (LWP 101338)]
+[Thread 0x7fffaeffd6c0 (LWP 101338) exited]
+[New Thread 0x7fffaeffd6c0 (LWP 101339)]
+[Thread 0x7fffaeffd6c0 (LWP 101339) exited]
+[New Thread 0x7fffaeffd6c0 (LWP 101340)]
+[Thread 0x7fffaeffd6c0 (LWP 101340) exited]
+[New Thread 0x7fffaeffd6c0 (LWP 101341)]
+[Thread 0x7fffaeffd6c0 (LWP 101341) exited]
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+[Thread 0x7fffad1ff6c0 (LWP 101323) exited]
+
+Thread 1 "mpv" received signal SIGPIPE, Broken pipe.
+0x00007ffff311c87d in __GI___libc_write (nbytes=1, buf=0x7fffffffdae7, fd=11)
+    at ../sysdeps/unix/sysv/linux/write.c:26
+warning: 26	../sysdeps/unix/sysv/linux/write.c: 没有那个文件或目录
+(gdb) Quit
+(gdb) (gdb) 
+===MARK===
+(gdb)   Id   Target Id                                            Frame 
+* 1    Thread 0x7fffe8dd02c0 (LWP 101280) "mpv"             0x00007ffff311c87d in __GI___libc_write (nbytes=1, buf=0x7fffffffdae7, fd=11)
+    at ../sysdeps/unix/sysv/linux/write.c:26
+  2    Thread 0x7fffe6fff6c0 (LWP 101283) "log"             0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=32767, cancel=true, abstime=0x0, 
+    op=393, expected=0, futex_word=0x555555885e30)
+    at ./nptl/futex-internal.c:57
+  3    Thread 0x7fffe67fe6c0 (LWP 101284) "lua/osc"         0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=32767, cancel=true, abstime=0x0, 
+    op=393, expected=0, futex_word=0x5555558859c0)
+    at ./nptl/futex-internal.c:57
+  4    Thread 0x7fffe5ffd6c0 (LWP 101285) "lua/ytdl_hook"   0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, 
+    expected=0, futex_word=0x555555923344) at ./nptl/futex-internal.c:57
+  5    Thread 0x7fffe57fc6c0 (LWP 101286) "lua/stats"       0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, 
+    expected=0, futex_word=0x5555559299a0) at ./nptl/futex-internal.c:57
+  6    Thread 0x7fffe4ffb6c0 (LWP 101287) "lua/console"     0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, 
+    expected=0, futex_word=0x55555592ff94) at ./nptl/futex-internal.c:57
+  8    Thread 0x7fffcf7fe6c0 (LWP 101289) "lua/select"      0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, 
+    expected=0, futex_word=0x55555593cc40) at ./nptl/futex-internal.c:57
+  9    Thread 0x7fffceffd6c0 (LWP 101290) "lua/positioning" 0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, 
+    expected=0, futex_word=0x5555559432f4) at ./nptl/futex-internal.c:57
+  10   Thread 0x7fffce7fc6c0 (LWP 101291) "lua/commands"    0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, 
+    expected=0, futex_word=0x555555949990) at ./nptl/futex-internal.c:57
+  11   Thread 0x7fffcdffb6c0 (LWP 101292) "lua/context_men" 0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, 
+    expected=0, futex_word=0x55555594fff0) at ./nptl/futex-internal.c:57
+  12   Thread 0x7fffcd7fa6c0 (LWP 101293) "ipc/socket"      0x00007ffff311b79d in __GI___poll (fds=0x7fffcd7f9280, nfds=2, timeout=-1)
+    at ../sysdeps/unix/sysv/linux/poll.c:29
+  16   Thread 0x7fffccff96c0 (LWP 101297) "worker"          0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=-1, cancel=true, abstime=0x0, 
+    op=393, expected=0, futex_word=0x555555885adc)
+    at ./nptl/futex-internal.c:57
+  36   Thread 0x7fffaffff6c0 (LWP 101317) "threaded-ml"     __futex_lock_pi64 (
+    futex_word=futex_word@entry=0x5555559fc620, clockid=clockid@entry=0, 
+    abstime=abstime@entry=0x0, private=private@entry=0)
+    at ./nptl/futex-internal.c:180
+  37   Thread 0x7fffaf7fe6c0 (LWP 101318) "ao"              0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=21845, cancel=true, abstime=0x0, 
+    op=393, expected=0, futex_word=0x55555597a760)
+    at ./nptl/futex-internal.c:57
+  40   Thread 0x7fffcffff6c0 (LWP 101321) "demux"           __memcpy_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:660
+(gdb) 
+Thread 40 (Thread 0x7fffcffff6c0 (LWP 101321) "demux"):
+#0  __memcpy_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:660
+No locals.
+#1  0x0000555555654e00 in ?? ()
+No symbol table info available.
+#2  0x0000555555655bca in ?? ()
+No symbol table info available.
+#3  0x00005555555dc34c in ?? ()
+No symbol table info available.
+#4  0x000055555570f6af in ?? ()
+No symbol table info available.
+#5  0x00005555555d8da1 in ?? ()
+No symbol table info available.
+#6  0x00005555555dc815 in ?? ()
+No symbol table info available.
+#7  0x00005555555e5eba in ?? ()
+No symbol table info available.
+#8  0x00005555555cc788 in ?? ()
+No symbol table info available.
+#9  0x00005555555ccc37 in ?? ()
+No symbol table info available.
+#10 0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736683046592, 7731160912771940978, 140736683046592, -400, 0, 140737488345664, 7731160912759358066, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#11 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 37 (Thread 0x7fffaf7fe6c0 (LWP 101318) "ao"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=21845, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55555597a760) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=21845, abstime=0x0, clockid=0, expected=0, futex_word=0x55555597a760) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x55555597a760, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x55555597a710, cond=0x55555597a738) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffaf7fd230, __canceltype = 313160, __prev = 0x0}
+        cbuffer = {wseq = 140, cond = 0x55555597a738, mutex = 0x55555597a710, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 140
+        seq = 70
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x55555597a738, mutex=0x55555597a710) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x00005555555b5f73 in ?? ()
+No symbol table info available.
+#6  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736137782976, 7731089446126748274, 140736137782976, -400, 88, 140737488342736, 7731089446114165362, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#7  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 36 (Thread 0x7fffaffff6c0 (LWP 101317) "threaded-ml"):
+#0  __futex_lock_pi64 (futex_word=futex_word@entry=0x5555559fc620, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:180
+        err = -513
+        clockbit = <optimized out>
+        op_pi2 = <optimized out>
+        op_pi1 = <optimized out>
+        op_pi = 134
+#1  0x00007ffff309fe79 in __pthread_mutex_lock_full (mutex=0x5555559fc620) at ./nptl/pthread_mutex_lock.c:441
+        private = 0
+        e = <optimized out>
+        kind = 1
+        robust = <optimized out>
+        newval = 101317
+        assume_other_futex_waiters = <optimized out>
+        oldval = <optimized out>
+        id = 101317
+        __PRETTY_FUNCTION__ = "__pthread_mutex_lock_full"
+#2  0x00007fffecb51992 in pa_mutex_lock () from /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-16.1.so
+No symbol table info available.
+#3  0x00007ffff376d5a1 in ?? () from /lib/x86_64-linux-gnu/libpulse.so.0
+No symbol table info available.
+#4  0x00007ffff37566e4 in pa_mainloop_poll () from /lib/x86_64-linux-gnu/libpulse.so.0
+No symbol table info available.
+#5  0x00007ffff37611b3 in pa_mainloop_iterate () from /lib/x86_64-linux-gnu/libpulse.so.0
+No symbol table info available.
+#6  0x00007ffff3761278 in pa_mainloop_run () from /lib/x86_64-linux-gnu/libpulse.so.0
+No symbol table info available.
+#7  0x00007ffff37717c1 in ?? () from /lib/x86_64-linux-gnu/libpulse.so.0
+No symbol table info available.
+#8  0x00007fffecb5667b in ?? () from /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-16.1.so
+No symbol table info available.
+#9  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736146175680, 7731090544027763314, 140736146175680, -400, 0, 140737488342496, 7731090544015180402, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#10 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 16 (Thread 0x7fffccff96c0 (LWP 101297) "worker"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=-1, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555885adc) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=-1, abstime=0x0, clockid=0, expected=0, futex_word=0x555555885adc) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x555555885adc, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x555555885a88, cond=0x555555885ab0) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffccff8260, __canceltype = 0, __prev = 0x0}
+        cbuffer = {wseq = 3, cond = 0x555555885ab0, mutex = 0x555555885a88, private = 0}
+        err = <optimized out>
+        g = 1
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 3
+        seq = 1
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x555555885ab0, mutex=0x555555885a88) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x00005555555ffd81 in ?? ()
+No symbol table info available.
+#6  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736632690368, 7731167508767965810, 140736632690368, -400, 0, 140737488345552, 7731167508755382898, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#7  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 12 (Thread 0x7fffcd7fa6c0 (LWP 101293) "ipc/socket"):
+#0  0x00007ffff311b79d in __GI___poll (fds=0x7fffcd7f9280, nfds=2, timeout=-1) at ../sysdeps/unix/sysv/linux/poll.c:29
+        sc_ret = -516
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+#1  0x00005555556a8a5a in ?? ()
+No symbol table info available.
+#2  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736641083072, 7731164210769953394, 140736641083072, -400, 2, 140737488346224, 7731164210757370482, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#3  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 11 (Thread 0x7fffcdffb6c0 (LWP 101292) "lua/context_men"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55555594fff0) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x55555594fff0) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x55555594fff0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x55555594ffa0, cond=0x55555594ffc8) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffcdff9800, __canceltype = -838887408, __prev = 0x0}
+        cbuffer = {wseq = 50, cond = 0x55555594ffc8, mutex = 0x55555594ffa0, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 50
+        seq = 25
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x55555594ffc8, mutex=0x55555594ffa0) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x000055555561bf6c in ?? ()
+No symbol table info available.
+#6  0x000055555561c30c in mpv_wait_event ()
+No symbol table info available.
+#7  0x00005555556b91e0 in ?? ()
+No symbol table info available.
+#8  0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#9  0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#10 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#11 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#12 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#13 0x00005555556ba49c in ?? ()
+No symbol table info available.
+#14 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#15 0x00007ffff574d697 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#16 0x00007ffff57406f8 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#17 0x00007ffff574076f in lua_callk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#18 0x00005555556b6e92 in ?? ()
+No symbol table info available.
+#19 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#20 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#21 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#22 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#23 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#24 0x00005555556b76e4 in ?? ()
+No symbol table info available.
+#25 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#26 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#27 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#28 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#29 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#30 0x00005555556b79d7 in ?? ()
+No symbol table info available.
+#31 0x000055555564d2d2 in ?? ()
+No symbol table info available.
+#32 0x000055555564d3ad in ?? ()
+No symbol table info available.
+#33 0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736649475776, 7731165308670968434, 140736649475776, -400, 2, 140737488345632, 7731165308658385522, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#34 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 10 (Thread 0x7fffce7fc6c0 (LWP 101291) "lua/commands"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555949990) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x555555949990) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x555555949990, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x555555949940, cond=0x555555949968) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffce7fa800, __canceltype = -830494704, __prev = 0x0}
+        cbuffer = {wseq = 50, cond = 0x555555949968, mutex = 0x555555949940, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 50
+        seq = 25
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x555555949968, mutex=0x555555949940) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x000055555561bf6c in ?? ()
+No symbol table info available.
+#6  0x000055555561c30c in mpv_wait_event ()
+No symbol table info available.
+#7  0x00005555556b91e0 in ?? ()
+No symbol table info available.
+#8  0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#9  0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#10 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#11 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#12 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#13 0x00005555556ba49c in ?? ()
+No symbol table info available.
+#14 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#15 0x00007ffff574d697 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#16 0x00007ffff57406f8 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#17 0x00007ffff574076f in lua_callk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#18 0x00005555556b6e92 in ?? ()
+No symbol table info available.
+#19 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#20 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#21 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#22 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#23 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#24 0x00005555556b76e4 in ?? ()
+No symbol table info available.
+#25 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#26 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#27 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#28 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#29 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#30 0x00005555556b79d7 in ?? ()
+No symbol table info available.
+#31 0x000055555564d2d2 in ?? ()
+No symbol table info available.
+#32 0x000055555564d3ad in ?? ()
+No symbol table info available.
+#33 0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736657868480, 7731162010672956018, 140736657868480, -400, 2, 140737488345632, 7731162010660373106, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#34 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 9 (Thread 0x7fffceffd6c0 (LWP 101290) "lua/positioning"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x5555559432f4) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x5555559432f4) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x5555559432f4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x5555559432a0, cond=0x5555559432c8) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffceffb800, __canceltype = -822102000, __prev = 0x0}
+        cbuffer = {wseq = 55, cond = 0x5555559432c8, mutex = 0x5555559432a0, private = 0}
+        err = <optimized out>
+        g = 1
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 55
+        seq = 27
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x5555559432c8, mutex=0x5555559432a0) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x000055555561bf6c in ?? ()
+No symbol table info available.
+#6  0x000055555561c30c in mpv_wait_event ()
+No symbol table info available.
+#7  0x00005555556b91e0 in ?? ()
+No symbol table info available.
+#8  0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#9  0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#10 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#11 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#12 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#13 0x00005555556ba49c in ?? ()
+No symbol table info available.
+#14 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#15 0x00007ffff574d697 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#16 0x00007ffff57406f8 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#17 0x00007ffff574076f in lua_callk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#18 0x00005555556b6e92 in ?? ()
+No symbol table info available.
+#19 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#20 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#21 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#22 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#23 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#24 0x00005555556b76e4 in ?? ()
+No symbol table info available.
+#25 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#26 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#27 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#28 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#29 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#30 0x00005555556b79d7 in ?? ()
+No symbol table info available.
+#31 0x000055555564d2d2 in ?? ()
+No symbol table info available.
+#32 0x000055555564d3ad in ?? ()
+No symbol table info available.
+#33 0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736666261184, 7731163112868938354, 140736666261184, -400, 2, 140737488345632, 7731163112856355442, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#34 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 8 (Thread 0x7fffcf7fe6c0 (LWP 101289) "lua/select"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55555593cc40) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x55555593cc40) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x55555593cc40, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x55555593cbf0, cond=0x55555593cc18) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffcf7fc800, __canceltype = -813709296, __prev = 0x0}
+        cbuffer = {wseq = 50, cond = 0x55555593cc18, mutex = 0x55555593cbf0, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 50
+        seq = 25
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x55555593cc18, mutex=0x55555593cbf0) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x000055555561bf6c in ?? ()
+No symbol table info available.
+#6  0x000055555561c30c in mpv_wait_event ()
+No symbol table info available.
+#7  0x00005555556b91e0 in ?? ()
+No symbol table info available.
+#8  0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#9  0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#10 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#11 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#12 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#13 0x00005555556ba49c in ?? ()
+No symbol table info available.
+#14 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#15 0x00007ffff574d697 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#16 0x00007ffff57406f8 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#17 0x00007ffff574076f in lua_callk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#18 0x00005555556b6e92 in ?? ()
+No symbol table info available.
+#19 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#20 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#21 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#22 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#23 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#24 0x00005555556b76e4 in ?? ()
+No symbol table info available.
+#25 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#26 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#27 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#28 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#29 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#30 0x00005555556b79d7 in ?? ()
+No symbol table info available.
+#31 0x000055555564d2d2 in ?? ()
+No symbol table info available.
+#32 0x000055555564d3ad in ?? ()
+No symbol table info available.
+#33 0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736674653888, 7731159814870925938, 140736674653888, -400, 2, 140737488345632, 7731159814858343026, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#34 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 6 (Thread 0x7fffe4ffb6c0 (LWP 101287) "lua/console"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55555592ff94) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x55555592ff94) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x55555592ff94, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x55555592ff40, cond=0x55555592ff68) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffe4ff9800, __canceltype = -453011440, __prev = 0x0}
+        cbuffer = {wseq = 53, cond = 0x55555592ff68, mutex = 0x55555592ff40, private = 0}
+        err = <optimized out>
+        g = 1
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 53
+        seq = 26
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x55555592ff68, mutex=0x55555592ff40) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x000055555561bf6c in ?? ()
+No symbol table info available.
+#6  0x000055555561c30c in mpv_wait_event ()
+No symbol table info available.
+#7  0x00005555556b91e0 in ?? ()
+No symbol table info available.
+#8  0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#9  0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#10 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#11 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#12 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#13 0x00005555556ba49c in ?? ()
+No symbol table info available.
+#14 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#15 0x00007ffff574d697 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#16 0x00007ffff57406f8 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#17 0x00007ffff574076f in lua_callk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#18 0x00005555556b6e92 in ?? ()
+No symbol table info available.
+#19 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#20 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#21 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#22 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#23 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#24 0x00005555556b76e4 in ?? ()
+No symbol table info available.
+#25 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#26 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#27 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#28 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#29 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#30 0x00005555556b79d7 in ?? ()
+No symbol table info available.
+#31 0x000055555564d2d2 in ?? ()
+No symbol table info available.
+#32 0x000055555564d3ad in ?? ()
+No symbol table info available.
+#33 0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140737035351744, 7731220284252357234, 140737035351744, -400, 2, 140737488345632, 7731220284239774322, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#34 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 5 (Thread 0x7fffe57fc6c0 (LWP 101286) "lua/stats"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x5555559299a0) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x5555559299a0) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x5555559299a0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x555555929950, cond=0x555555929978) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffe57fa800, __canceltype = -444618736, __prev = 0x0}
+        cbuffer = {wseq = 50, cond = 0x555555929978, mutex = 0x555555929950, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 50
+        seq = 25
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x555555929978, mutex=0x555555929950) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x000055555561bf6c in ?? ()
+No symbol table info available.
+#6  0x000055555561c30c in mpv_wait_event ()
+No symbol table info available.
+#7  0x00005555556b91e0 in ?? ()
+No symbol table info available.
+#8  0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#9  0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#10 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#11 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#12 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#13 0x00005555556ba49c in ?? ()
+No symbol table info available.
+#14 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#15 0x00007ffff574d697 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#16 0x00007ffff57406f8 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#17 0x00007ffff574076f in lua_callk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#18 0x00005555556b6e92 in ?? ()
+No symbol table info available.
+#19 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#20 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#21 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#22 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#23 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#24 0x00005555556b76e4 in ?? ()
+No symbol table info available.
+#25 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#26 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#27 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#28 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#29 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#30 0x00005555556b79d7 in ?? ()
+No symbol table info available.
+#31 0x000055555564d2d2 in ?? ()
+No symbol table info available.
+#32 0x000055555564d3ad in ?? ()
+No symbol table info available.
+#33 0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140737043744448, 7731216986254344818, 140737043744448, -400, 2, 140737488345632, 7731216986241761906, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#34 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 4 (Thread 0x7fffe5ffd6c0 (LWP 101285) "lua/ytdl_hook"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555923344) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x555555923344) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x555555923344, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x5555559232f0, cond=0x555555923318) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffe5ffb800, __canceltype = -436226032, __prev = 0x0}
+        cbuffer = {wseq = 73, cond = 0x555555923318, mutex = 0x5555559232f0, private = 0}
+        err = <optimized out>
+        g = 1
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 73
+        seq = 36
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x555555923318, mutex=0x5555559232f0) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x000055555561bf6c in ?? ()
+No symbol table info available.
+#6  0x000055555561c30c in mpv_wait_event ()
+No symbol table info available.
+#7  0x00005555556b91e0 in ?? ()
+No symbol table info available.
+#8  0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#9  0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#10 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#11 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#12 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#13 0x00005555556ba49c in ?? ()
+No symbol table info available.
+#14 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#15 0x00007ffff574d697 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#16 0x00007ffff57406f8 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#17 0x00007ffff574076f in lua_callk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#18 0x00005555556b6e92 in ?? ()
+No symbol table info available.
+#19 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#20 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#21 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#22 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#23 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#24 0x00005555556b76e4 in ?? ()
+No symbol table info available.
+#25 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#26 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#27 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#28 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#29 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#30 0x00005555556b79d7 in ?? ()
+No symbol table info available.
+#31 0x000055555564d2d2 in ?? ()
+No symbol table info available.
+#32 0x000055555564d3ad in ?? ()
+No symbol table info available.
+#33 0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140737052137152, 7731218088450327154, 140737052137152, -400, 2, 140737488345632, 7731218088437744242, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#34 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 3 (Thread 0x7fffe67fe6c0 (LWP 101284) "lua/osc"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=32767, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x5555558859c0) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=32767, abstime=0x0, clockid=0, expected=0, futex_word=0x5555558859c0) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x5555558859c0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x555555885970, cond=0x555555885998) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffe67fcad0, __canceltype = 1004495, __prev = 0x0}
+        cbuffer = {wseq = 378, cond = 0x555555885998, mutex = 0x555555885970, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 378
+        seq = 189
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x555555885998, mutex=0x555555885970) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x0000555555604b5b in ?? ()
+No symbol table info available.
+#6  0x000055555561d470 in mpv_get_property ()
+No symbol table info available.
+#7  0x00005555556b8e56 in ?? ()
+No symbol table info available.
+#8  0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#9  0x00007ffff574d697 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#10 0x00007ffff57406f8 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#11 0x00007ffff574076f in lua_callk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#12 0x00005555556b6e92 in ?? ()
+No symbol table info available.
+#13 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#14 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#15 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#16 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#17 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#18 0x00005555556b76e4 in ?? ()
+No symbol table info available.
+#19 0x00007ffff57403e9 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#20 0x00007ffff5742820 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#21 0x00007ffff573d026 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#22 0x00007ffff5753309 in ?? () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#23 0x00007ffff5740841 in lua_pcallk () from /lib/x86_64-linux-gnu/liblua5.2.so.0
+No symbol table info available.
+#24 0x00005555556b79d7 in ?? ()
+No symbol table info available.
+#25 0x000055555564d2d2 in ?? ()
+No symbol table info available.
+#26 0x000055555564d3ad in ?? ()
+No symbol table info available.
+#27 0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140737060529856, 7731214790452314738, 140737060529856, -400, 2, 140737488345632, 7731214790439731826, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#28 0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 2 (Thread 0x7fffe6fff6c0 (LWP 101283) "log"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=32767, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555885e30) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=32767, abstime=0x0, clockid=0, expected=0, futex_word=0x555555885e30) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x555555885e30, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x555555885de0, cond=0x555555885e08) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffe6ffe250, __canceltype = -419437952, __prev = 0x0}
+        cbuffer = {wseq = 1292, cond = 0x555555885e08, mutex = 0x555555885de0, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 1292
+        seq = 646
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x555555885e08, mutex=0x555555885de0) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x00005555555bd1b2 in ?? ()
+No symbol table info available.
+#6  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140737068922560, 7731215888353329778, 140737068922560, -400, 2, 140737488346064, 7731215888340746866, 7731238068945027698}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#7  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 1 (Thread 0x7fffe8dd02c0 (LWP 101280) "mpv"):
+#0  0x00007ffff311c87d in __GI___libc_write (nbytes=1, buf=0x7fffffffdae7, fd=11) at ../sysdeps/unix/sysv/linux/write.c:26
+        sc_ret = -32
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        sc_ret = <optimized out>
+        __arg2 = <optimized out>
+        _a3 = <optimized out>
+        _a1 = <optimized out>
+        resultvar = <optimized out>
+        __arg3 = <optimized out>
+        __arg1 = <optimized out>
+        _a2 = <optimized out>
+#1  __GI___libc_write (fd=11, buf=0x7fffffffdae7, nbytes=1) at ../sysdeps/unix/sysv/linux/write.c:24
+No locals.
+#2  0x00007fffecb1e632 in pa_write () from /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-16.1.so
+No symbol table info available.
+#3  0x00007ffff375622f in pa_mainloop_wakeup () from /lib/x86_64-linux-gnu/libpulse.so.0
+No symbol table info available.
+#4  0x00007ffff375651c in ?? () from /lib/x86_64-linux-gnu/libpulse.so.0
+No symbol table info available.
+#5  0x00007fffecb3f698 in ?? () from /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-16.1.so
+No symbol table info available.
+#6  0x00007ffff376c670 in pa_stream_cork () from /lib/x86_64-linux-gnu/libpulse.so.0
+No symbol table info available.
+#7  0x00005555556c8307 in ?? ()
+No symbol table info available.
+#8  0x00005555556c84af in ?? ()
+No symbol table info available.
+#9  0x00005555555b8ec9 in ?? ()
+No symbol table info available.
+#10 0x000055555563d536 in ?? ()
+No symbol table info available.
+#11 0x000055555564ac9c in ?? ()
+No symbol table info available.
+#12 0x00005555555ac7fe in main ()
+No symbol table info available.
+(gdb) pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+pa_write() failed while trying to wake up the mainloop: Broken pipe
+Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713, function pa_close_pipe(). Aborting.
+Detaching from program: /usr/bin/mpv, process 101280
+[Inferior 1 (process 101280) detached]
+(gdb) 

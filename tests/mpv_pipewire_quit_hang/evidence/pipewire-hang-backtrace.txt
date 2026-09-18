@@ -1,0 +1,395 @@
+Reading symbols from mpv...
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+(No debugging symbols found in mpv)
+(gdb) (gdb) (gdb) (gdb) Starting program: /usr/bin/mpv --idle=yes --keep-open=yes --input-ipc-server=/tmp/opencode/run-batch1-0.sock --no-terminal --no-config --log-file=/tmp/opencode/ev/mpv-batch1-0.log
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7fffe6fff6c0 (LWP 94897)]
+[New Thread 0x7fffe67fe6c0 (LWP 94898)]
+[New Thread 0x7fffe5ffd6c0 (LWP 94899)]
+[New Thread 0x7fffe57fc6c0 (LWP 94900)]
+[New Thread 0x7fffe4ffb6c0 (LWP 94901)]
+[New Thread 0x7fffcffff6c0 (LWP 94902)]
+[New Thread 0x7fffcf7fe6c0 (LWP 94903)]
+[New Thread 0x7fffceffd6c0 (LWP 94904)]
+[New Thread 0x7fffce7fc6c0 (LWP 94905)]
+[New Thread 0x7fffcdffb6c0 (LWP 94906)]
+[New Thread 0x7fffcd7fa6c0 (LWP 94907)]
+[Thread 0x7fffcffff6c0 (LWP 94902) exited]
+[New Thread 0x7fffcffff6c0 (LWP 94908)]
+[Thread 0x7fffcffff6c0 (LWP 94908) exited]
+[New Thread 0x7fffcffff6c0 (LWP 94909)]
+[Thread 0x7fffcffff6c0 (LWP 94909) exited]
+[New Thread 0x7fffcffff6c0 (LWP 94910)]
+[New Thread 0x7fffccff96c0 (LWP 94911)]
+[New Thread 0x7fffaffff6c0 (LWP 94912)]
+[New Thread 0x7fffaf7fe6c0 (LWP 94913)]
+[New Thread 0x7fffaeffd6c0 (LWP 94914)]
+[New Thread 0x7fffad1ff6c0 (LWP 94915)]
+[New Thread 0x7fffac9fe6c0 (LWP 94916)]
+[Thread 0x7fffac9fe6c0 (LWP 94916) exited]
+[Thread 0x7fffad1ff6c0 (LWP 94915) exited]
+[Thread 0x7fffaeffd6c0 (LWP 94914) exited]
+[Thread 0x7fffaf7fe6c0 (LWP 94913) exited]
+[New Thread 0x7fffaf7fe6c0 (LWP 94917)]
+[Thread 0x7fffaf7fe6c0 (LWP 94917) exited]
+[Thread 0x7fffaffff6c0 (LWP 94912) exited]
+[New Thread 0x7fffaffff6c0 (LWP 94918)]
+[New Thread 0x7fffaf7fe6c0 (LWP 94919)]
+[New Thread 0x7fffaeffd6c0 (LWP 94920)]
+[New Thread 0x7fffad1ff6c0 (LWP 94921)]
+[New Thread 0x7fffac9fe6c0 (LWP 94922)]
+[Thread 0x7fffac9fe6c0 (LWP 94922) exited]
+[Thread 0x7fffaeffd6c0 (LWP 94920) exited]
+[Thread 0x7fffad1ff6c0 (LWP 94921) exited]
+[Thread 0x7fffaf7fe6c0 (LWP 94919) exited]
+[New Thread 0x7fffaf7fe6c0 (LWP 94923)]
+[Thread 0x7fffaf7fe6c0 (LWP 94923) exited]
+[Thread 0x7fffaffff6c0 (LWP 94918) exited]
+[New Thread 0x7fffaffff6c0 (LWP 94924)]
+[Thread 0x7fffaffff6c0 (LWP 94924) exited]
+[New Thread 0x7fffaffff6c0 (LWP 94925)]
+[Thread 0x7fffaffff6c0 (LWP 94925) exited]
+[New Thread 0x7fffaffff6c0 (LWP 94926)]
+[Thread 0x7fffaffff6c0 (LWP 94926) exited]
+[New Thread 0x7fffaffff6c0 (LWP 94927)]
+[Thread 0x7fffaffff6c0 (LWP 94927) exited]
+[New Thread 0x7fffaffff6c0 (LWP 94928)]
+[Thread 0x7fffaffff6c0 (LWP 94928) exited]
+[New Thread 0x7fffaffff6c0 (LWP 94929)]
+[Thread 0x7fffaffff6c0 (LWP 94929) exited]
+[New Thread 0x7fffaffff6c0 (LWP 94930)]
+[Thread 0x7fffaffff6c0 (LWP 94930) exited]
+[New Thread 0x7fffaffff6c0 (LWP 94931)]
+[New Thread 0x7fffaf7fe6c0 (LWP 94932)]
+[New Thread 0x7fffaeffd6c0 (LWP 94933)]
+[New Thread 0x7fffad1ff6c0 (LWP 94936)]
+[Thread 0x7fffad1ff6c0 (LWP 94936) exited]
+[Thread 0x7fffcffff6c0 (LWP 94910) exited]
+[New Thread 0x7fffcffff6c0 (LWP 94937)]
+[Thread 0x7fffcffff6c0 (LWP 94937) exited]
+[New Thread 0x7fffcffff6c0 (LWP 94938)]
+[New Thread 0x7fffad1ff6c0 (LWP 94939)]
+[New Thread 0x7fffac9fe6c0 (LWP 94940)]
+[New Thread 0x7fffa7fff6c0 (LWP 94941)]
+[New Thread 0x7fffa77fe6c0 (LWP 94942)]
+[New Thread 0x7fff9b7ff6c0 (LWP 94943)]
+[New Thread 0x7fff9affe6c0 (LWP 94944)]
+[Thread 0x7fff9affe6c0 (LWP 94944) exited]
+[Thread 0x7fff9b7ff6c0 (LWP 94943) exited]
+[Thread 0x7fffa77fe6c0 (LWP 94942) exited]
+[Thread 0x7fffa7fff6c0 (LWP 94941) exited]
+[New Thread 0x7fffa7fff6c0 (LWP 94945)]
+[Thread 0x7fffa7fff6c0 (LWP 94945) exited]
+[Thread 0x7fffad1ff6c0 (LWP 94939) exited]
+[New Thread 0x7fffad1ff6c0 (LWP 94946)]
+[New Thread 0x7fffa7fff6c0 (LWP 94947)]
+[New Thread 0x7fffa77fe6c0 (LWP 94948)]
+[New Thread 0x7fff9b7ff6c0 (LWP 94949)]
+[New Thread 0x7fff9affe6c0 (LWP 94950)]
+[Thread 0x7fff9affe6c0 (LWP 94950) exited]
+[Thread 0x7fffa77fe6c0 (LWP 94948) exited]
+[Thread 0x7fff9b7ff6c0 (LWP 94949) exited]
+[Thread 0x7fffa7fff6c0 (LWP 94947) exited]
+[New Thread 0x7fffa7fff6c0 (LWP 94951)]
+[Thread 0x7fffa7fff6c0 (LWP 94951) exited]
+[Thread 0x7fffad1ff6c0 (LWP 94946) exited]
+[New Thread 0x7fffad1ff6c0 (LWP 94952)]
+[Thread 0x7fffad1ff6c0 (LWP 94952) exited]
+[New Thread 0x7fffad1ff6c0 (LWP 94953)]
+[Thread 0x7fffad1ff6c0 (LWP 94953) exited]
+[New Thread 0x7fffad1ff6c0 (LWP 94954)]
+[Thread 0x7fffad1ff6c0 (LWP 94954) exited]
+[New Thread 0x7fffad1ff6c0 (LWP 94955)]
+[Thread 0x7fffad1ff6c0 (LWP 94955) exited]
+[New Thread 0x7fffad1ff6c0 (LWP 94956)]
+[Thread 0x7fffad1ff6c0 (LWP 94956) exited]
+[New Thread 0x7fffad1ff6c0 (LWP 94957)]
+[Thread 0x7fffad1ff6c0 (LWP 94957) exited]
+[New Thread 0x7fffad1ff6c0 (LWP 94958)]
+[Thread 0x7fffad1ff6c0 (LWP 94958) exited]
+[Thread 0x7fffac9fe6c0 (LWP 94940) exited]
+[Thread 0x7fffcffff6c0 (LWP 94938) exited]
+[Thread 0x7fffcdffb6c0 (LWP 94906) exited]
+[Thread 0x7fffce7fc6c0 (LWP 94905) exited]
+[Thread 0x7fffe4ffb6c0 (LWP 94901) exited]
+[Thread 0x7fffe57fc6c0 (LWP 94900) exited]
+[Thread 0x7fffe5ffd6c0 (LWP 94899) exited]
+[Thread 0x7fffceffd6c0 (LWP 94904) exited]
+[Thread 0x7fffe67fe6c0 (LWP 94898) exited]
+[Thread 0x7fffcd7fa6c0 (LWP 94907) exited]
+[Thread 0x7fffcf7fe6c0 (LWP 94903) exited]
+
+Thread 1 "mpv" received signal SIGINT, Interrupt.
+0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=128, 
+    cancel=true, abstime=0x0, op=265, expected=94931, 
+    futex_word=0x7fffaffff990) at ./nptl/futex-internal.c:57
+warning: 57	./nptl/futex-internal.c: 没有那个文件或目录
+(gdb) (gdb) 
+===MARK===
+(gdb)   Id   Target Id                                           Frame 
+* 1    Thread 0x7fffe8dd02c0 (LWP 94894) "mpv"             0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=128, cancel=true, abstime=0x0, 
+    op=265, expected=94931, futex_word=0x7fffaffff990)
+    at ./nptl/futex-internal.c:57
+  2    Thread 0x7fffe6fff6c0 (LWP 94897) "log"             0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=32767, cancel=true, abstime=0x0, 
+    op=393, expected=0, futex_word=0x555555885e30)
+    at ./nptl/futex-internal.c:57
+  16   Thread 0x7fffccff96c0 (LWP 94911) "worker"          0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=-1, cancel=true, abstime=0x0, op=393, 
+    expected=0, futex_word=0x555555885adc) at ./nptl/futex-internal.c:57
+  36   Thread 0x7fffaffff6c0 (LWP 94931) "mpv/ao/pipewire" 0x00007ffff312a2d2 in epoll_wait (epfd=0, events=0x7fffafffdf00, maxevents=32, timeout=-1)
+    at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  37   Thread 0x7fffaf7fe6c0 (LWP 94932) "module-rt"       0x00007ffff312a2d2 in epoll_wait (epfd=19, events=0x7fffaf7fcf00, maxevents=32, timeout=-1)
+    at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  38   Thread 0x7fffaeffd6c0 (LWP 94933) "pw-data-loop"    0x00007ffff312a2d2 in epoll_wait (epfd=14, events=0x7fffaeffbe80, maxevents=32, timeout=-1)
+    at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+(gdb) 
+Thread 38 (Thread 0x7fffaeffd6c0 (LWP 94933) "pw-data-loop"):
+#0  0x00007ffff312a2d2 in epoll_wait (epfd=14, events=0x7fffaeffbe80, maxevents=32, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+        sc_ret = -4
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+#1  0x00007fffe40f0138 in ?? () from /usr/lib/x86_64-linux-gnu/spa-0.2/support/libspa-support.so
+No symbol table info available.
+#2  0x00007fffe40e1c59 in ?? () from /usr/lib/x86_64-linux-gnu/spa-0.2/support/libspa-support.so
+No symbol table info available.
+#3  0x00007ffff37cf7b6 in ?? () from /lib/x86_64-linux-gnu/libpipewire-0.3.so.0
+No symbol table info available.
+#4  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736129390272, -8688919891031808043, 140736129390272, -400, 0, 140737488340656, -8688919891044390955, -8688997802037794859}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#5  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 37 (Thread 0x7fffaf7fe6c0 (LWP 94932) "module-rt"):
+#0  0x00007ffff312a2d2 in epoll_wait (epfd=19, events=0x7fffaf7fcf00, maxevents=32, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+        sc_ret = -4
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+#1  0x00007fffe40f0138 in ?? () from /usr/lib/x86_64-linux-gnu/spa-0.2/support/libspa-support.so
+No symbol table info available.
+#2  0x00007fffe40e1c59 in ?? () from /usr/lib/x86_64-linux-gnu/spa-0.2/support/libspa-support.so
+No symbol table info available.
+#3  0x00007ffff381bc67 in ?? () from /lib/x86_64-linux-gnu/libpipewire-0.3.so.0
+No symbol table info available.
+#4  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736137782976, -8688918790983309355, 140736137782976, -400, 0, 140737488335120, -8688918790995892267, -8688997802037794859}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#5  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 36 (Thread 0x7fffaffff6c0 (LWP 94931) "mpv/ao/pipewire"):
+#0  0x00007ffff312a2d2 in epoll_wait (epfd=0, events=0x7fffafffdf00, maxevents=32, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+        sc_ret = -9
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+#1  0x00007fffe40f0138 in ?? () from /usr/lib/x86_64-linux-gnu/spa-0.2/support/libspa-support.so
+No symbol table info available.
+#2  0x00007fffe40e1c59 in ?? () from /usr/lib/x86_64-linux-gnu/spa-0.2/support/libspa-support.so
+No symbol table info available.
+#3  0x00007ffff381bc67 in ?? () from /lib/x86_64-linux-gnu/libpipewire-0.3.so.0
+No symbol table info available.
+#4  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736146175680, -8688917690934810667, 140736146175680, -400, 0, 140737488340880, -8688917690947393579, -8688997802037794859}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#5  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 16 (Thread 0x7fffccff96c0 (LWP 94911) "worker"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=-1, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555885adc) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=-1, abstime=0x0, clockid=0, expected=0, futex_word=0x555555885adc) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x555555885adc, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x555555885a88, cond=0x555555885ab0) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffccff8260, __canceltype = 0, __prev = 0x0}
+        cbuffer = {wseq = 3, cond = 0x555555885ab0, mutex = 0x555555885a88, private = 0}
+        err = <optimized out>
+        g = 1
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 3
+        seq = 1
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x555555885ab0, mutex=0x555555885a88) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x00005555555ffd81 in ?? ()
+No symbol table info available.
+#6  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140736632690368, -8689126597070346283, 140736632690368, -400, 0, 140737488345600, -8689126597082929195, -8688997802037794859}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#7  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 2 (Thread 0x7fffe6fff6c0 (LWP 94897) "log"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=32767, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555885e30) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=32767, abstime=0x0, clockid=0, expected=0, futex_word=0x555555885e30) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 393
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x555555885e30, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309b8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x555555885de0, cond=0x555555885e08) at ./nptl/pthread_cond_wait.c:503
+        spin = 0
+        buffer = {__routine = 0x7ffff309b590 <__condvar_cleanup_waiting>, __arg = 0x7fffe6ffe250, __canceltype = -419437952, __prev = 0x0}
+        cbuffer = {wseq = 1276, cond = 0x555555885e08, mutex = 0x555555885de0, private = 0}
+        err = <optimized out>
+        g = 0
+        flags = <optimized out>
+        g1_start = <optimized out>
+        maxspin = 0
+        signals = <optimized out>
+        result = 0
+        wseq = 1276
+        seq = 638
+        private = 0
+        maxspin = <optimized out>
+        err = <optimized out>
+        result = <optimized out>
+        wseq = <optimized out>
+        g = <optimized out>
+        seq = <optimized out>
+        flags = <optimized out>
+        private = <optimized out>
+        signals = <optimized out>
+        done = <optimized out>
+        g1_start = <optimized out>
+        spin = <optimized out>
+        buffer = <optimized out>
+        cbuffer = <optimized out>
+        s = <optimized out>
+#4  ___pthread_cond_wait (cond=0x555555885e08, mutex=0x555555885de0) at ./nptl/pthread_cond_wait.c:627
+No locals.
+#5  0x00005555555bd1b2 in ?? ()
+No symbol table info available.
+#6  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+        ret = <optimized out>
+        pd = <optimized out>
+        out = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140737068922560, -8689043035260377131, 140737068922560, -400, 2, 140737488346112, -8689043035272960043, -8688997802037794859}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 0x0, 0x0}, data = {prev = 0x0, cleanup = 0x0, canceltype = 0}}}
+        not_first_call = <optimized out>
+#7  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+No locals.
+
+Thread 1 (Thread 0x7fffe8dd02c0 (LWP 94894) "mpv"):
+#0  0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=128, cancel=true, abstime=0x0, op=265, expected=94931, futex_word=0x7fffaffff990) at ./nptl/futex-internal.c:57
+        sc_cancel_oldtype = 0
+        sc_ret = <optimized out>
+        resultvar = <optimized out>
+        __arg6 = <optimized out>
+        __arg5 = <optimized out>
+        __arg4 = <optimized out>
+        __arg3 = <optimized out>
+        __arg2 = <optimized out>
+        __arg1 = <optimized out>
+        _a6 = <optimized out>
+        _a5 = <optimized out>
+        _a4 = <optimized out>
+        _a3 = <optimized out>
+        _a2 = <optimized out>
+        _a1 = <optimized out>
+#1  __futex_abstimed_wait_common (cancel=true, private=128, abstime=0x0, clockid=0, expected=94931, futex_word=0x7fffaffff990) at ./nptl/futex-internal.c:87
+        err = <optimized out>
+        clockbit = 256
+        op = 265
+        err = <optimized out>
+        clockbit = <optimized out>
+        op = <optimized out>
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7fffaffff990, expected=94931, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=128) at ./nptl/futex-internal.c:139
+No locals.
+#3  0x00007ffff309e883 in __pthread_clockjoin_ex (threadid=140736146175680, thread_return=0x0, clockid=0, abstime=0x0, block=<optimized out>) at ./nptl/pthread_join_common.c:102
+        ret = <optimized out>
+        _buffer = {__routine = 0x7ffff309e730 <cleanup>, __arg = 0x7fffaffffce0, __canceltype = -134230016, __prev = 0x0}
+        tid = <optimized out>
+        pd = 0x7fffaffff6c0
+        self = <optimized out>
+        result = 0
+        pd_result = <optimized out>
+#4  0x00007ffff381a1eb in pw_thread_loop_stop () from /lib/x86_64-linux-gnu/libpipewire-0.3.so.0
+No symbol table info available.
+#5  0x00005555556c5f3c in ?? ()
+No symbol table info available.
+#6  0x00005555555b964c in ?? ()
+No symbol table info available.
+#7  0x000055555561917d in ?? ()
+No symbol table info available.
+#8  0x0000555555640eb8 in ?? ()
+No symbol table info available.
+#9  0x00005555555ac7e0 in main ()
+No symbol table info available.
+(gdb) Detaching from program: /usr/bin/mpv, process 94894
+[Inferior 1 (process 94894) detached]
+(gdb) 

@@ -1,0 +1,28 @@
+/proc/108098/fd/1: /dev/null
+/proc/108098/fd/2: /dev/null
+/proc/108098/fd/3: /tmp/opencode/ev/pw149-0.log
+/proc/108098/fd/8: pipe:[478649]
+/proc/108098/fd/9: pipe:[478649]
+/proc/108098/fd/10: pipe:[477928]
+/proc/108098/fd/11: anon_inode:[eventfd]
+/proc/108098/fd/12: anon_inode:[eventfd]
+/proc/108098/fd/13: socket:[477935]
+/proc/108098/fd/14: anon_inode:[eventpoll]
+/proc/108098/fd/15: anon_inode:[eventfd]
+/proc/108098/fd/16: anon_inode:[eventfd]
+/proc/108098/fd/17: socket:[477936]
+/proc/108098/fd/18: anon_inode:[eventfd]
+/proc/108098/fd/19: anon_inode:[eventfd]
+/proc/108098/fd/20: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=2312 (deleted)
+/proc/108098/fd/21: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=2312 (deleted)
+/proc/108098/fd/22: anon_inode:[eventfd]
+/proc/108098/fd/23: anon_inode:[eventfd]
+/proc/108098/fd/24: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=2312 (deleted)
+/proc/108098/fd/25: pipe:[477944]
+/proc/108098/fd/26: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=2312 (deleted)
+/proc/108098/fd/27: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=32832 (deleted)
+/proc/108098/fd/28: /memfd:pipewire-memfd:flags=0x0000000f,type=2,size=32832 (deleted)
+/proc/108098/fd/29: anon_inode:[eventfd]
+/proc/108098/fd/30: pipe:[477944]
+/proc/108098/fd/31: anon_inode:[eventfd]
+/proc/108098/fd/32: pipe:[477945]

@@ -1,0 +1,87 @@
+信宿 #24883
+	状态：SUSPENDED
+	名称：alsa_output.pci-0000_02_00.0.analog-stereo
+	描述：200 Series PCH HD Audio 模拟立体声
+	驱动程序：PipeWire
+	采样规格：s32le 2ch 48000Hz
+	声道映射：front-left,front-right
+	所有者模块：4294967295
+	静音：否
+	音量：front-left: 26214 /  40% / -23.88 dB,   front-right: 26214 /  40% / -23.88 dB
+	        平衡 0.00
+	基础音量：65536 / 100% / 0.00 dB
+	监视器信源：alsa_output.pci-0000_02_00.0.analog-stereo.monitor
+	延迟：0 微秒，设置为 0 微秒
+	标记：HARDWARE HW_MUTE_CTRL HW_VOLUME_CTRL DECIBEL_VOLUME LATENCY 
+	属性：
+		alsa.card = "1"
+		alsa.card_name = "HDA Intel PCH"
+		alsa.class = "generic"
+		alsa.components = "HDA:10ec0897,10ec0897,00100402 HDA:8086280b,80860101,00100000"
+		alsa.device = "0"
+		alsa.driver_name = "snd_hda_intel"
+		alsa.id = "PCH"
+		alsa.long_card_name = "HDA Intel PCH at 0x81e10000 irq 53"
+		alsa.mixer_name = "Realtek ALC897"
+		alsa.name = "ALC897 Analog"
+		alsa.resolution_bits = "16"
+		alsa.subclass = "generic-mix"
+		alsa.subdevice = "0"
+		alsa.subdevice_name = "subdevice #0"
+		api.alsa.card.longname = "HDA Intel PCH at 0x81e10000 irq 53"
+		api.alsa.card.name = "HDA Intel PCH"
+		client.id = "35"
+		api.alsa.path = "front:1"
+		api.alsa.pcm.card = "1"
+		api.alsa.pcm.stream = "playback"
+		node.driver = "true"
+		audio.channels = "2"
+		audio.position = "FL,FR"
+		card.profile.device = "6"
+		device.api = "alsa"
+		device.class = "sound"
+		device.id = "42"
+		device.profile.description = "模拟立体声"
+		device.profile.name = "analog-stereo"
+		device.routes = "2"
+		factory.name = "api.alsa.pcm.sink"
+		media.class = "Audio/Sink"
+		device.description = "200 Series PCH HD Audio"
+		node.name = "alsa_output.pci-0000_02_00.0.analog-stereo"
+		node.nick = "ALC897 Analog"
+		node.pause-on-idle = "false"
+		object.path = "alsa:pcm:1:front:1:playback"
+		priority.driver = "1009"
+		priority.session = "1009"
+		factory.id = "18"
+		clock.quantum-limit = "8192"
+		factory.mode = "merge"
+		audio.adapt.follower = ""
+		library.name = "audioconvert/libspa-audioconvert"
+		object.id = "79"
+		object.serial = "24883"
+		api.acp.auto-port = "false"
+		api.acp.auto-profile = "false"
+		api.alsa.card = "1"
+		api.alsa.use-acp = "true"
+		api.dbus.ReserveDevice1 = "Audio1"
+		device.bus = "pci"
+		device.bus_path = "pci-0000:02:00.0"
+		device.enum.api = "udev"
+		device.icon_name = "audio-card-analog-pci"
+		device.name = "alsa_card.pci-0000_02_00.0"
+		device.nick = "HDA Intel PCH"
+		device.plugged.usec = "6911442"
+		device.product.id = "0xa2f0"
+		device.product.name = "200 Series PCH HD Audio"
+		device.subsystem = "sound"
+		sysfs.path = "/devices/pci0000:00/0000:00:1c.1/0000:02:00.0/sound/card1"
+		device.vendor.id = "0x8086"
+		device.vendor.name = "Intel Corporation"
+		device.string = "1"
+	端口：
+		analog-output-headphones: 模拟耳机 (type: 模拟耳机, priority: 9900, availability unknown)
+		analog-output-headphones-2: 模拟耳机 2 (type: 模拟耳机, priority: 9800, availability group: Legacy 3, not available)
+	活动端口：analog-output-headphones
+	格式：
+		pcm

@@ -1,0 +1,1422 @@
+	id: 0
+	permissions: r-xm-
+	type: PipeWire:Interface:Core/4
+	cookie: 766247715
+	user-name: "hermes"
+	host-name: "ubuntu"
+	version: "1.0.5"
+	name: "pipewire-0"
+*	properties:
+*		config.name = "pipewire.conf"
+*		link.max-buffers = "16"
+*		core.daemon = "true"
+*		core.name = "pipewire-0"
+*		default.clock.min-quantum = "1024"
+*		module.x11.bell = "true"
+*		module.access = "true"
+*		module.jackdbus-detect = "true"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		log.level = "2"
+*		clock.power-of-two-quantum = "true"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		object.id = "0"
+*		object.serial = "0"
+	id: 1
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-rt"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-rt.so"
+	args: "{
+            nice.level    = -11
+            rt.prio       = 88
+            #rt.time.soft = -1
+            #rt.time.hard = -1
+            #uclamp.min = 0
+            #uclamp.max = 1024
+        }"
+*	properties:
+*		module.name = "libpipewire-module-rt"
+*		object.id = "1"
+*		object.serial = "1"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Use realtime thread scheduling, falling back to RTKit"
+*		module.usage = "( nice.level=<priority: default 20(don't change)> ) ( rt.prio=<priority: default 83> ) ( rt.time.soft=<in usec: default -1> ) ( rt.time.hard=<in usec: default -1> ) ( rlimits.enabled=<default true> ) ( rtportal.enabled=<default true> ) ( rtkit.enabled=<default true> ) ( uclamp.min=<default 0> ) ( uclamp.max=<default 1024> )"
+*		module.version = "1.0.5"
+*		nice.level = "-11"
+*		rt.prio = "88"
+	id: 2
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-protocol-native"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-protocol-native.so"
+	args: "{
+            # List of server Unix sockets, and optionally permissions
+            #sockets = [ { name = "pipewire-0" }, { name = "pipewire-0-manager" } ]
+        }"
+*	properties:
+*		module.name = "libpipewire-module-protocol-native"
+*		object.id = "2"
+*		object.serial = "2"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Native protocol using unix sockets"
+*		module.version = "1.0.5"
+	id: 3
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-profiler"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-profiler.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-profiler"
+*		object.id = "3"
+*		object.serial = "3"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Generate Profiling data"
+*		module.version = "1.0.5"
+	id: 5
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-metadata"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-metadata.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-metadata"
+*		object.id = "5"
+*		object.serial = "5"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Allow clients to create metadata store"
+*		module.version = "1.0.5"
+	id: 6
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "metadata"
+	object-type: PipeWire:Interface:Metadata/3
+*	properties:
+*		factory.usage = "(metadata.name = <name> ) (metadata.values = [    { ( id = <int> ) key = <string> ( type = <string> ) value = <json> }    ...  ] )"
+*		module.id = "5"
+*		object.id = "6"
+*		object.serial = "6"
+*		factory.name = "metadata"
+*		factory.type.name = "PipeWire:Interface:Metadata"
+*		factory.type.version = "3"
+	id: 7
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-spa-device-factory"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-spa-device-factory.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-spa-device-factory"
+*		object.id = "7"
+*		object.serial = "7"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Provide a factory to make SPA devices"
+*		module.version = "1.0.5"
+	id: 8
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "spa-device-factory"
+	object-type: PipeWire:Interface:Device/3
+*	properties:
+*		module.id = "7"
+*		object.id = "8"
+*		object.serial = "8"
+*		factory.name = "spa-device-factory"
+*		factory.type.name = "PipeWire:Interface:Device"
+*		factory.type.version = "3"
+	id: 9
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-spa-node-factory"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-spa-node-factory.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-spa-node-factory"
+*		object.id = "9"
+*		object.serial = "9"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Provide a factory to make SPA nodes"
+*		module.version = "1.0.5"
+	id: 10
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "spa-node-factory"
+	object-type: PipeWire:Interface:Node/3
+*	properties:
+*		module.id = "9"
+*		object.id = "10"
+*		object.serial = "10"
+*		factory.name = "spa-node-factory"
+*		factory.type.name = "PipeWire:Interface:Node"
+*		factory.type.version = "3"
+	id: 11
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-client-node"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-client-node.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-client-node"
+*		object.id = "11"
+*		object.serial = "11"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Allow clients to create and control remote nodes"
+*		module.version = "1.0.5"
+	id: 12
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "client-node"
+	object-type: PipeWire:Interface:ClientNode/5
+*	properties:
+*		module.id = "11"
+*		object.id = "12"
+*		object.serial = "12"
+*		factory.name = "client-node"
+*		factory.type.name = "PipeWire:Interface:ClientNode"
+*		factory.type.version = "5"
+	id: 13
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-client-device"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-client-device.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-client-device"
+*		object.id = "13"
+*		object.serial = "13"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Allow clients to create and control remote devices"
+*		module.version = "1.0.5"
+	id: 14
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "client-device"
+	object-type: Spa:Pointer:Interface:Device/0
+*	properties:
+*		factory.usage = "[device.name=<string>]"
+*		module.id = "13"
+*		object.id = "14"
+*		object.serial = "14"
+*		factory.name = "client-device"
+*		factory.type.name = "Spa:Pointer:Interface:Device"
+*		factory.type.version = "0"
+	id: 15
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-portal"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-portal.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-portal"
+*		object.id = "15"
+*		object.serial = "15"
+	id: 16
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-access"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-access.so"
+	args: "{
+            # Socket-specific access permissions
+            #access.socket = { pipewire-0 = "default", pipewire-0-manager = "unrestricted" }
+
+            # Deprecated legacy mode (not socket-based),
+            # for now enabled by default if access.socket is not specified
+            #access.legacy = true
+        }"
+*	properties:
+*		module.name = "libpipewire-module-access"
+*		object.id = "16"
+*		object.serial = "16"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Perform access check"
+*		module.usage = "( access.socket={ <socket>=<access>, ... } ) ( access.legacy=true ) "
+*		module.version = "1.0.5"
+	id: 17
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-adapter"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-adapter.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-adapter"
+*		object.id = "17"
+*		object.serial = "17"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Manage adapter nodes"
+*		module.version = "1.0.5"
+	id: 18
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "adapter"
+	object-type: PipeWire:Interface:Node/3
+*	properties:
+*		factory.usage = "factory.name=<factory-name> (library.name=<library-name>) node.name=<string> "
+*		module.id = "17"
+*		object.id = "18"
+*		object.serial = "18"
+*		factory.name = "adapter"
+*		factory.type.name = "PipeWire:Interface:Node"
+*		factory.type.version = "3"
+	id: 19
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-link-factory"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-link-factory.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-link-factory"
+*		object.id = "19"
+*		object.serial = "19"
+*		module.author = "Wim Taymans <wim.taymans@gmail.com>"
+*		module.description = "Allow clients to create links"
+*		module.usage = "( allow.link.passive=<bool, default false> ) "
+*		module.version = "1.0.5"
+	id: 20
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "link-factory"
+	object-type: PipeWire:Interface:Link/3
+*	properties:
+*		factory.usage = "(link.output.node=<output-node>) (link.output.port=<output-port>) (link.input.node=<input-node>) (link.input.port=<input-port>) (object.linger=<bool>) (link.passive=<bool>)"
+*		module.id = "19"
+*		object.id = "20"
+*		object.serial = "20"
+*		factory.name = "link-factory"
+*		factory.type.name = "PipeWire:Interface:Link"
+*		factory.type.version = "3"
+	id: 21
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-session-manager"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-session-manager.so"
+	args: "(null)"
+*	properties:
+*		module.name = "libpipewire-module-session-manager"
+*		object.id = "21"
+*		object.serial = "21"
+*		module.author = "George Kiagiadakis <george.kiagiadakis@collabora.com>"
+*		module.description = "Implements objects for session management"
+*		module.version = "1.0.5"
+	id: 22
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "client-endpoint"
+	object-type: PipeWire:Interface:ClientEndpoint/0
+*	properties:
+*		module.id = "21"
+*		object.id = "22"
+*		object.serial = "22"
+*		factory.name = "client-endpoint"
+*		factory.type.name = "PipeWire:Interface:ClientEndpoint"
+*		factory.type.version = "0"
+	id: 23
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "client-session"
+	object-type: PipeWire:Interface:ClientSession/0
+*	properties:
+*		module.id = "21"
+*		object.id = "23"
+*		object.serial = "23"
+*		factory.name = "client-session"
+*		factory.type.name = "PipeWire:Interface:ClientSession"
+*		factory.type.version = "0"
+	id: 24
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "session"
+	object-type: PipeWire:Interface:Session/0
+*	properties:
+*		module.id = "21"
+*		object.id = "24"
+*		object.serial = "24"
+*		factory.name = "session"
+*		factory.type.name = "PipeWire:Interface:Session"
+*		factory.type.version = "0"
+	id: 25
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "endpoint"
+	object-type: PipeWire:Interface:Endpoint/0
+*	properties:
+*		module.id = "21"
+*		object.id = "25"
+*		object.serial = "25"
+*		factory.name = "endpoint"
+*		factory.type.name = "PipeWire:Interface:Endpoint"
+*		factory.type.version = "0"
+	id: 26
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "endpoint-stream"
+	object-type: PipeWire:Interface:EndpointStream/0
+*	properties:
+*		module.id = "21"
+*		object.id = "26"
+*		object.serial = "26"
+*		factory.name = "endpoint-stream"
+*		factory.type.name = "PipeWire:Interface:EndpointStream"
+*		factory.type.version = "0"
+	id: 27
+	permissions: r--m-
+	type: PipeWire:Interface:Factory/3
+	name: "endpoint-link"
+	object-type: PipeWire:Interface:EndpointLink/0
+*	properties:
+*		module.id = "21"
+*		object.id = "27"
+*		object.serial = "27"
+*		factory.name = "endpoint-link"
+*		factory.type.name = "PipeWire:Interface:EndpointLink"
+*		factory.type.version = "0"
+	id: 28
+	permissions: r--m-
+	type: PipeWire:Interface:Module/3
+	name: "libpipewire-module-jackdbus-detect"
+	filename: "/usr/lib/x86_64-linux-gnu/pipewire-0.3/libpipewire-module-jackdbus-detect.so"
+	args: "{
+            #jack.library     = libjack.so.0
+            #jack.server      = null
+            #jack.client-name = PipeWire
+            #jack.connect     = true
+            #tunnel.mode      = duplex  # source|sink|duplex
+            source.props = {
+                #audio.channels = 2
+		#midi.ports = 1
+                #audio.position = [ FL FR ]
+                # extra sink properties
+            }
+            sink.props = {
+                #audio.channels = 2
+		#midi.ports = 1
+                #audio.position = [ FL FR ]
+                # extra sink properties
+            }
+        }"
+*	properties:
+*		module.name = "libpipewire-module-jackdbus-detect"
+*		object.id = "28"
+*		object.serial = "28"
+	id: 29
+	permissions: rwxm-
+	type: PipeWire:Interface:Node/3
+*	input ports: 0/0
+*	output ports: 0/0
+*	state: "running"
+*	properties:
+*		factory.name = "support.node.driver"
+*		node.name = "Dummy-Driver"
+*		node.group = "pipewire.dummy"
+*		priority.driver = "20000"
+*		factory.id = "10"
+*		clock.quantum-limit = "8192"
+*		node.driver = "true"
+*		clock.id = "monotonic"
+*		clock.name = "clock.system.monotonic"
+*		object.id = "29"
+*		object.serial = "29"
+*	params: (0)
+		none
+	id: 30
+	permissions: rwxm-
+	type: PipeWire:Interface:Node/3
+*	input ports: 0/0
+*	output ports: 0/0
+*	state: "suspended"
+*	properties:
+*		factory.name = "support.node.driver"
+*		node.name = "Freewheel-Driver"
+*		priority.driver = "19000"
+*		node.group = "pipewire.freewheel"
+*		node.freewheel = "true"
+*		factory.id = "10"
+*		clock.quantum-limit = "8192"
+*		node.driver = "true"
+*		clock.id = "monotonic"
+*		clock.name = "clock.system.monotonic"
+*		object.id = "30"
+*		object.serial = "30"
+*	params: (0)
+		none
+	id: 32
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "1216"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "32"
+*		object.serial = "32"
+*		config.name = "pipewire-pulse.conf"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		log.level = "2"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		application.name = "pipewire"
+*		application.process.binary = "pipewire"
+*		application.language = "zh_CN.UTF-8"
+*		application.process.id = "1216"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-1216"
+*		pipewire.access = "unrestricted"
+	id: 34
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "1215"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "34"
+*		object.serial = "34"
+*		config.name = "/usr/share/wireplumber/wireplumber.conf"
+*		application.name = "WirePlumber"
+*		wireplumber.daemon = "true"
+*		wireplumber.export-core = "true"
+*		log.level = "2"
+*		wireplumber.script-engine = "lua-scripting"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		application.process.binary = "wireplumber"
+*		application.language = "zh_CN.UTF-8"
+*		application.process.id = "1215"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-1215"
+*		pipewire.access = "unrestricted"
+	id: 35
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "1215"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "35"
+*		object.serial = "35"
+*		application.name = "WirePlumber [export]"
+*		config.name = "/usr/share/wireplumber/wireplumber.conf"
+*		wireplumber.daemon = "true"
+*		wireplumber.export-core = "true"
+*		log.level = "2"
+*		wireplumber.script-engine = "lua-scripting"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		application.process.binary = "wireplumber"
+*		application.language = "zh_CN.UTF-8"
+*		application.process.id = "1215"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-1215"
+*		pipewire.access = "unrestricted"
+	id: 39
+	permissions: rwxm-
+	type: PipeWire:Interface:Node/3
+*	input ports: 1/256
+*	output ports: 1/256
+*	state: "suspended"
+*	properties:
+*		factory.name = "api.alsa.seq.bridge"
+*		node.name = "Midi-Bridge"
+*		priority.driver = "1"
+*		priority.session = "100"
+*		factory.id = "10"
+*		client.id = "35"
+*		clock.quantum-limit = "8192"
+*		device.api = "alsa"
+*		media.class = "Midi/Bridge"
+*		node.driver = "true"
+*		object.id = "39"
+*		object.serial = "39"
+*	params: (3)
+*	  1 (Spa:Enum:ParamId:PropInfo) r-
+*	  2 (Spa:Enum:ParamId:Props) rw
+*	  7 (Spa:Enum:ParamId:IO) r-
+	id: 40
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "input"
+*	properties:
+*		format.dsp = "8 bit raw midi"
+*		object.path = "alsa:seq:default:client_14:playback_0"
+*		port.name = "Midi Through:(playback_0) Midi Through Port-0"
+*		port.alias = "Midi Through:Midi Through Port-0"
+*		port.id = "0"
+*		port.physical = "true"
+*		port.terminal = "true"
+*		port.direction = "in"
+*		node.id = "39"
+*		object.id = "40"
+*		object.serial = "40"
+*	params: (6)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  5 (Spa:Enum:ParamId:Buffers) --
+*	  15 (Spa:Enum:ParamId:Latency) rw
+	id: 41
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "output"
+*	properties:
+*		format.dsp = "8 bit raw midi"
+*		object.path = "alsa:seq:default:client_14:capture_0"
+*		port.name = "Midi Through:(capture_0) Midi Through Port-0"
+*		port.alias = "Midi Through:Midi Through Port-0"
+*		port.id = "0"
+*		port.physical = "true"
+*		port.terminal = "true"
+*		port.direction = "out"
+*		node.id = "39"
+*		object.id = "41"
+*		object.serial = "41"
+*	params: (6)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  5 (Spa:Enum:ParamId:Buffers) --
+*	  15 (Spa:Enum:ParamId:Latency) rw
+	id: 42
+	permissions: rwxm-
+	type: PipeWire:Interface:Device/3
+*	properties:
+*		api.acp.auto-port = "false"
+*		api.acp.auto-profile = "false"
+*		api.alsa.card = "1"
+*		api.alsa.card.longname = "HDA Intel PCH at 0x81e10000 irq 53"
+*		api.alsa.card.name = "HDA Intel PCH"
+*		api.alsa.path = "hw:1"
+*		api.alsa.use-acp = "true"
+*		api.dbus.ReserveDevice1 = "Audio1"
+*		device.api = "alsa"
+*		device.bus = "pci"
+*		device.bus-path = "pci-0000:02:00.0"
+*		device.description = "200 Series PCH HD Audio"
+*		device.enum.api = "udev"
+*		device.icon-name = "audio-card-analog-pci"
+*		device.name = "alsa_card.pci-0000_02_00.0"
+*		device.nick = "HDA Intel PCH"
+*		device.plugged.usec = "6911442"
+*		device.product.id = "0xa2f0"
+*		device.product.name = "200 Series PCH HD Audio"
+*		device.subsystem = "sound"
+*		device.sysfs.path = "/devices/pci0000:00/0000:00:1c.1/0000:02:00.0/sound/card1"
+*		device.vendor.id = "0x8086"
+*		device.vendor.name = "Intel Corporation"
+*		media.class = "Audio/Device"
+*		factory.id = "14"
+*		client.id = "35"
+*		object.id = "42"
+*		object.serial = "42"
+*		object.path = "alsa:pcm:1"
+*		alsa.card = "1"
+*		alsa.card_name = "HDA Intel PCH"
+*		alsa.long_card_name = "HDA Intel PCH at 0x81e10000 irq 53"
+*		alsa.driver_name = "snd_hda_intel"
+*		alsa.mixer_name = "Realtek ALC897"
+*		alsa.components = "HDA:10ec0897,10ec0897,00100402 HDA:8086280b,80860101,00100000"
+*		alsa.id = "PCH"
+*		device.string = "1"
+*	params: (4)
+*	  8 (Spa:Enum:ParamId:EnumProfile) r-
+*	  9 (Spa:Enum:ParamId:Profile) rw
+*	  12 (Spa:Enum:ParamId:EnumRoute) r-
+*	  13 (Spa:Enum:ParamId:Route) rw
+	id: 43
+	permissions: rwxm-
+	type: PipeWire:Interface:Node/3
+*	input ports: 0/0
+*	output ports: 2/65
+*	state: "suspended"
+*	properties:
+*		alsa.card = "1"
+*		alsa.card_name = "HDA Intel PCH"
+*		alsa.class = "generic"
+*		alsa.components = "HDA:10ec0897,10ec0897,00100402 HDA:8086280b,80860101,00100000"
+*		alsa.device = "0"
+*		alsa.driver_name = "snd_hda_intel"
+*		alsa.id = "PCH"
+*		alsa.long_card_name = "HDA Intel PCH at 0x81e10000 irq 53"
+*		alsa.mixer_name = "Realtek ALC897"
+*		alsa.name = "ALC897 Analog"
+*		alsa.resolution_bits = "16"
+*		alsa.subclass = "generic-mix"
+*		alsa.subdevice = "0"
+*		alsa.subdevice_name = "subdevice #0"
+*		api.alsa.card.longname = "HDA Intel PCH at 0x81e10000 irq 53"
+*		api.alsa.card.name = "HDA Intel PCH"
+*		client.id = "35"
+*		api.alsa.path = "front:1"
+*		api.alsa.pcm.card = "1"
+*		api.alsa.pcm.stream = "capture"
+*		node.driver = "true"
+*		audio.channels = "2"
+*		audio.position = "FL,FR"
+*		card.profile.device = "0"
+*		device.api = "alsa"
+*		device.class = "sound"
+*		device.id = "42"
+*		device.profile.description = "模拟立体声"
+*		device.profile.name = "analog-stereo"
+*		device.routes = "2"
+*		factory.name = "api.alsa.pcm.source"
+*		media.class = "Audio/Source"
+*		node.description = "200 Series PCH HD Audio 模拟立体声"
+*		node.name = "alsa_input.pci-0000_02_00.0.analog-stereo.99"
+*		node.nick = "ALC897 Analog"
+*		node.pause-on-idle = "false"
+*		object.path = "alsa:pcm:1:front:1:capture"
+*		priority.driver = "2009"
+*		priority.session = "2009"
+*		factory.id = "18"
+*		clock.quantum-limit = "8192"
+*		factory.mode = "split"
+*		audio.adapt.follower = ""
+*		library.name = "audioconvert/libspa-audioconvert"
+*		object.id = "43"
+*		object.serial = "24884"
+*	params: (9)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  1 (Spa:Enum:ParamId:PropInfo) r-
+*	  2 (Spa:Enum:ParamId:Props) rw
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  10 (Spa:Enum:ParamId:EnumPortConfig) r-
+*	  11 (Spa:Enum:ParamId:PortConfig) rw
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  16 (Spa:Enum:ParamId:ProcessLatency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 46
+	permissions: r-x--
+	type: PipeWire:Interface:Link/3
+	output-node-id: 77
+	output-port-id: 81
+	input-node-id: 79
+	input-port-id: 86
+*	state: "init"
+*	format:
+  Object: size 128, type Spa:Pod:Object:Param:Format (262147), id Spa:Enum:ParamId:Format (4)
+    Prop: key Spa:Pod:Object:Param:Format:mediaType (1), flags 00000000
+      Choice: type Spa:Enum:Choice:None, flags 00000000 20 4
+        Id 1        (Spa:Enum:MediaType:audio)
+    Prop: key Spa:Pod:Object:Param:Format:mediaSubtype (2), flags 00000000
+      Choice: type Spa:Enum:Choice:None, flags 00000000 20 4
+        Id 2        (Spa:Enum:MediaSubtype:dsp)
+    Prop: key Spa:Pod:Object:Param:Format:Audio:format (65537), flags 00000000
+      Choice: type Spa:Enum:Choice:None, flags 00000000 20 4
+        Id 518      (Spa:Enum:AudioFormat:F32P)
+*	properties:
+*		link.output.node = "77"
+*		link.output.port = "81"
+*		link.input.node = "79"
+*		link.input.port = "86"
+*		factory.id = "20"
+*		client.id = "34"
+*		object.id = "46"
+*		object.serial = "24948"
+	id: 48
+	permissions: r-x--
+	type: PipeWire:Interface:Link/3
+	output-node-id: 77
+	output-port-id: 78
+	input-node-id: 79
+	input-port-id: 65
+*	state: "init"
+*	format:
+  Object: size 128, type Spa:Pod:Object:Param:Format (262147), id Spa:Enum:ParamId:Format (4)
+    Prop: key Spa:Pod:Object:Param:Format:mediaType (1), flags 00000000
+      Choice: type Spa:Enum:Choice:None, flags 00000000 20 4
+        Id 1        (Spa:Enum:MediaType:audio)
+    Prop: key Spa:Pod:Object:Param:Format:mediaSubtype (2), flags 00000000
+      Choice: type Spa:Enum:Choice:None, flags 00000000 20 4
+        Id 2        (Spa:Enum:MediaSubtype:dsp)
+    Prop: key Spa:Pod:Object:Param:Format:Audio:format (65537), flags 00000000
+      Choice: type Spa:Enum:Choice:None, flags 00000000 20 4
+        Id 518      (Spa:Enum:AudioFormat:F32P)
+*	properties:
+*		link.output.node = "77"
+*		link.output.port = "78"
+*		link.input.node = "79"
+*		link.input.port = "65"
+*		factory.id = "20"
+*		client.id = "34"
+*		object.id = "48"
+*		object.serial = "24947"
+	id: 49
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "output"
+*	properties:
+*		format.dsp = "32 bit float mono audio"
+*		audio.channel = "FR"
+*		port.id = "1"
+*		port.physical = "true"
+*		port.terminal = "true"
+*		port.direction = "out"
+*		object.path = "alsa:pcm:1:front:1:capture:capture_1"
+*		port.name = "capture_FR"
+*		port.alias = "ALC897 Analog:capture_FR"
+*		node.id = "43"
+*		object.id = "49"
+*		object.serial = "24890"
+*	params: (7)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  5 (Spa:Enum:ParamId:Buffers) --
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 50
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "1383"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "50"
+*		object.serial = "55"
+*		log.level = "0"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		application.name = "gnome-shell"
+*		application.process.binary = "gnome-shell"
+*		application.language = "zh_CN.UTF-8"
+*		application.process.id = "1383"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		window.x11.display = ":0"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-1383"
+*		pipewire.access = "unrestricted"
+	id: 51
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "1216"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "51"
+*		object.serial = "56"
+*		client.api = "pipewire-pulse"
+*		pulse.server.type = "unix"
+*		application.name = "GNOME Shell Volume Control"
+*		application.id = "org.gnome.VolumeControl"
+*		application.icon-name = "multimedia-volume-control"
+*		application.version = "46.0"
+*		application.process.id = "1383"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		application.process.binary = "gnome-shell"
+*		application.language = "zh_CN.UTF-8"
+*		window.x11.display = ":0"
+*		application.process.machine-id = "8675eedaf690447b8c17a8cd144f492b"
+*		config.name = "pipewire-pulse.conf"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		log.level = "2"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-1216"
+*		pipewire.access = "unrestricted"
+	id: 52
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "1216"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "52"
+*		object.serial = "57"
+*		client.api = "pipewire-pulse"
+*		pulse.server.type = "unix"
+*		application.name = "GNOME Volume Control Media Keys"
+*		application.id = "org.gnome.VolumeControl"
+*		application.icon-name = "multimedia-volume-control"
+*		application.version = ""
+*		application.process.id = "1598"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		application.process.binary = "gsd-media-keys"
+*		application.language = "zh_CN.UTF-8"
+*		window.x11.display = ":0"
+*		application.process.machine-id = "8675eedaf690447b8c17a8cd144f492b"
+*		config.name = "pipewire-pulse.conf"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		log.level = "2"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-1216"
+*		pipewire.access = "unrestricted"
+	id: 53
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "1983"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "53"
+*		object.serial = "58"
+*		pipewire.access.portal.is_portal = "true"
+*		portal.monitor = "Camera"
+*		log.level = "0"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		application.name = "xdg-desktop-portal"
+*		application.process.binary = "xdg-desktop-portal"
+*		application.language = "zh_CN.UTF-8"
+*		application.process.id = "1983"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		window.x11.display = ":0"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-1983"
+*		pipewire.access = "unrestricted"
+	id: 60
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "95045"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "60"
+*		object.serial = "24952"
+*		log.level = "0"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		application.name = "pw-cli"
+*		application.process.binary = "pw-cli"
+*		application.language = "zh_CN.UTF-8"
+*		application.process.id = "95045"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		application.process.session-id = "1191"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-95045"
+*		pipewire.access = "unrestricted"
+	id: 64
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "output"
+*	properties:
+*		format.dsp = "32 bit float mono audio"
+*		audio.channel = "FR"
+*		port.monitor = "true"
+*		port.id = "1"
+*		port.direction = "out"
+*		object.path = "alsa:pcm:1:front:1:playback:monitor_1"
+*		port.name = "monitor_FR"
+*		port.alias = "ALC897 Analog:monitor_FR"
+*		node.id = "79"
+*		object.id = "64"
+*		object.serial = "24888"
+*	params: (7)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  5 (Spa:Enum:ParamId:Buffers) --
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 65
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "input"
+*	properties:
+*		format.dsp = "32 bit float mono audio"
+*		audio.channel = "FL"
+*		port.id = "0"
+*		port.physical = "true"
+*		port.terminal = "true"
+*		port.direction = "in"
+*		object.path = "alsa:pcm:1:front:1:playback:playback_0"
+*		port.name = "playback_FL"
+*		port.alias = "ALC897 Analog:playback_FL"
+*		node.id = "79"
+*		object.id = "65"
+*		object.serial = "24885"
+*	params: (7)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  5 (Spa:Enum:ParamId:Buffers) --
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 76
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "1216"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "76"
+*		object.serial = "168"
+*		client.api = "pipewire-pulse"
+*		pulse.server.type = "unix"
+*		application.name = "Mutter"
+*		application.process.id = "1383"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		application.process.binary = "gnome-shell"
+*		application.language = "zh_CN.UTF-8"
+*		window.x11.display = ":0"
+*		application.process.machine-id = "8675eedaf690447b8c17a8cd144f492b"
+*		config.name = "pipewire-pulse.conf"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		log.level = "2"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-1216"
+*		pipewire.access = "unrestricted"
+	id: 77
+	permissions: rwxm-
+	type: PipeWire:Interface:Node/3
+*	input ports: 0/0
+*	output ports: 2/65
+*	state: "idle"
+*	properties:
+*		media.type = "Audio"
+*		media.category = "Playback"
+*		node.name = "mpv"
+*		node.description = "mpv"
+*		application.name = "mpv"
+*		application.id = "mpv"
+*		application.icon-name = "mpv"
+*		node.always-process = "true"
+*		node.rate = "1/48000"
+*		media.name = "Casino Royale (2006) (1080p BluRay x265 SAMPA) - mpv"
+*		stream.is-live = "true"
+*		node.want-driver = "true"
+*		node.autoconnect = "true"
+*		media.class = "Stream/Output/Audio"
+*		adapt.follower.spa-node = ""
+*		object.register = "false"
+*		factory.id = "8"
+*		clock.quantum-limit = "8192"
+*		factory.mode = "split"
+*		audio.adapt.follower = ""
+*		library.name = "audioconvert/libspa-audioconvert"
+*		client.id = "88"
+*		object.id = "77"
+*		object.serial = "24944"
+*	params: (9)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  1 (Spa:Enum:ParamId:PropInfo) r-
+*	  2 (Spa:Enum:ParamId:Props) rw
+*	  4 (Spa:Enum:ParamId:Format) rw
+*	  10 (Spa:Enum:ParamId:EnumPortConfig) r-
+*	  11 (Spa:Enum:ParamId:PortConfig) rw
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  16 (Spa:Enum:ParamId:ProcessLatency) rw
+*	  17 (Spa:Enum:ParamId:Tag) -w
+	id: 78
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "output"
+*	properties:
+*		format.dsp = "32 bit float mono audio"
+*		audio.channel = "FL"
+*		port.id = "0"
+*		port.direction = "out"
+*		object.path = "mpv:output_0"
+*		port.name = "output_FL"
+*		port.alias = "mpv:output_FL"
+*		node.id = "77"
+*		object.id = "78"
+*		object.serial = "24945"
+*	params: (7)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) rw
+*	  5 (Spa:Enum:ParamId:Buffers) r-
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 79
+	permissions: rwxm-
+	type: PipeWire:Interface:Node/3
+*	input ports: 2/65
+*	output ports: 2/0
+*	state: "suspended"
+*	properties:
+*		alsa.card = "1"
+*		alsa.card_name = "HDA Intel PCH"
+*		alsa.class = "generic"
+*		alsa.components = "HDA:10ec0897,10ec0897,00100402 HDA:8086280b,80860101,00100000"
+*		alsa.device = "0"
+*		alsa.driver_name = "snd_hda_intel"
+*		alsa.id = "PCH"
+*		alsa.long_card_name = "HDA Intel PCH at 0x81e10000 irq 53"
+*		alsa.mixer_name = "Realtek ALC897"
+*		alsa.name = "ALC897 Analog"
+*		alsa.resolution_bits = "16"
+*		alsa.subclass = "generic-mix"
+*		alsa.subdevice = "0"
+*		alsa.subdevice_name = "subdevice #0"
+*		api.alsa.card.longname = "HDA Intel PCH at 0x81e10000 irq 53"
+*		api.alsa.card.name = "HDA Intel PCH"
+*		client.id = "35"
+*		api.alsa.path = "front:1"
+*		api.alsa.pcm.card = "1"
+*		api.alsa.pcm.stream = "playback"
+*		node.driver = "true"
+*		audio.channels = "2"
+*		audio.position = "FL,FR"
+*		card.profile.device = "6"
+*		device.api = "alsa"
+*		device.class = "sound"
+*		device.id = "42"
+*		device.profile.description = "模拟立体声"
+*		device.profile.name = "analog-stereo"
+*		device.routes = "2"
+*		factory.name = "api.alsa.pcm.sink"
+*		media.class = "Audio/Sink"
+*		node.description = "200 Series PCH HD Audio 模拟立体声"
+*		node.name = "alsa_output.pci-0000_02_00.0.analog-stereo"
+*		node.nick = "ALC897 Analog"
+*		node.pause-on-idle = "false"
+*		object.path = "alsa:pcm:1:front:1:playback"
+*		priority.driver = "1009"
+*		priority.session = "1009"
+*		factory.id = "18"
+*		clock.quantum-limit = "8192"
+*		factory.mode = "merge"
+*		audio.adapt.follower = ""
+*		library.name = "audioconvert/libspa-audioconvert"
+*		object.id = "79"
+*		object.serial = "24883"
+*	params: (9)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  1 (Spa:Enum:ParamId:PropInfo) r-
+*	  2 (Spa:Enum:ParamId:Props) rw
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  10 (Spa:Enum:ParamId:EnumPortConfig) r-
+*	  11 (Spa:Enum:ParamId:PortConfig) rw
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  16 (Spa:Enum:ParamId:ProcessLatency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 81
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "output"
+*	properties:
+*		format.dsp = "32 bit float mono audio"
+*		audio.channel = "FR"
+*		port.id = "1"
+*		port.direction = "out"
+*		object.path = "mpv:output_1"
+*		port.name = "output_FR"
+*		port.alias = "mpv:output_FR"
+*		node.id = "77"
+*		object.id = "81"
+*		object.serial = "24946"
+*	params: (7)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) rw
+*	  5 (Spa:Enum:ParamId:Buffers) r-
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 82
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "output"
+*	properties:
+*		format.dsp = "32 bit float mono audio"
+*		audio.channel = "FL"
+*		port.id = "0"
+*		port.physical = "true"
+*		port.terminal = "true"
+*		port.direction = "out"
+*		object.path = "alsa:pcm:1:front:1:capture:capture_0"
+*		port.name = "capture_FL"
+*		port.alias = "ALC897 Analog:capture_FL"
+*		node.id = "43"
+*		object.id = "82"
+*		object.serial = "24889"
+*	params: (7)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  5 (Spa:Enum:ParamId:Buffers) --
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 83
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "output"
+*	properties:
+*		format.dsp = "32 bit float mono audio"
+*		audio.channel = "FL"
+*		port.monitor = "true"
+*		port.id = "0"
+*		port.direction = "out"
+*		object.path = "alsa:pcm:1:front:1:playback:monitor_0"
+*		port.name = "monitor_FL"
+*		port.alias = "ALC897 Analog:monitor_FL"
+*		node.id = "79"
+*		object.id = "83"
+*		object.serial = "24886"
+*	params: (7)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  5 (Spa:Enum:ParamId:Buffers) --
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 86
+	permissions: r-xm-
+	type: PipeWire:Interface:Port/3
+	direction: "input"
+*	properties:
+*		format.dsp = "32 bit float mono audio"
+*		audio.channel = "FR"
+*		port.id = "1"
+*		port.physical = "true"
+*		port.terminal = "true"
+*		port.direction = "in"
+*		object.path = "alsa:pcm:1:front:1:playback:playback_1"
+*		port.name = "playback_FR"
+*		port.alias = "ALC897 Analog:playback_FR"
+*		node.id = "79"
+*		object.id = "86"
+*		object.serial = "24887"
+*	params: (7)
+*	  3 (Spa:Enum:ParamId:EnumFormat) r-
+*	  6 (Spa:Enum:ParamId:Meta) r-
+*	  7 (Spa:Enum:ParamId:IO) r-
+*	  4 (Spa:Enum:ParamId:Format) -w
+*	  5 (Spa:Enum:ParamId:Buffers) --
+*	  15 (Spa:Enum:ParamId:Latency) rw
+*	  17 (Spa:Enum:ParamId:Tag) rw
+	id: 88
+	permissions: rwxm-
+	type: PipeWire:Interface:Client/3
+*	properties:
+*		pipewire.protocol = "protocol-native"
+*		pipewire.sec.socket = "pipewire-0"
+*		pipewire.sec.pid = "94894"
+*		pipewire.sec.uid = "1001"
+*		pipewire.sec.gid = "1001"
+*		pipewire.sec.label = "unconfined"
+*		module.id = "2"
+*		object.id = "88"
+*		object.serial = "24943"
+*		config.name = "client-rt.conf"
+*		log.level = "0"
+*		cpu.max-align = "32"
+*		default.clock.rate = "48000"
+*		default.clock.quantum = "1024"
+*		default.clock.min-quantum = "32"
+*		default.clock.max-quantum = "2048"
+*		default.clock.quantum-limit = "8192"
+*		default.clock.quantum-floor = "4"
+*		default.video.width = "640"
+*		default.video.height = "480"
+*		default.video.rate.num = "25"
+*		default.video.rate.denom = "1"
+*		clock.power-of-two-quantum = "true"
+*		link.max-buffers = "64"
+*		mem.warn-mlock = "false"
+*		mem.allow-mlock = "true"
+*		settings.check-quantum = "false"
+*		settings.check-rate = "false"
+*		application.name = "mpv"
+*		application.process.binary = "mpv"
+*		application.language = "zh_CN.UTF-8"
+*		application.process.id = "94894"
+*		application.process.user = "hermes"
+*		application.process.host = "ubuntu"
+*		application.process.session-id = "1191"
+*		core.version = "1.0.5"
+*		core.name = "pipewire-hermes-94894"
+*		pipewire.access = "unrestricted"
+info: unsupported type PipeWire:Interface:Profiler

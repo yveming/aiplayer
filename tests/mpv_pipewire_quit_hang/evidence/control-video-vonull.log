@@ -1,0 +1,742 @@
+[   0.001][v][cplayer] mpv v0.41.0 Copyright © 2000-2025 mpv/MPlayer/mplayer2 projects
+[   0.001][v][cplayer] libplacebo version: v6.338.2
+[   0.001][v][cplayer] FFmpeg version: 6.1.1-3ubuntu5
+[   0.001][v][cplayer] FFmpeg library versions:
+[   0.001][v][cplayer]    libavcodec      60.31.102
+[   0.001][v][cplayer]    libavdevice     60.3.100
+[   0.001][v][cplayer]    libavfilter     9.12.100
+[   0.001][v][cplayer]    libavformat     60.16.100
+[   0.001][v][cplayer]    libavutil       58.29.100
+[   0.001][v][cplayer]    libswresample   4.12.100
+[   0.001][v][cplayer]    libswscale      7.5.100
+[   0.001][v][cplayer] Configuration: -Dpython.bytecompile=-1 -Dlibmpv=true -Dbuild-date=false -Dcdda=enabled -Ddvdnav=enabled -Ddrm=enabled -Ddvbin=enabled -Dsndio=disabled -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu -Dlocalstatedir=/var -Dsysconfdir=/etc -Dbuildtype=plain -Dwrap_mode=nodownload
+[   0.001][v][cplayer] List of enabled features: alsa caca cdda cplugins cuda-hwaccel cuda-interop dmabuf-interop-gl dmabuf-wayland drm dvbin dvdnav egl egl-drm egl-wayland egl-x11 ffmpeg ffnvcodec gbm gl glibc-thread-name glob glob-posix gpl iconv jack javascript jpeg lcms2 libarchive libass libavdevice libbluray libdl libplacebo linux-fstatfs lua52 memfd-create memrchr pipewire posix posix-shm ppoll pthread-condattr-setclock pulse rubberband rubberband-3 sixel uchardet vaapi vaapi-drm vaapi-wayland vaapi-x11 vdpau vector vk-khr-display vt.h vulkan wayland wayland-protocols-1-32 wayland-protocols-1-38 x11 x11-clipboard xv zimg zimg-st428 zlib
+[   0.001][v][cplayer] Command line options: '--idle=yes' '--keep-open=yes' '--input-ipc-server=/tmp/opencode/vnull-0.sock' '--no-terminal' '--no-config' '--log-file=/tmp/opencode/ev/vnull-0.log' '--vo=null'
+[   0.001][v][cplayer] mpv v0.41.0 Copyright © 2000-2025 mpv/MPlayer/mplayer2 projects
+[   0.001][v][cplayer] libplacebo version: v6.338.2
+[   0.001][v][cplayer] FFmpeg version: 6.1.1-3ubuntu5
+[   0.001][v][cplayer] FFmpeg library versions:
+[   0.001][v][cplayer]    libavcodec      60.31.102
+[   0.001][v][cplayer]    libavdevice     60.3.100
+[   0.001][v][cplayer]    libavfilter     9.12.100
+[   0.001][v][cplayer]    libavformat     60.16.100
+[   0.001][v][cplayer]    libavutil       58.29.100
+[   0.001][v][cplayer]    libswresample   4.12.100
+[   0.001][v][cplayer]    libswscale      7.5.100
+[   0.001][v][cplayer] Configuration: -Dpython.bytecompile=-1 -Dlibmpv=true -Dbuild-date=false -Dcdda=enabled -Ddvdnav=enabled -Ddrm=enabled -Ddvbin=enabled -Dsndio=disabled -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu -Dlocalstatedir=/var -Dsysconfdir=/etc -Dbuildtype=plain -Dwrap_mode=nodownload
+[   0.001][v][cplayer] List of enabled features: alsa caca cdda cplugins cuda-hwaccel cuda-interop dmabuf-interop-gl dmabuf-wayland drm dvbin dvdnav egl egl-drm egl-wayland egl-x11 ffmpeg ffnvcodec gbm gl glibc-thread-name glob glob-posix gpl iconv jack javascript jpeg lcms2 libarchive libass libavdevice libbluray libdl libplacebo linux-fstatfs lua52 memfd-create memrchr pipewire posix posix-shm ppoll pthread-condattr-setclock pulse rubberband rubberband-3 sixel uchardet vaapi vaapi-drm vaapi-wayland vaapi-x11 vdpau vector vk-khr-display vt.h vulkan wayland wayland-protocols-1-32 wayland-protocols-1-38 x11 x11-clipboard xv zimg zimg-st428 zlib
+[   0.001][d][global] home path: '' -> '-'
+[   0.001][d][global] user path: '~~home/' -> ''
+[   0.001][d][global] user path: '~~old_home/' -> ''
+[   0.001][v][cplayer] Setting option 'idle' = 'yes' (flags = 8)
+[   0.001][v][cplayer] Setting option 'keep-open' = 'yes' (flags = 8)
+[   0.001][v][cplayer] Setting option 'input-ipc-server' = '/tmp/opencode/vnull-0.sock' (flags = 8)
+[   0.001][v][cplayer] Setting option 'terminal' = 'no' (flags = 8)
+[   0.001][v][cplayer] Setting option 'config' = 'no' (flags = 8)
+[   0.001][v][cplayer] Setting option 'log-file' = '/tmp/opencode/ev/vnull-0.log' (flags = 8)
+[   0.001][v][cplayer] Setting option 'vo' = 'null' (flags = 8)
+[   0.004][d][osc] Loading lua script @osc.lua...
+[   0.006][d][ytdl_hook] Loading lua script @ytdl_hook.lua...
+[   0.006][d][stats] Loading lua script @stats.lua...
+[   0.006][d][console] Loading lua script @console.lua...
+[   0.006][d][auto_profiles] Loading lua script @auto_profiles.lua...
+[   0.006][d][select] Loading lua script @select.lua...
+[   0.006][d][osc] loading mp.defaults
+[   0.006][d][positioning] Loading lua script @positioning.lua...
+[   0.006][d][commands] Loading lua script @commands.lua...
+[   0.006][d][context_menu] Loading lua script @context_menu.lua...
+[   0.006][v][clipboard] Initialized vo clipboard backend.
+[   0.006][v][cplayer] Waiting for scripts...
+[   0.006][d][ytdl_hook] loading mp.defaults
+[   0.006][d][osc] loading @osc.lua
+[   0.006][d][ytdl_hook] loading @ytdl_hook.lua
+[   0.006][d][stats] loading mp.defaults
+[   0.007][d][stats] loading @stats.lua
+[   0.008][d][console] loading mp.defaults
+[   0.009][d][console] loading @console.lua
+[   0.010][d][auto_profiles] loading mp.defaults
+[   0.011][d][auto_profiles] loading @auto_profiles.lua
+[   0.012][d][select] loading mp.defaults
+[   0.013][d][select] loading @select.lua
+[   0.015][d][positioning] loading mp.defaults
+[   0.015][d][positioning] loading @positioning.lua
+[   0.015][d][positioning] reading options for positioning
+[   0.015][d][positioning] script-opts/positioning.conf not found.
+[   0.015][d][positioning] lua-settings/positioning.conf not found.
+[   0.016][d][commands] loading mp.defaults
+[   0.016][d][commands] loading @commands.lua
+[   0.017][d][context_menu] loading mp.defaults
+[   0.018][v][ipc] Starting IPC master
+[   0.018][d][context_menu] loading @context_menu.lua
+[   0.018][v][ipc] Listening to IPC socket.
+[   0.021][d][console] reading options for console
+[   0.021][d][console] script-opts/console.conf not found.
+[   0.021][d][console] lua-settings/console.conf not found.
+[   0.021][d][context_menu] reading options for context_menu
+[   0.021][d][context_menu] script-opts/context_menu.conf not found.
+[   0.021][d][context_menu] lua-settings/context_menu.conf not found.
+[   0.021][d][cplayer] Run command: define-section, flags=64, args=[name="input_console", contents="", flags="default"]
+[   0.021][d][cplayer] Run command: enable-section, flags=64, args=[name="input_console", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.021][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_console", contents="", flags="force"]
+[   0.021][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_console", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.021][d][select] reading options for select
+[   0.021][d][select] script-opts/select.conf not found.
+[   0.021][d][select] lua-settings/select.conf not found.
+[   0.022][d][commands] reading options for commands
+[   0.022][d][commands] script-opts/commands.conf not found.
+[   0.022][d][commands] lua-settings/commands.conf not found.
+[   0.022][d][ytdl_hook] reading options for ytdl_hook
+[   0.022][d][ytdl_hook] script-opts/ytdl_hook.conf not found.
+[   0.022][d][ytdl_hook] lua-settings/ytdl_hook.conf not found.
+[   0.022][d][cplayer] Run command: define-section, flags=64, args=[name="input_commands", contents="", flags="default"]
+[   0.022][d][cplayer] Run command: enable-section, flags=64, args=[name="input_commands", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.022][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_commands", contents="", flags="force"]
+[   0.022][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_commands", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.022][d][cplayer] Run command: define-section, flags=64, args=[name="input_select", contents="", flags="default"]
+[   0.022][d][cplayer] Run command: enable-section, flags=64, args=[name="input_select", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.022][d][cplayer] Run command: define-section, flags=64, args=[name="showhide", contents="mouse_move script-binding osc/__keybinding1\nmouse_leave script-binding osc/__keybinding2\n", flags="force"]
+[   0.022][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_select", contents="", flags="force"]
+[   0.022][d][cplayer] Run command: define-section, flags=64, args=[name="showhide_wc", contents="mouse_move script-binding osc/__keybinding3\nmouse_leave script-binding osc/__keybinding4\n", flags="force"]
+[   0.022][d][cplayer] Run command: enable-section, flags=64, args=[name="showhide", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.022][d][cplayer] Run command: enable-section, flags=64, args=[name="showhide_wc", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.022][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_select", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.022][d][cplayer] Run command: define-section, flags=64, args=[name="input", contents="mbtn_left script-binding osc/__keybinding5\nmbtn_mid script-binding osc/__keybinding6\nmbtn_right script-binding osc/__keybinding7\nshift+mbtn_left script-binding osc/__keybinding8\nwheel_up script-binding osc/__keybinding9\nwheel_down script-binding osc/__keybinding10\nmbtn_left_dbl ignore\nshift+mbtn_left_dbl ignore\nmbtn_right_dbl ignore\n", flags="force"]
+[   0.022][d][cplayer] Run command: enable-section, flags=64, args=[name="input", flags=""]
+[   0.023][d][cplayer] Run command: define-section, flags=64, args=[name="window-controls", contents="mbtn_left script-binding osc/__keybinding11\n", flags="force"]
+[   0.023][d][cplayer] Run command: enable-section, flags=64, args=[name="window-controls", flags=""]
+[   0.023][d][cplayer] Run command: define-section, flags=64, args=[name="input_positioning", contents="", flags="default"]
+[   0.023][d][cplayer] Run command: enable-section, flags=64, args=[name="input_positioning", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.023][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_positioning", contents="", flags="force"]
+[   0.023][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_positioning", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.023][d][auto_profiles] Destroying client handle...
+[   0.024][d][stats] reading options for stats
+[   0.025][d][osc] reading options for osc
+[   0.025][d][osc] script-opts/osc.conf not found.
+[   0.025][d][osc] lua-settings/osc.conf not found.
+[   0.025][v][cplayer] Set property: user-data/osc/visibility="auto" -> 1
+[   0.025][d][cplayer] Run command: disable-section, flags=64, args=[name="input"]
+[   0.025][d][cplayer] Run command: disable-section, flags=64, args=[name="window-controls"]
+[   0.025][v][cplayer] Set property: user-data/osc/margins={"r":0,"b":0,"l":0,"t":0} -> 1
+[   0.025][d][stats] script-opts/stats.conf not found.
+[   0.025][d][stats] lua-settings/stats.conf not found.
+[   0.026][v][cplayer] Done loading scripts.
+[   0.026][d][cplayer] Run command: define-section, flags=64, args=[name="input_stats", contents="", flags="default"]
+[   0.026][d][cplayer] Run command: enable-section, flags=64, args=[name="input_stats", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.026][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_stats", contents="", flags="force"]
+[   0.026][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_stats", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.026][v][cplayer] Set property: user-data/osc/margins={"r":0,"b":0,"l":0,"t":0} -> 1
+[   0.026][d][cplayer] Run command: define-section, flags=64, args=[name="input_osc", contents="", flags="default"]
+[   0.026][d][cplayer] Run command: enable-section, flags=64, args=[name="input_osc", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.027][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_osc", contents="", flags="force"]
+[   0.027][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_osc", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.433][v][ipc_0] Client connected
+[   0.433][d][cplayer] Run command: loadfile, flags=64, args=[url="/mnt/media/movie/007/Casino.Royale.2006.CE.Bluray.1080p.DTS-HD.x264-Grym.mkv", flags="replace", index="-1", options=""]
+[   0.433][v][cplayer] Running hook: auto_profiles/on_before_start_file
+[   0.433][v][cplayer] Failed sending hook command auto_profiles/on_before_start_file. Removing hook.
+[   0.433][v][ipc_0] Client disconnected
+[   0.433][d][ipc_0] Destroying client handle...
+[   0.433][d][global] state path: 'watch_later' -> '-'
+[   0.433][v][cplayer] Running hook: auto_profiles/on_load
+[   0.433][v][cplayer] Failed sending hook command auto_profiles/on_load. Removing hook.
+[   0.433][v][cplayer] Running hook: ytdl_hook/on_load
+[   0.434][v][cplayer] Running hook: ytdl_hook/on_load
+[   0.434][v][ytdl_hook] playlist hook
+[   0.434][d][osc] osc_init
+[   0.434][v][ifo_dvdnav] Opening /mnt/media/movie/007/Casino.Royale.2006.CE.Bluray.1080p.DTS-HD.x264-Grym.mkv
+[   0.434][v][bdmv/bluray] Opening /mnt/media/movie/007/Casino.Royale.2006.CE.Bluray.1080p.DTS-HD.x264-Grym.mkv
+[   0.434][v][file] Opening /mnt/media/movie/007/Casino.Royale.2006.CE.Bluray.1080p.DTS-HD.x264-Grym.mkv
+[   0.434][v][cplayer] Set property: user-data/osc/margins={"r":0,"b":0,"l":0,"t":0} -> 1
+[   0.434][d][osd/libass] ASS library version: 0x1701000 (runtime 0x1701000)
+[   0.434][v][osd/libass] libass API version: 0x1701000
+[   0.434][v][osd/libass] libass source: tarball: 0.17.1
+[   0.434][v][osd/libass] Shaper: FriBidi 1.0.13 (SIMPLE) HarfBuzz-ng 8.3.0 (COMPLEX)
+[   0.434][v][osd/libass] Setting up fonts...
+[   0.434][d][file] resize stream to 131072 bytes, drop 0 bytes
+[   0.434][d][file] Stream opened successfully.
+[   0.434][v][demux] Trying demuxers for level=normal.
+[   0.434][d][demux] Trying demuxer: directory (force-level: normal)
+[   0.435][d][demux] Trying demuxer: disc (force-level: normal)
+[   0.435][d][demux] Trying demuxer: edl (force-level: normal)
+[   0.435][d][demux] Trying demuxer: cue (force-level: normal)
+[   0.435][d][demux] Trying demuxer: rawaudio (force-level: normal)
+[   0.435][d][demux] Trying demuxer: rawvideo (force-level: normal)
+[   0.435][d][demux] Trying demuxer: mkv (force-level: normal)
+[   0.436][d][mkv] Found the head...
+[   0.436][d][mkv] + a segment...
+[   0.436][d][mkv] Parsing seek head...
+[   0.436][d][mkv] |+ segment information...
+[   0.436][d][mkv] float 8673152.000000
+[   0.436][d][mkv] | + muxing app: libebml v1.3.10 + libmatroska v1.5.2
+[   0.436][d][mkv] | + writing app: mkvmerge v42.0.0 ('Overtime') 64-bit
+[   0.436][d][mkv] | + timecode scale: 1000000
+[   0.436][d][mkv] | + duration: 8673.152s
+[   0.436][d][mkv] | + segment uid 36 e8 d7 0f 77 26 0a ed 5c c7 a4 23 87 7f 77 4c
+[   0.436][d][mkv] |+ segment tracks...
+[   0.436][d][mkv] float 48000.000000
+[   0.436][d][mkv] float 48000.000000
+[   0.436][d][mkv] float 48000.000000
+[   0.436][d][mkv] float 48000.000000
+[   0.436][d][mkv] | + a track...
+[   0.436][d][mkv] |  + Track number: 1
+[   0.436][d][mkv] |  + Track type: Video
+[   0.436][d][mkv] |  + Video track
+[   0.436][d][mkv] |   + Display width: 1920
+[   0.436][d][mkv] |   + Display height: 800
+[   0.436][d][mkv] |   + Pixel width: 1920
+[   0.436][d][mkv] |   + Pixel height: 800
+[   0.436][d][mkv] |  + Codec ID: V_MPEGH/ISO/HEVC
+[   0.436][d][mkv] |  + CodecPrivate, length 2324
+[   0.436][d][mkv] |  + Language: und
+[   0.436][d][mkv] |  + Default duration: 41.708ms ( = 23.976 fps)
+[   0.436][d][mkv] | + a track...
+[   0.436][d][mkv] |  + Track number: 2
+[   0.436][d][mkv] |  + Name: English (5.1) (DTS)
+[   0.436][d][mkv] |  + Track type: Audio
+[   0.436][d][mkv] |  + Audio track
+[   0.436][d][mkv] |   + Sampling frequency: 48000.000000
+[   0.436][d][mkv] |   + Bit depth: 24
+[   0.436][d][mkv] |   + Channels: 6
+[   0.436][d][mkv] |  + Codec ID: A_DTS
+[   0.436][d][mkv] |  + Default flag: 0
+[   0.436][d][mkv] |  + Default duration: 10.667ms ( = 93.750 fps)
+[   0.436][d][mkv] | + a track...
+[   0.436][d][mkv] |  + Track number: 3
+[   0.436][d][mkv] |  + Name: English (5.1) (Dolby Digital)
+[   0.436][d][mkv] |  + Track type: Audio
+[   0.436][d][mkv] |  + Audio track
+[   0.436][d][mkv] |   + Sampling frequency: 48000.000000
+[   0.436][d][mkv] |   + Channels: 6
+[   0.436][d][mkv] |  + Codec ID: A_AC3
+[   0.436][d][mkv] |  + Default duration: 32.000ms ( = 31.250 fps)
+[   0.436][d][mkv] | + a track...
+[   0.436][d][mkv] |  + Track number: 4
+[   0.436][d][mkv] |  + Name: Audio commentary with various members of the production crew
+[   0.436][d][mkv] |  + Track type: Audio
+[   0.436][d][mkv] |  + Audio track
+[   0.436][d][mkv] |   + Sampling frequency: 48000.000000
+[   0.436][d][mkv] |   + Channels: 2
+[   0.436][d][mkv] |  + Codec ID: A_AC3
+[   0.436][d][mkv] |  + Default flag: 0
+[   0.436][d][mkv] |  + Default duration: 32.000ms ( = 31.250 fps)
+[   0.436][d][mkv] | + a track...
+[   0.436][d][mkv] |  + Track number: 5
+[   0.436][d][mkv] |  + Name: Rifftrax (LOL)
+[   0.436][d][mkv] |  + Track type: Audio
+[   0.436][d][mkv] |  + Audio track
+[   0.436][d][mkv] |   + Sampling frequency: 48000.000000
+[   0.436][d][mkv] |   + Channels: 2
+[   0.437][d][mkv] |  + Codec ID: A_AC3
+[   0.437][d][mkv] |  + Default flag: 0
+[   0.437][d][mkv] |  + Default duration: 32.000ms ( = 31.250 fps)
+[   0.437][d][mkv] | + a track...
+[   0.437][d][mkv] |  + Track number: 6
+[   0.437][d][mkv] |  + Track type: Subtitle
+[   0.437][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.437][d][mkv] |  + CodecPrivate, length 348
+[   0.437][d][mkv] |  + Default flag: 0
+[   0.437][d][mkv] | + a track...
+[   0.437][d][mkv] |  + Track number: 7
+[   0.437][d][mkv] |  + Track type: Subtitle
+[   0.437][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.437][d][mkv] |  + CodecPrivate, length 348
+[   0.437][d][mkv] |  + Language: chi
+[   0.437][d][mkv] |  + Default flag: 0
+[   0.437][d][mkv] | + a track...
+[   0.437][d][mkv] |  + Track number: 8
+[   0.437][d][mkv] |  + Track type: Subtitle
+[   0.437][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.437][d][mkv] |  + CodecPrivate, length 348
+[   0.437][d][mkv] |  + Language: chi
+[   0.437][d][mkv] |  + Default flag: 0
+[   0.437][d][mkv] | + a track...
+[   0.437][d][mkv] |  + Track number: 9
+[   0.437][d][mkv] |  + Track type: Subtitle
+[   0.437][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.437][d][mkv] |  + CodecPrivate, length 348
+[   0.437][d][mkv] |  + Language: cze
+[   0.437][d][mkv] |  + Default flag: 0
+[   0.437][d][mkv] | + a track...
+[   0.437][d][mkv] |  + Track number: 10
+[   0.437][d][mkv] |  + Track type: Subtitle
+[   0.437][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.437][d][mkv] |  + CodecPrivate, length 348
+[   0.437][d][mkv] |  + Language: dan
+[   0.437][d][mkv] |  + Default flag: 0
+[   0.437][d][mkv] | + a track...
+[   0.437][d][mkv] |  + Track number: 11
+[   0.437][d][mkv] |  + Track type: Subtitle
+[   0.437][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.437][d][mkv] |  + CodecPrivate, length 348
+[   0.437][d][mkv] |  + Language: dut
+[   0.437][d][mkv] |  + Default flag: 0
+[   0.437][d][mkv] | + a track...
+[   0.437][d][mkv] |  + Track number: 12
+[   0.437][d][mkv] |  + Track type: Subtitle
+[   0.437][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.437][d][mkv] |  + CodecPrivate, length 348
+[   0.437][d][mkv] |  + Language: fin
+[   0.437][d][mkv] |  + Default flag: 0
+[   0.437][d][mkv] | + a track...
+[   0.437][d][mkv] |  + Track number: 13
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: fre
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 14
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: ger
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 15
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: hun
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 16
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: ita
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 17
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: jpn
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 18
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: kor
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 19
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: nob
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 20
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: pol
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 21
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: por
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 22
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: spa
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 23
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: spa
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 24
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: swe
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 25
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 26
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.438][d][mkv] |  + Language: fre
+[   0.438][d][mkv] |  + Default flag: 0
+[   0.438][d][mkv] | + a track...
+[   0.438][d][mkv] |  + Track number: 27
+[   0.438][d][mkv] |  + Track type: Subtitle
+[   0.438][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.438][d][mkv] |  + CodecPrivate, length 348
+[   0.439][d][mkv] |  + Language: ger
+[   0.439][d][mkv] |  + Default flag: 0
+[   0.439][d][mkv] | + a track...
+[   0.439][d][mkv] |  + Track number: 28
+[   0.439][d][mkv] |  + Track type: Subtitle
+[   0.439][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.439][d][mkv] |  + CodecPrivate, length 348
+[   0.439][d][mkv] |  + Language: ita
+[   0.439][d][mkv] |  + Default flag: 0
+[   0.439][d][mkv] | + a track...
+[   0.439][d][mkv] |  + Track number: 29
+[   0.439][d][mkv] |  + Track type: Subtitle
+[   0.439][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.439][d][mkv] |  + CodecPrivate, length 348
+[   0.439][d][mkv] |  + Language: jpn
+[   0.439][d][mkv] |  + Default flag: 0
+[   0.439][d][mkv] | + a track...
+[   0.439][d][mkv] |  + Track number: 30
+[   0.439][d][mkv] |  + Track type: Subtitle
+[   0.439][d][mkv] |  + Codec ID: S_VOBSUB
+[   0.439][d][mkv] |  + CodecPrivate, length 348
+[   0.439][d][mkv] |  + Language: spa
+[   0.439][d][mkv] |  + Default flag: 0
+[   0.439][d][mkv] Parsing attachments...
+[   0.439][d][mkv] Attachment: cover.jpg, image/jpeg, 36069 bytes
+[   0.439][d][mkv] Parsing chapters...
+[   0.439][v][mkv] New edition 0
+[   0.439][v][mkv] Default edition flag: 0
+[   0.439][d][mkv] Chapter 0 from 00:00:00.000000000 to 00:00:00.000000000, Double O Status
+[   0.439][d][mkv] Chapter 1 from 00:06:56.707999999 to 00:00:00.000000000, Freedom Banking
+[   0.439][d][mkv] Chapter 2 from 00:09:37.951966666 to 00:00:00.000000000, Fancy Footwork
+[   0.439][d][mkv] Chapter 3 from 00:16:14.431899999 to 00:00:00.000000000, You Can Run
+[   0.439][d][mkv] Chapter 4 from 00:19:31.169866666 to 00:00:00.000000000, Embassy Heat
+[   0.439][d][mkv] Chapter 5 from 00:25:35.992833333 to 00:00:00.000000000, Island Retreat
+[   0.439][d][mkv] Chapter 6 from 00:30:11.684733333 to 00:00:00.000000000, Risky Wager
+[   0.439][d][mkv] Chapter 7 from 00:35:18.907833333 to 00:00:00.000000000, After Hours Questioning
+[   0.439][d][mkv] Chapter 8 from 00:39:59.521699999 to 00:00:00.000000000, Miami Showcase
+[   0.439][d][mkv] Chapter 9 from 00:45:30.810533333 to 00:00:00.000000000, Unveiling Operation
+[   0.439][d][mkv] Chapter 10 from 00:52:02.368499999 to 00:00:00.000000000, Manipulative Maneuver
+[   0.439][d][mkv] Chapter 11 from 00:57:51.050899999 to 00:00:00.000000000, Game of Luck
+[   0.439][d][mkv] Chapter 12 from 01:02:10.601466666 to 00:00:00.000000000, Relationship Briefing
+[   0.439][d][mkv] Chapter 13 from 01:07:22.287766666 to 00:00:00.000000000, Sizing Up the Competition
+[   0.439][d][mkv] Chapter 14 from 01:12:31.638466666 to 00:00:00.000000000, Calling the Shots
+[   0.439][d][mkv] Chapter 15 from 01:17:12.043733333 to 00:00:00.000000000, Cutting Their Losses
+[   0.439][d][mkv] Chapter 16 from 01:22:33.197566666 to 00:00:00.000000000, Raising the Stakes
+[   0.439][d][mkv] Chapter 17 from 01:30:06.066333333 to 00:00:00.000000000, Arrogance Happens
+[   0.439][d][mkv] Chapter 18 from 01:33:35.609500000 to 00:00:00.000000000, Dirty Martini
+[   0.439][d][mkv] Chapter 19 from 01:38:15.931466666 to 00:00:00.000000000, Big Blind
+[   0.439][d][mkv] Chapter 20 from 01:43:29.619500000 to 00:00:00.000000000, A Vesper
+[   0.439][d][mkv] Chapter 21 from 01:48:23.871666666 to 00:00:00.000000000, Simplest Torture
+[   0.439][d][mkv] Chapter 22 from 01:53:33.033500000 to 00:00:00.000000000, Trust Games
+[   0.439][d][mkv] Chapter 23 from 02:00:09.493500000 to 00:00:00.000000000, Tell Tales
+[   0.439][d][mkv] Chapter 24 from 02:02:31.260966666 to 00:00:00.000000000, New Ventures
+[   0.439][d][mkv] Chapter 25 from 02:05:45.370800000 to 00:00:00.000000000, Red Handed
+[   0.439][d][mkv] Chapter 26 from 02:13:19.699788888 to 00:00:00.000000000, Sinking Feelings
+[   0.439][d][mkv] Chapter 27 from 02:16:49.242500000 to 00:00:00.000000000, Double Blind
+[   0.439][d][mkv] |+ found cluster
+[   0.439][v][mkv] Seeking to 7640361038 to read header element 0x1c53bb6b.
+[   0.439][v][file] stream level seek from 131072 to 7640361038
+[   0.439][v][mkv] Parsing cues...
+[   0.453][v][osd/libass] Using font provider fontconfig
+[   0.453][v][osd/libass] Done.
+[   0.469][v][mkv] Seeking to 7641284415 to read header element 0x1254c367.
+[   0.469][v][file] stream level seek from 7641295814 to 57085
+[   0.469][v][mkv] All headers are parsed!
+[   0.469][v][demux] Detected file format: Matroska
+[   0.469][v][cplayer] Opening done: /mnt/media/movie/007/Casino.Royale.2006.CE.Bluray.1080p.DTS-HD.x264-Grym.mkv
+[   0.470][v][find_files] Loading external files in /mnt/media/movie/007/
+[   0.471][d][osc] osc_init
+[   0.471][v][cplayer] Running hook: auto_profiles/on_preloaded
+[   0.471][v][cplayer] Failed sending hook command auto_profiles/on_preloaded. Removing hook.
+[   0.471][v][cplayer] Running hook: ytdl_hook/on_preloaded
+[   0.471][v][mkv] select track 0
+[   0.471][v][mkv] select track 2
+[   0.471][i][cplayer] ● Video  --vid=1               (hevc 1920x800 23.976 fps) [default]
+[   0.471][i][cplayer] ○ Image  --vid=2               'cover.jpg' (mjpeg)
+[   0.471][i][cplayer] ○ Audio  --aid=1  --alang=eng  'English (5.1) (DTS)' (dts 6ch 48000 Hz)
+[   0.471][i][cplayer] ● Audio  --aid=2  --alang=eng  'English (5.1) (Dolby Digital)' (ac3 6ch 48000 Hz) [default]
+[   0.471][i][cplayer] ○ Audio  --aid=3  --alang=eng  'Audio commentary with various members of the production crew' (ac3 2ch 48000 Hz)
+[   0.471][i][cplayer] ○ Audio  --aid=4  --alang=eng  'Rifftrax (LOL)' (ac3 2ch 48000 Hz)
+[   0.471][i][cplayer] ○ Subs   --sid=1  --slang=eng  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=2  --slang=chi  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=3  --slang=chi  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=4  --slang=cze  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=5  --slang=dan  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=6  --slang=dut  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=7  --slang=fin  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=8  --slang=fre  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=9  --slang=ger  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=10 --slang=hun  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=11 --slang=ita  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=12 --slang=jpn  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=13 --slang=kor  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=14 --slang=nob  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=15 --slang=pol  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=16 --slang=por  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=17 --slang=spa  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=18 --slang=spa  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=19 --slang=swe  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=20 --slang=eng  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=21 --slang=fre  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=22 --slang=ger  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=23 --slang=ita  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=24 --slang=jpn  (dvd_subtitle)
+[   0.471][i][cplayer] ○ Subs   --sid=25 --slang=spa  (dvd_subtitle)
+[   0.471][i][display-tags] File tags:
+[   0.471][i][display-tags]  Title: Casino Royale (2006) (1080p BluRay x265 SAMPA)
+[   0.471][v][vd] Container reported FPS: 23.976024
+[   0.478][v][vd] Codec list:
+[   0.478][v][vd]     hevc - HEVC (High Efficiency Video Coding)
+[   0.478][v][vd]     hevc_qsv (hevc) - HEVC video (Intel Quick Sync Video acceleration)
+[   0.478][v][vd]     hevc_v4l2m2m (hevc) - V4L2 mem2mem HEVC decoder wrapper
+[   0.478][v][vd]     hevc_cuvid (hevc) - Nvidia CUVID HEVC decoder
+[   0.478][v][vd] Opening decoder hevc
+[   0.480][v][vd] No hardware decoding requested.
+[   0.480][v][vd] Using software decoding.
+[   0.480][v][vd] Detected 2 logical cores.
+[   0.480][v][vd] Requesting 3 threads for decoding.
+[   0.488][v][vd] Selected decoder: hevc - HEVC (High Efficiency Video Coding)
+[   0.488][v][vf] User filter list:
+[   0.488][v][vf]   (empty)
+[   0.488][v][ad] Codec list:
+[   0.488][v][ad]     ac3 - ATSC A/52A (AC-3)
+[   0.488][v][ad]     ac3_fixed (ac3) - ATSC A/52A (AC-3)
+[   0.488][v][ad] Opening decoder ac3
+[   0.489][v][ad] Requesting 1 threads for decoding.
+[   0.489][v][ad] Selected decoder: ac3 - ATSC A/52A (AC-3)
+[   0.489][v][af] User filter list:
+[   0.489][v][af]   (empty)
+[   0.489][v][cplayer] Starting playback...
+[   0.490][d][mkv] stream 2: resize index to 128
+[   0.493][v][cplayer] Set property: user-data/osc/margins={"r":0,"b":0,"l":0,"t":0} -> 1
+[   0.493][d][mkv] stream 0: resize index to 128
+[   0.505][d][vd] DR parameter change to 1920x800 yuv420p10 align=64
+[   0.505][d][vd] Allocating new (host-cached) DR image...
+[   0.505][d][vd] ...failed..
+[   0.505][v][vd] DR failed - disabling.
+[   0.540][v][vd] Using software decoding.
+[   0.540][v][vd] Decoder format: 1920x800 [0:1] yuv420p10 bt.709/bt.709/bt.1886/limited/auto CL=mpeg2/4/h264 crop=1920x800+0+0
+[   0.540][v][vd] Using container aspect ratio.
+[   0.540][v][vf] [in] 1920x800 yuv420p10 bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   0.540][v][vf] [userdeint] 1920x800 yuv420p10 bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   0.540][v][vf] [userdeint] (disabled)
+[   0.540][v][vf] [autovflip] 1920x800 yuv420p10 bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   0.540][v][vf] [autovflip] (disabled)
+[   0.540][v][vf] [autorotate] 1920x800 yuv420p10 bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   0.540][v][vf] [autorotate] (disabled)
+[   0.540][v][vf] [convert] 1920x800 yuv420p10 bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   0.540][v][vf] [convert] (disabled)
+[   0.540][v][vf] [out] 1920x800 yuv420p10 bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   0.540][v][af] [in] 48000Hz 5.1(side) 6ch floatp
+[   0.540][v][af] [userspeed] 48000Hz 5.1(side) 6ch floatp
+[   0.540][v][af] [userspeed] (disabled)
+[   0.540][v][af] [convert] 48000Hz 5.1(side) 6ch floatp
+[   0.540][v][ao] Trying audio driver 'pipewire'
+[   0.540][v][ao/pipewire] requested format: 48000 Hz, 5.1(side) channels, floatp
+[   0.540][v][ao/pipewire] Headers version: 1.0.5
+[   0.540][v][ao/pipewire] Library version: 1.0.5
+[   0.556][v][ao/pipewire] Core user: hermes
+[   0.556][v][ao/pipewire] Core host: ubuntu
+[   0.556][v][ao/pipewire] Core version: 1.0.5
+[   0.556][v][ao/pipewire] Core name: pipewire-0
+[   0.558][d][ao/pipewire] Stream state changed: old_state=unconnected state=connecting error=(null)
+[   0.558][v][ao/pipewire] using soft-buffer of 9600 samples.
+[   0.558][i][cplayer] AO: [pipewire] 48000Hz 5.1(side) 6ch floatp
+[   0.558][v][cplayer] AO: Description: PipeWire audio output
+[   0.558][v][af] [convert] (disabled)
+[   0.558][v][af] [out] 48000Hz 5.1(side) 6ch floatp
+[   0.558][i][cplayer] VO: [null] 1920x800 yuv420p10
+[   0.558][v][cplayer] VO: Description: Null video output
+[   0.558][v][vo/null] reconfig to 1920x800 yuv420p10 bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   0.558][v][cplayer] first video frame after restart shown
+[   0.564][d][ao/pipewire] Stream state changed: old_state=connecting state=paused error=(null)
+[   0.564][d][osc] osc_init
+[   0.573][v][cplayer] audio ready
+[   0.573][d][cplayer] starting video playback
+[   0.573][v][cplayer] starting audio playback
+[   0.573][v][cplayer] playback restart complete @ 0.000000, audio=playing, video=playing
+[   0.580][v][cplayer] Set property: user-data/osc/margins={"r":0,"b":0,"l":0,"t":0} -> 1
+[   0.580][d][ao/pipewire] Stream state changed: old_state=paused state=streaming error=(null)
+[   0.610][d][osc] osc_init
+[   0.612][v][cplayer] Set property: user-data/osc/margins={"r":0,"b":0,"l":0,"t":0} -> 1
+[   0.675][d][mkv] stream 2: resize index to 256
+[   2.434][v][ipc_1] Client connected
+[   2.434][d][cplayer] Run command: loadfile, flags=64, args=[url="/mnt/media/movie/007/No.Time.To.Die.2021.1080p.AMZN.WEB-DL.DDP5.1.H.264-EVO.mkv", flags="replace", index="-1", options=""]
+[   2.434][v][ipc_1] Client disconnected
+[   2.434][d][ipc_1] Destroying client handle...
+[   2.435][v][cplayer] EOF code: 3  
+[   2.435][d][ao/pipewire] Stream state changed: old_state=streaming state=paused error=(null)
+[   2.435][d][ad] Uninit decoder.
+[   2.436][d][vd] Uninit decoder.
+[   2.439][d][cplayer] Terminating demuxers...
+[   2.440][d][cplayer] Done terminating demuxers.
+[   2.440][v][cplayer] finished playback, success (reason 2)
+[   2.440][v][cplayer] Running hook: ytdl_hook/on_after_end_file
+[   2.464][d][cplayer] Run command: del, flags=64, args=[name="user-data/mpv/ytdl/json-subprocess-result"]
+[   2.464][d][global] state path: 'watch_later' -> '-'
+[   2.464][v][cplayer] Running hook: ytdl_hook/on_load
+[   2.465][v][cplayer] Running hook: ytdl_hook/on_load
+[   2.465][v][ytdl_hook] playlist hook
+[   2.465][v][ifo_dvdnav] Opening /mnt/media/movie/007/No.Time.To.Die.2021.1080p.AMZN.WEB-DL.DDP5.1.H.264-EVO.mkv
+[   2.466][v][bdmv/bluray] Opening /mnt/media/movie/007/No.Time.To.Die.2021.1080p.AMZN.WEB-DL.DDP5.1.H.264-EVO.mkv
+[   2.466][v][file] Opening /mnt/media/movie/007/No.Time.To.Die.2021.1080p.AMZN.WEB-DL.DDP5.1.H.264-EVO.mkv
+[   2.468][d][file] resize stream to 131072 bytes, drop 0 bytes
+[   2.468][d][file] Stream opened successfully.
+[   2.468][v][demux] Trying demuxers for level=normal.
+[   2.468][d][demux] Trying demuxer: directory (force-level: normal)
+[   2.469][d][demux] Trying demuxer: disc (force-level: normal)
+[   2.469][d][demux] Trying demuxer: edl (force-level: normal)
+[   2.469][d][demux] Trying demuxer: cue (force-level: normal)
+[   2.469][d][demux] Trying demuxer: rawaudio (force-level: normal)
+[   2.469][d][demux] Trying demuxer: rawvideo (force-level: normal)
+[   2.469][d][demux] Trying demuxer: mkv (force-level: normal)
+[   2.469][d][mkv] Found the head...
+[   2.469][d][mkv] + a segment...
+[   2.470][d][mkv] Parsing seek head...
+[   2.470][d][mkv] |+ segment information...
+[   2.470][d][mkv] float 9803808.000000
+[   2.470][d][mkv] | + muxing app: libebml v1.4.0 + libmatroska v1.6.1
+[   2.470][d][mkv] | + writing app: mkvmerge v49.0.0 ('Sick Of Losing Soulmates') 64-bit
+[   2.470][d][mkv] | + timecode scale: 1000000
+[   2.470][d][mkv] | + duration: 9803.808s
+[   2.470][d][mkv] | + segment uid ec cd 8b 9b 02 b3 d7 84 ad e2 2e 15 d5 9f e3 63
+[   2.470][d][mkv] |+ segment tracks...
+[   2.470][d][mkv] float 48000.000000
+[   2.470][d][mkv] | + a track...
+[   2.470][d][mkv] |  + Track number: 1
+[   2.470][d][mkv] |  + Track type: Video
+[   2.470][d][mkv] |  + Video track
+[   2.470][d][mkv] |   + Display width: 1920
+[   2.470][d][mkv] |   + Display height: 800
+[   2.470][d][mkv] |   + Pixel width: 1920
+[   2.470][d][mkv] |   + Pixel height: 800
+[   2.470][d][mkv] |  + Codec ID: V_MPEG4/ISO/AVC
+[   2.470][d][mkv] |  + CodecPrivate, length 57
+[   2.470][d][mkv] |  + Language: und
+[   2.470][d][mkv] |  + Default duration: 41.708ms ( = 23.976 fps)
+[   2.470][d][mkv] | + a track...
+[   2.470][d][mkv] |  + Track number: 2
+[   2.470][d][mkv] |  + Track type: Audio
+[   2.470][d][mkv] |  + Audio track
+[   2.470][d][mkv] |   + Sampling frequency: 48000.000000
+[   2.470][d][mkv] |   + Channels: 6
+[   2.470][d][mkv] |  + Codec ID: A_EAC3
+[   2.470][d][mkv] |  + Default duration: 32.000ms ( = 31.250 fps)
+[   2.470][d][mkv] | + a track...
+[   2.470][d][mkv] |  + Track number: 3
+[   2.470][d][mkv] |  + Track type: Subtitle
+[   2.470][d][mkv] |  + Codec ID: S_TEXT/UTF8
+[   2.470][d][mkv] |  + Default flag: 0
+[   2.470][d][mkv] | + a track...
+[   2.470][d][mkv] |  + Track number: 4
+[   2.470][d][mkv] |  + Name: SDH
+[   2.470][d][mkv] |  + Track type: Subtitle
+[   2.470][d][mkv] |  + Codec ID: S_TEXT/UTF8
+[   2.470][d][mkv] |  + Default flag: 0
+[   2.470][d][mkv] |+ found cluster
+[   2.470][v][mkv] Seeking to 11892539920 to read header element 0x1c53bb6b.
+[   2.470][v][file] stream level seek from 131072 to 11892539920
+[   2.470][v][mkv] Parsing cues...
+[   2.473][v][mkv] Seeking to 11892751038 to read header element 0x1254c367.
+[   2.473][v][file] stream level seek from 11892752623 to 5750
+[   2.473][v][mkv] All headers are parsed!
+[   2.474][v][demux] Detected file format: Matroska
+[   2.474][v][cplayer] Opening done: /mnt/media/movie/007/No.Time.To.Die.2021.1080p.AMZN.WEB-DL.DDP5.1.H.264-EVO.mkv
+[   2.475][v][find_files] Loading external files in /mnt/media/movie/007/
+[   2.475][v][cplayer] Running hook: ytdl_hook/on_preloaded
+[   2.475][v][mkv] select track 0
+[   2.475][v][mkv] select track 1
+[   2.475][i][cplayer] ● Video  --vid=1               (h264 1920x800 23.976 fps) [default]
+[   2.475][i][cplayer] ● Audio  --aid=1  --alang=eng  (eac3 6ch 48000 Hz) [default]
+[   2.475][i][cplayer] ○ Subs   --sid=1  --slang=eng  (subrip)
+[   2.475][i][cplayer] ○ Subs   --sid=2  --slang=eng  'SDH' (subrip)
+[   2.476][v][vd] Container reported FPS: 23.976024
+[   2.476][v][vd] Codec list:
+[   2.476][v][vd]     h264 - H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10
+[   2.476][v][vd]     h264_v4l2m2m (h264) - V4L2 mem2mem H.264 decoder wrapper
+[   2.476][v][vd]     h264_qsv (h264) - H264 video (Intel Quick Sync Video acceleration)
+[   2.476][v][vd]     h264_cuvid (h264) - Nvidia CUVID H264 decoder
+[   2.476][v][vd] Opening decoder h264
+[   2.476][v][vd] No hardware decoding requested.
+[   2.476][v][vd] Using software decoding.
+[   2.476][v][vd] Detected 2 logical cores.
+[   2.476][v][vd] Requesting 3 threads for decoding.
+[   2.478][d][ffmpeg/video] h264: Reinit context to 1920x800, pix_fmt: yuv420p
+[   2.479][d][vd] DR parameter change to 1920x802 yuv420p align=64
+[   2.479][d][vd] Allocating new (host-cached) DR image...
+[   2.479][d][vd] ...failed..
+[   2.479][v][vd] DR failed - disabling.
+[   2.485][v][vd] Selected decoder: h264 - H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10
+[   2.485][v][vf] User filter list:
+[   2.485][v][vf]   (empty)
+[   2.485][v][ad] Codec list:
+[   2.485][v][ad]     eac3 - ATSC A/52B (AC-3, E-AC-3)
+[   2.485][v][ad] Opening decoder eac3
+[   2.485][v][ad] Requesting 1 threads for decoding.
+[   2.485][v][ad] Selected decoder: eac3 - ATSC A/52B (AC-3, E-AC-3)
+[   2.485][v][af] User filter list:
+[   2.485][v][af]   (empty)
+[   2.485][v][cplayer] Starting playback...
+[   2.486][d][mkv] stream 1: resize index to 128
+[   2.486][d][mkv] stream 0: resize index to 128
+[   2.488][d][ffmpeg/video] h264: Reinit context to 1920x800, pix_fmt: yuv420p
+[   2.502][v][vd] Using software decoding.
+[   2.502][v][vd] Decoder format: 1920x800 yuv420p bt.709/bt.709/bt.1886/limited/auto CL=mpeg2/4/h264 crop=1920x800+0+0
+[   2.502][v][vd] Using container aspect ratio.
+[   2.502][v][vf] [in] 1920x800 yuv420p bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   2.502][v][vf] [userdeint] 1920x800 yuv420p bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   2.502][v][vf] [userdeint] (disabled)
+[   2.502][v][vf] [autovflip] 1920x800 yuv420p bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   2.502][v][vf] [autovflip] (disabled)
+[   2.502][v][vf] [autorotate] 1920x800 yuv420p bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   2.502][v][vf] [autorotate] (disabled)
+[   2.502][v][vf] [convert] 1920x800 yuv420p bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   2.502][v][vf] [convert] (disabled)
+[   2.502][v][vf] [out] 1920x800 yuv420p bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   2.502][v][af] [in] 48000Hz 5.1(side) 6ch floatp
+[   2.502][v][af] [userspeed] 48000Hz 5.1(side) 6ch floatp
+[   2.502][v][af] [userspeed] (disabled)
+[   2.502][v][af] [convert] 48000Hz 5.1(side) 6ch floatp
+[   2.504][d][osc] osc_init
+[   2.504][v][af] [convert] (disabled)
+[   2.504][v][af] [out] 48000Hz 5.1(side) 6ch floatp
+[   2.506][i][cplayer] VO: [null] 1920x800 yuv420p
+[   2.506][v][cplayer] VO: Description: Null video output
+[   2.506][v][vo/null] reconfig to 1920x800 yuv420p bt.709/bt.709/bt.1886/limited/display CL=mpeg2/4/h264 crop=1920x800+0+0
+[   2.507][v][cplayer] first video frame after restart shown
+[   2.509][v][cplayer] Set property: user-data/osc/margins={"r":0,"b":0,"l":0,"t":0} -> 1
+[   2.511][v][cplayer] audio ready
+[   2.511][d][cplayer] starting video playback
+[   2.511][v][cplayer] starting audio playback
+[   2.511][v][cplayer] playback restart complete @ 0.000000, audio=playing, video=playing
+[   2.515][d][ao/pipewire] Stream state changed: old_state=paused state=streaming error=(null)
+[   2.526][d][osc] osc_init
+[   2.526][v][cplayer] Set property: user-data/osc/margins={"r":0,"b":0,"l":0,"t":0} -> 1
+[   2.608][d][mkv] stream 1: resize index to 256
+[   4.434][v][ipc_2] Client connected
+[   4.435][d][cplayer] Run command: quit, flags=64, args=[code="0"]
+[   4.435][v][cplayer] EOF code: 5  
+[   4.435][d][ao/pipewire] Stream state changed: old_state=streaming state=paused error=(null)
+[   4.435][v][ipc_2] Client disconnected
+[   4.435][d][ipc_2] Destroying client handle...
+[   4.435][d][ad] Uninit decoder.
+[   4.436][d][vd] Uninit decoder.
+[   4.437][d][cplayer] Terminating demuxers...
+[   4.437][d][cplayer] Done terminating demuxers.
+[   4.437][v][cplayer] finished playback, success (reason 3)
+[   4.437][v][cplayer] Running hook: ytdl_hook/on_after_end_file
+[   4.468][d][cplayer] Run command: del, flags=64, args=[name="user-data/mpv/ytdl/json-subprocess-result"]
+[   4.468][d][osc] osc_init
+[   4.468][i][cplayer] Exiting... (Quit)
+[   4.468][d][select] Destroying client handle...
+[   4.468][d][context_menu] Destroying client handle...
+[   4.468][d][commands] Destroying client handle...
+[   4.468][d][positioning] Destroying client handle...
+[   4.468][d][stats] Destroying client handle...
+[   4.469][d][cplayer] Run command: del, flags=64, args=[name="user-data/mpv/console"]
+[   4.469][d][console] Destroying client handle...
+[   4.469][v][cplayer] Set property: user-data/osc/margins={"r":0,"b":0,"l":0,"t":0} -> 1
+[   4.469][d][cplayer] Run command: del, flags=64, args=[name="user-data/osc"]
+[   4.471][d][osc] Destroying client handle...
+[   4.471][d][ytdl_hook] Destroying client handle...

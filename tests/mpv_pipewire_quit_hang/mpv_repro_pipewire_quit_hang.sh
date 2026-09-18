@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Minimal reproduction: mpv hangs on quit after a second "loadfile replace".
 #
 # Observed with mpv v0.41.0 (Ubuntu) using the default PipeWire audio output.
