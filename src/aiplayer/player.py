@@ -67,6 +67,11 @@ class Player(ABC):
         """Advance to the next playlist entry."""
 
     @abstractmethod
+    def playlist_items(self):
+        """Return the current playlist as a list of entry dicts
+        ({index, title, path, current})."""
+
+    @abstractmethod
     def get_kodi_api(self):
         """Return the underlying KodiAPI, or None for non-KODI backends."""
 

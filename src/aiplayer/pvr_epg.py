@@ -537,19 +537,23 @@ def show_current_program(player, channel):
 
 
 def _show_all_epg_kodi(api):
-    """Show currently-playing program for ALL PVR channels (KODI mode)."""
+    """Show the current program for every PVR channel (KODI mode).
+
+    Streams rows as each channel is fetched (one PVR call at a time, so a weak
+    box is never hammered). The header is printed lazily before the first row,
+    which keeps the fallback clean: a box that returns no current programmes at
+    all prints nothing and returns False, letting the caller fall back to an
+    m3u/XMLTV EPG source.
+    """
     local_tz = LOCAL_TZ
-    now_local = datetime.now(local_tz)
     now_utc = datetime.now(timezone.utc)
 
     channels = get_all_channels(api)
     if not channels:
-        print("No channels found.")
         return False
 
-    print(f"Current programs ({now_local.strftime('%Y-%m-%d %H:%M')}):")
-    print()
-
+    header_shown = False
+    shown = 0
     for ch in channels:
         label = ch.get('label', '?')
         channel_id = ch['channelid']
@@ -559,6 +563,13 @@ def _show_all_epg_kodi(api):
         current = find_program_at(epg, now_utc)
         if not current:
             continue
+
+        if not header_shown:
+            now_local = datetime.now(local_tz)
+            print(f"Current programs ({now_local.strftime('%Y-%m-%d %H:%M')}):")
+            print()
+            header_shown = True
+
         st = parse_time(current.get('starttime', ''))
         et = parse_time(current.get('endtime', ''))
         if st and et:
@@ -567,8 +578,9 @@ def _show_all_epg_kodi(api):
             print(f"  {label}: {current.get('title', '?')}  ({s}-{e})")
         else:
             print(f"  {label}: {current.get('title', '?')}")
+        shown += 1
 
-    return True
+    return shown > 0
 
 
 def show_epg(player=None, channel=None, date_str='', time_str='', m3u=None, epg=None):
@@ -586,7 +598,16 @@ def show_epg(player=None, channel=None, date_str='', time_str='', m3u=None, epg=
         return False
 
     if channel is None:
-        return _show_all_epg_kodi(api)
+        if _show_all_epg_kodi(api):
+            return True
+        # KODI gave nothing -> fall back to config m3u/XMLTV (same rule as a
+        # single channel). An explicit --m3u already returned above.
+        patch_m3u = m3u or load_config().get('iptv', {}).get('m3u', '')
+        if patch_m3u:
+            print("PVR EPG unavailable - falling back to m3u/XMLTV EPG patch...")
+            return _show_all_epg_from_http(player, patch_m3u, epg)
+        print("No EPG data available (KODI returned none; no m3u configured).")
+        return False
 
     target_channel = _find_pvr_channel(api, channel)
     if not target_channel:
