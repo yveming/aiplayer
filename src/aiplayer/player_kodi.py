@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """KODI backend: adapts KodiAPI to the Player interface."""
 
+import os
+
 from aiplayer.kodi_api import KodiAPI
 from aiplayer.player import Player, PlayerMode
 
 
 class KodiBackend(Player):
+    # Active playlist id (0=audio, 1=video), resolved lazily for append/clear/
+    # jump so write operations and playlist_items() agree on the same list.
+    _playlist_id = None
+
     def __init__(self, kodi_config):
         super().__init__(PlayerMode.KODI)
         kodi_config = kodi_config or {}
@@ -18,13 +24,19 @@ class KodiBackend(Player):
         )
 
     def play_file(self, path):
-        return self.kodi.player_open_item({'file': path})
+        result = self.kodi.player_open_item({'file': path})
+        self._playlist_id = None
+        return result
 
     def play_url(self, url):
-        return self.kodi.player_open_item({'file': url})
+        result = self.kodi.player_open_item({'file': url})
+        self._playlist_id = None
+        return result
 
     def play_item(self, item):
-        return self.kodi.player_open_item(item)
+        result = self.kodi.player_open_item(item)
+        self._playlist_id = None
+        return result
 
     def control_playback(self, action):
         return self._kodi_playback(action)
@@ -62,18 +74,72 @@ class KodiBackend(Player):
         return info
 
     def playlist_append(self, path):
-        return self.kodi.playlist_add(0, {'file': path})
+        return self.kodi.playlist_add(self._playlist_id_for_write(), {'file': path})
 
     def playlist_clear(self):
-        return self.kodi.playlist_clear(0)
+        return self.kodi.playlist_clear(self._playlist_id_for_write())
 
     def playlist_play_index(self, index):
-        return self.kodi.player_open_item({'playlistid': 0, 'position': index})
+        return self.kodi.player_open_item(
+            {'playlistid': self._playlist_id_for_write(), 'position': index})
 
     def play_next(self):
         if self.get_active_player():
             pid = self.get_active_player()
             return self.kodi.player_go_to(pid, 'next')
+
+    def _active_playlist(self):
+        """Return (playlist_id, position) for the active player.
+
+        playlist_id is 0=audio / 1=video (2=picture): taken from
+        Player.GetProperties when the box reports it, else inferred from the
+        player type. position is the current playlist index, or None when
+        nothing is playing.
+        """
+        playlist_id, position = 0, None
+        active = self.kodi.player_get_active_players()
+        players = active.get('result') if active else None
+        if players:
+            player_id = players[0].get('playerid', 0)
+            props = self.kodi.player_get_properties(player_id, ['position', 'playlistid'])
+            result = props.get('result') if props and 'result' in props else None
+            if result is None:
+                props = self.kodi.player_get_properties(player_id, ['position'])
+                result = props.get('result') if props and 'result' in props else {}
+            if result.get('playlistid') is not None:
+                playlist_id = result['playlistid']
+            elif players[0].get('type') == 'video':
+                playlist_id = 1
+            if result.get('position') is not None:
+                position = result['position']
+        return playlist_id, position
+
+    def _playlist_id_for_write(self):
+        """Playlist id for append/clear/jump, resolved once and cached until
+        the next play request (the media type cannot change in between)."""
+        if self._playlist_id is None:
+            self._playlist_id, _ = self._active_playlist()
+        return self._playlist_id
+
+    def playlist_items(self):
+        """Return the active playlist (audio=0 / video=1) as entry dicts."""
+        playlist_id, position = self._active_playlist()
+
+        response = self.kodi.playlist_get_items(playlist_id, ['title', 'file'])
+        if not response or 'result' not in response:
+            return []
+        items = response['result'].get('items', [])
+        entries = []
+        for i, item in enumerate(items):
+            path = item.get('file') or ''
+            entries.append({
+                'index': i,
+                'title': item.get('title') or item.get('label')
+                         or os.path.basename(path) or path or '?',
+                'path': path,
+                'current': position == i,
+            })
+        return entries
 
     def get_active_player(self):
         response = self.kodi.player_get_active_players()

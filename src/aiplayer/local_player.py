@@ -450,6 +450,21 @@ class MpvPlayer:
         self._cmd(["set_property", "pause", False])
         return r
 
+    def get_playlist(self):
+        """Return mpv's playlist as a list of entry dicts.
+
+        Uses the `playlist` property (one IPC call). Each entry keeps mpv's
+        `filename` and `current` fields. Does not start mpv if it is idle.
+        """
+        if not self._probe():
+            return []
+        r = self._cmd(["get_property", "playlist"])
+        if r.get("error") in (None, "success"):
+            data = r.get("data")
+            if isinstance(data, list):
+                return data
+        return []
+
     def status(self):
         """Get current playback status."""
         r = self._cmd(["get_property", "path"])

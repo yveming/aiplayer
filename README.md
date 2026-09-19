@@ -97,6 +97,7 @@ aiplayer catchup "湖南卫视" --m3u "http://..." --date yesterday --time 18:30
 
 # KODI 模式
 aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达三"
+aiplayer epg                                         # KODI PVR 优先，列出所有频道当前节目（无数据回退 m3u/XMLTV）
 
 # 按路径直接播放
 aiplayer playfile "G:/music/歌.flac"
@@ -106,6 +107,7 @@ aiplayer playfiles "G:/music/a.flac" "G:/music/b.flac"
 aiplayer pause
 aiplayer next
 aiplayer volume_up
+aiplayer playlist
 aiplayer status
 
 # JSON 输出（面向 AI/脚本，无交互提示）

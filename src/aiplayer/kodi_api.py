@@ -185,11 +185,32 @@ class KodiAPI:
         """Set playback speed"""
         return self._request('Player.SetSpeed', {'playerid': player_id, 'speed': speed})
     
-    def player_get_properties(self, player_id=0):
-        """Get player properties"""
+    def player_get_item(self, player_id=0, properties=None):
+        """Get the item currently loaded by a player.
+
+        KODI returns only the requested fields. The 11 box rejects most
+        properties with -32602 (it allows title/file/duration), so when an
+        explicit property list fails we retry with the minimal set.
+        """
+        props = properties if properties is not None else ['title', 'file']
+        result = self._request('Player.GetItem', {
+            'playerid': player_id,
+            'properties': props,
+        })
+        if result and 'error' in result and properties:
+            minimal = [p for p in ('title', 'file', 'duration') if p in properties]
+            if minimal and minimal != list(props):
+                result = self._request('Player.GetItem', {
+                    'playerid': player_id,
+                    'properties': minimal,
+                })
+        return result
+
+    def player_get_properties(self, player_id=0, properties=None):
+        """Get player properties (time/totaltime/... by default)."""
         return self._request('Player.GetProperties', {
             'playerid': player_id,
-            'properties': ['time', 'totaltime', 'percentage', 'speed', 'volume']
+            'properties': properties or ['time', 'totaltime', 'percentage', 'speed', 'volume'],
         })
     
     def application_set_volume(self, volume):
@@ -327,6 +348,16 @@ class KodiAPI:
         """Play playlist"""
         return self._request('Playlist.Play', {'playlistid': playlist_id})
     
+    def playlist_get_items(self, playlist_id=0, properties=None, limits=None):
+        """Get items in a playlist (0=audio, 1=video, 2=picture)."""
+        params = {
+            'playlistid': playlist_id,
+            'properties': properties or ['title', 'file', 'duration'],
+        }
+        if limits:
+            params['limits'] = limits
+        return self._request('Playlist.GetItems', params)
+
     def playlist_get_playlists(self):
         """Get available playlists"""
         return self._request('Playlist.GetPlaylists')

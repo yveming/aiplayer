@@ -10,8 +10,10 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 
 import aiplayer.pvr_epg as pvr_epg
+from aiplayer.aiplayer import _player_kind
 from aiplayer.player import PlayerMode
 from aiplayer.player_factory import create_player
+from types import SimpleNamespace
 
 passed = failed = 0
 
@@ -51,6 +53,15 @@ finally:
 p = create_player(PlayerMode.LOCAL, local_config={'mpv_path': 'C:/fake/mpv.exe'})
 check('mpv_path from local_config used verbatim',
       p.local.mpv_path == 'C:/fake/mpv.exe')
+
+# --local must win over a configured/--host KODI so the mpv queue is reachable.
+kind = lambda local=False, host='', auto=False: _player_kind(
+    SimpleNamespace(local=local, host=host, auto=auto))
+check('--local wins over --host', kind(local=True, host='1.2.3.4') == 'local')
+check('--local wins over --auto', kind(local=True, auto=True) == 'local')
+check('--host selects kodi', kind(host='1.2.3.4') == 'kodi')
+check('--auto selects auto', kind(auto=True) == 'auto')
+check('no flags defaults to local', kind() == 'local')
 
 print()
 print('TOTAL: %d passed, %d failed' % (passed, failed))

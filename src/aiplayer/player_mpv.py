@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Local mpv backend: adapts MpvPlayer to the Player interface."""
 
+import os
+
 from aiplayer.local_player import MpvPlayer
 from aiplayer.player import Player, PlayerMode
 
@@ -47,6 +49,20 @@ class MpvBackend(Player):
 
     def play_next(self):
         return self.local.play_next()
+
+    def playlist_items(self):
+        entries = []
+        for i, e in enumerate(self.local.get_playlist()):
+            if not isinstance(e, dict):
+                continue
+            path = e.get('filename') or ''
+            entries.append({
+                'index': i,
+                'title': os.path.basename(path) or path or '?',
+                'path': path,
+                'current': bool(e.get('current')),
+            })
+        return entries
 
     def get_kodi_api(self):
         return None

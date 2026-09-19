@@ -57,7 +57,8 @@ aiplayer [connection-flags] <action> [query] [action-flags]
 4. **Connection flags**: when config `kodi.host` is set, KODI commands need NO
    `--host/--port/...` at all. Pass `--host` only to use a *different* box than config.
    Local mode is the default when config has no host and no `--host` is given.
-   `--auto` (SSDP/mDNS, ~5s) only when the user explicitly asks.
+   `--local` forces local mpv even when config `kodi.host` is set (useful to inspect
+   the mpv queue). `--auto` (SSDP/mDNS, ~5s) only when the user explicitly asks.
 5. **IPTV m3u/EPG scoping**: config `iptv.m3u` applies in local mode automatically; in KODI
    mode pass `--m3u` explicitly or PVR actions stay on KODI. When KODI returns no EPG,
    `catchup`/`epg` fall back to the m3u/XMLTV patch (config or `--m3u`/`--epg`) automatically.
@@ -113,7 +114,7 @@ configured m3u - **zero connection flags**.
 | `video` | Search and play a TV episode (S03E04) | yes | both |
 | `music` | Search and play music (with `--artist`/`--album`/`--song`) | optional | both |
 | `tv` | Play a live TV channel; no query = list channels | yes to play; no to list | both |
-| `epg` | Browse EPG; no query = current programs of all channels (needs m3u) | optional | both |
+| `epg` | Browse EPG; no query = current programs of all channels | optional | both |
 | `catchup` | Play catch-up TV (needs `--date`/`--time`) | yes | both |
 | `pause` | Toggle pause | no | both |
 | `play` | Resume playback | no | both |
@@ -125,6 +126,7 @@ configured m3u - **zero connection flags**.
 | `volume_up` | Volume +10% | no | both |
 | `volume_down` | Volume -10% | no | both |
 | `mute` | Toggle mute | no | both |
+| `playlist` | List the current playlist, marking the playing entry | no | both |
 | `status` | Show current playback info | no | both |
 | `playfile` | Play/replace a file by path | yes (path) | both |
 | `enqueue` | Append a file to playlist | yes (path) | both |
@@ -142,6 +144,7 @@ configured m3u - **zero connection flags**.
 | `--username` | str | `--host` http | HTTP auth username |
 | `--password` | str | `--host` http | HTTP auth password |
 | `--auto` | flag | standalone | Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv |
+| `--local` | flag | standalone | Force local mpv, ignoring config `kodi.host`/`--host` |
 | `--m3u` | URL or path | tv/catchup/epg | IPTV m3u (config iptv.m3u = local mode only; KODI mode needs it explicitly) |
 | `--epg` | URL or path | epg/catchup | XMLTV EPG (priority: --epg > config iptv.epg > m3u x-tvg-url) |
 | `--artist` | str | music | Artist name filter |
@@ -230,16 +233,22 @@ Keywords: `放电视`, `直播`, `live`, `tv`, `频道`
 ### epg — Browse EPG
 
 With a channel: EPG around now, or for `--date`/`--time`. Without a query:
-the current program of every channel (requires `--m3u` or config `iptv.m3u`).
+the current program of every channel.
+
+Source priority (KODI mode): KODI PVR first; if KODI returns no EPG at all it
+falls back to the m3u/XMLTV patch (config `iptv.m3u`/`iptv.epg`). An explicit
+`--m3u` overrides and uses m3u/XMLTV directly. Local mode always needs `--m3u`
+or config `iptv.m3u`.
 
 ```
-# config-driven
+# KODI PVR first, config m3u fallback if PVR has no EPG
 aiplayer epg "CCTV1"
 aiplayer epg "CCTV1" --date today
 aiplayer epg "CCTV1" --date yesterday
 aiplayer epg                              # all channels' current programs
 
-# temporary override
+# temporary override (forces m3u/XMLTV)
+aiplayer epg --m3u http://192.168.100.2:8000/iptv/iptv.m3u
 aiplayer epg "CCTV1" --m3u http://192.168.100.2:8000/iptv/iptv.m3u --date yesterday
 ```
 
@@ -270,10 +279,11 @@ Same connection flags as the last play command (config kodi.host -> no flags for
 ```
 aiplayer pause / play / playpause / next / prev / stop / restart
 aiplayer volume_up / volume_down / mute
+aiplayer playlist
 aiplayer status
 ```
 
-Keywords: `暂停`(pause), `继续`/`播放`(play), `下一首`/`下一集`(next), `上一首`/`上一集`(prev), `重播`/`从头开始`(restart), `停止`(stop), `大声点`(volume_up), `小声点`(volume_down), `静音`(mute), `当前播放`/`状态`(status)
+Keywords: `暂停`(pause), `继续`/`播放`(play), `下一首`/`下一集`(next), `上一首`/`上一集`(prev), `重播`/`从头开始`(restart), `停止`(stop), `大声点`(volume_up), `小声点`(volume_down), `静音`(mute), `队列`/`播放列表`/`排队`(playlist), `当前播放`/`状态`(status)
 
 ---
 

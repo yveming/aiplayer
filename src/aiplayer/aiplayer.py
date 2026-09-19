@@ -5,6 +5,7 @@ Auto-discovers KODI or falls back to local mpv playback with HTTP m3u/EPG for TV
 """
 
 import argparse
+import json
 import sys
 import os
 
@@ -51,6 +52,30 @@ def _m3u_for_tv(args_m3u, m3u_cfg, kodi_mode):
     return None if kodi_mode else m3u_cfg
 
 
+def _player_kind(args):
+    """Resolve the player backend from CLI flags: 'local', 'kodi' or 'auto'.
+
+    --local wins over --host, so a configured kodi.host can be overridden to
+    inspect the local mpv queue (e.g. `aiplayer --local playlist`).
+    """
+    if getattr(args, 'local', False):
+        return 'local'
+    if args.host:
+        return 'kodi'
+    if args.auto:
+        return 'auto'
+    return 'local'
+
+
+def _epg_requires_channel(player, query, m3u):
+    """True when an EPG request cannot list anything.
+
+    A channel-less EPG works via KODI PVR or an m3u source; only error out
+    when neither is available (e.g. local mpv with no --m3u/config m3u).
+    """
+    return not query and not m3u and resolve_kodi_api(player) is None
+
+
 def _fmt_hms(seconds):
     """Format seconds as [H:]MM:SS."""
     mm, ss = divmod(int(seconds), 60)
@@ -58,12 +83,51 @@ def _fmt_hms(seconds):
     return f"{hh}:{mm:02d}:{ss:02d}" if hh else f"{mm}:{ss:02d}"
 
 
+def _print_playlist(entries, json_output=False):
+    """Print the current playlist, marking the playing entry."""
+    if json_output:
+        print(json.dumps(entries, ensure_ascii=False))
+        return
+    if not entries:
+        print("Queue is empty.")
+        return
+    for e in entries:
+        mark = "▶" if e.get("current") else " "
+        print(f"{mark} {e['index'] + 1}. {e['title']}")
+
+
+def _play_files(player, paths):
+    """Play a batch: open the first file, then append the rest.
+
+    Player.Open (KODI) and loadfile replace (mpv) both replace the current
+    queue with the first file, so no pre-clear is needed - and clearing first
+    would target the *previous* media type's KODI playlist. Appending after
+    the open resolves the correct list (audio=0 / video=1).
+    """
+    result = player.play_file(paths[0])
+    if isinstance(result, dict) and result.get("error") not in (None, "success"):
+        print(f"Playback error: {result['error']}")
+        return False
+    for path in paths[1:]:
+        player.playlist_append(path)
+    print(f"Playing {len(paths)} file(s)")
+    return True
+
+
+ACTION_CHOICES = [
+    'movie', 'video', 'tv', 'music', 'catchup', 'epg',
+    'pause', 'play', 'playpause', 'next', 'prev', 'stop',
+    'restart', 'volume_up', 'volume_down', 'mute',
+    'playlist', 'status', 'playfile', 'enqueue', 'playfiles',
+]
+
+
 EPILOG = """actions:
   media    movie | video (TV episodes, SxxEyy) | music
   live TV  tv (play/list channels) | epg (guide) | catchup (needs --date --time)
   files    playfile | enqueue | playfiles
   control  pause | play | playpause | next | prev | stop | restart |
-           volume_up | volume_down | mute | status
+           volume_up | volume_down | mute | playlist | status
 
 examples:
   aiplayer video "黑暗物质第三季第四集" --json    # episodes
@@ -84,10 +148,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument('action', nargs='?', default=None, metavar='action',
-                        choices=['movie', 'video', 'tv', 'music', 'catchup', 'epg',
-                                 'pause', 'play', 'playpause', 'next', 'prev', 'stop',
-                                 'restart', 'volume_up', 'volume_down', 'mute',
-                                 'status', 'playfile', 'enqueue', 'playfiles'],
+                        choices=ACTION_CHOICES,
                         help='Action to perform (required) - see "actions" below')
     parser.add_argument('query', nargs='*', default=[], metavar='query',
                         help='Search query or file paths')
@@ -124,6 +185,8 @@ def main():
     g_music.add_argument('--shuffle', action='store_true', help='Shuffle playback order')
 
     g_gen = parser.add_argument_group('general')
+    g_gen.add_argument('--local', action='store_true',
+                       help='Force local mpv playback (ignore config/--host KODI)')
     g_gen.add_argument('--json', action='store_true',
                        help='Search actions print JSON, never auto-play (for AI)')
     g_gen.add_argument('--debug', action='store_true', help='Show debug output')
@@ -138,8 +201,9 @@ def main():
     m3u_explicit = args.m3u is not None
     m3u_cfg = iptv_cfg.get('m3u', '')
     m3u_source = args.m3u if m3u_explicit else m3u_cfg
+    kind = _player_kind(args)
     # KODI mode ignores config m3u unless --m3u is given explicitly (no wrong-action hijacking)
-    m3u_for_tv = _m3u_for_tv(args.m3u, m3u_cfg, bool(args.host))
+    m3u_for_tv = _m3u_for_tv(args.m3u, m3u_cfg, kind == 'kodi')
 
     # Determine player
     player = None
@@ -147,7 +211,7 @@ def main():
     if args.mpv_path:
         local_config['mpv_path'] = args.mpv_path
 
-    if args.host:
+    if kind == 'kodi':
         # User specified a KODI host directly
         player = create_player(
             PlayerMode.KODI,
@@ -160,7 +224,7 @@ def main():
             },
         )
         print(f"Mode: KODI ({args.host}:{args.port or 9090})")
-    elif args.auto:
+    elif kind == 'auto':
         # --auto: auto-discover KODI, fall back to local
         discovery = discover_player()
         if discovery['mode'] == 'kodi':
@@ -189,7 +253,7 @@ def main():
     else:
         # Default: local mpv playback (skip discovery)
         player = create_player(PlayerMode.LOCAL, local_config=local_config)
-        print("Mode: local mpv")
+        print("Mode: local mpv (forced)" if args.local else "Mode: local mpv")
 
     action = args.action
     query_list = args.query
@@ -251,7 +315,7 @@ def main():
                               m3u=m3u_for_tv or None,
                               epg=args.epg or None)
     elif action == 'epg':
-        if not query and not m3u_for_tv:
+        if _epg_requires_channel(player, query, m3u_for_tv):
             print("Channel name required for EPG (or use --m3u).")
             sys.exit(1)
         success = show_epg(player, query or None, args.date, args.time,
@@ -282,20 +346,10 @@ def main():
         if not query_list:
             print("File paths required.")
             sys.exit(1)
-        player.playlist_clear()
-        # Play the first file instead of only pointing playlist-pos at index 0:
-        # playlist-clear keeps the current entry, so appended files land after
-        # it and index 0 would replay the OLD file (KODI behaves the same).
-        # loadfile replace (local) / Player.Open (KODI) start it for real.
-        r = player.play_file(query_list[0])
-        if isinstance(r, dict) and r.get("error") not in (None, "success"):
-            print(f"Playback error: {r['error']}")
-            success = False
-        else:
-            for path in query_list[1:]:
-                player.playlist_append(path)
-            print(f"Playing {len(query_list)} file(s)")
-            success = True
+        success = _play_files(player, query_list)
+    elif action == 'playlist':
+        _print_playlist(player.playlist_items(), json_output=args.json)
+        success = True
     elif action == 'status':
         info = player.status()
         if not info:

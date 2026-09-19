@@ -25,6 +25,8 @@ SUITES = [
     ('mpv session env',     'test_mpv_session_env.py',     'display env recovery: systemctl + /proc fallback'),
     ('mpv pause inheritance', 'test_pause_inheritance.py', 'pause reset on new file / playlist jump'),
     ('priority order',       'test_priority_order.py',     'CLI > config > derived: EPG source + mpv path tiers'),
+    ('kodi api contract',    'test_kodi_api_contract.py',  'player_get_item / player_get_properties + echo paths'),
+    ('playlist view',        'test_playlist.py',           'mpv + KODI playlist_items + CLI formatting'),
 ]
 
 # Real-KODI suite - skipped by default

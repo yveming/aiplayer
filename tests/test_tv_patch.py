@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
 """Offline tests: KODI no-EPG catchup/epg patch + m3u scoping matrix."""
 import io
+import json
 import os
 import sys
+import tempfile
 from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
 
 from aiplayer.kodi_api import KodiAPI
-from aiplayer.pvr_epg import play_catchup, show_epg
-from aiplayer.aiplayer import _m3u_for_tv
+from aiplayer.pvr_epg import play_catchup, show_epg, _show_all_epg_kodi
+from aiplayer.aiplayer import _m3u_for_tv, _epg_requires_channel
 
 PASS = 0
 FAIL = 0
 
 
-def check(name, cond):
+def check(name, cond, detail=''):
     global PASS, FAIL
-    print('  [%s / %s] %s' % ('OK' if cond else 'FAIL', 'OK' if cond else 'NG', name))
+    suffix = '' if cond or not detail else '  ' + detail
+    print('  [%s / %s] %s%s' % ('OK' if cond else 'FAIL', 'OK' if cond else 'NG', name, suffix))
     if cond:
         PASS += 1
     else:
@@ -42,6 +45,21 @@ class MockKodi(KodiAPI):
     def play_url(self, url):
         self.played_url = url
         return {'result': 'OK'}
+
+
+class MockKodiWithEPG(MockKodi):
+    """PVR box that lists channels and returns one current broadcast."""
+
+    def __init__(self):
+        now = datetime.now(timezone.utc)
+        self._broadcast = {
+            'title': 'Now Show',
+            'starttime': (now - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S+00:00'),
+            'endtime': (now + timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S+00:00'),
+        }
+
+    def pvr_get_broadcasts(self, channel_id, fields=None, limits=None):
+        return {'result': {'broadcasts': [self._broadcast]}}
 
 
 def make_fixtures(tmp):
@@ -150,6 +168,111 @@ def test_epg_patch(tmp):
         if old_home[1]: os.environ['HOME'] = old_home[1]
 
 
+def make_current_fixtures(tmp):
+    """m3u + XMLTV with a programme covering *now* (for all-channels EPG)."""
+    tz = timezone(timedelta(hours=8))
+    now = datetime.now(tz)
+    m3u = os.path.join(tmp, 'current.m3u')
+    io.open(m3u, 'w', encoding='utf-8').write(
+        '#EXTM3U\n'
+        '#EXTINF:-1 tvg-id="cctv1" tvg-name="CCTV1",CCTV-1\n'
+        'http://example.com/cctv1\n')
+    xml = os.path.join(tmp, 'current.xml')
+    io.open(xml, 'w', encoding='utf-8').write(
+        '<tv>\n<channel id="cctv1"><display-name>CCTV-1</display-name></channel>\n'
+        '<programme start="%s" stop="%s" channel="cctv1"><title>Live Now</title></programme>\n'
+        '</tv>\n' % (
+            (now - timedelta(hours=1)).strftime('%Y%m%d%H%M%S') + ' +0800',
+            (now + timedelta(hours=1)).strftime('%Y%m%d%H%M%S') + ' +0800'))
+    return m3u, xml
+
+
+def _set_home(home):
+    old = (os.environ.get('USERPROFILE'), os.environ.get('HOME'))
+    os.environ['USERPROFILE'] = home
+    os.environ['HOME'] = home
+    return old
+
+
+def _restore_home(old):
+    if old[0] is not None:
+        os.environ['USERPROFILE'] = old[0]
+    if old[1] is not None:
+        os.environ['HOME'] = old[1]
+
+
+def _write_config(home, m3u, epg=''):
+    cfgdir = os.path.join(home, '.config', 'aiplayer')
+    os.makedirs(cfgdir, exist_ok=True)
+    io.open(os.path.join(cfgdir, 'config.json'), 'w', encoding='utf-8').write(
+        json.dumps({'iptv': {'m3u': m3u, 'epg': epg}, 'metadata': {'enabled': False}}))
+
+
+def _capture(fn):
+    buf = io.StringIO()
+
+    class Cap:
+        def write(self, t): buf.write(t)
+        def flush(self): pass
+
+    old = sys.stdout
+    sys.stdout = Cap()
+    try:
+        ret = fn()
+    finally:
+        sys.stdout = old
+    return buf.getvalue(), ret
+
+
+def test_epg_requires_channel():
+    print('=== _epg_requires_channel guard ===')
+    api = MockKodi()
+    check('kodi + no query + no m3u -> allowed', _epg_requires_channel(api, '', None) is False)
+    check('kodi + query -> allowed', _epg_requires_channel(api, 'CCTV-1', None) is False)
+    check('local + no query + no m3u -> error', _epg_requires_channel(None, '', None) is True)
+    check('local + m3u -> allowed', _epg_requires_channel(None, '', 'cfg.m3u') is False)
+    check('local + query -> allowed', _epg_requires_channel(None, 'CCTV-1', None) is False)
+
+
+def test_show_all_epg_kodi():
+    print('=== _show_all_epg_kodi: empty vs current programme ===')
+    out, ret = _capture(lambda: _show_all_epg_kodi(MockKodi()))
+    check('no programmes -> False', ret is False)
+    check('no programmes -> no output', out.strip() == '', repr(out))
+
+    out, ret = _capture(lambda: _show_all_epg_kodi(MockKodiWithEPG()))
+    check('current programme -> True', ret is True)
+    check('current programme shown', 'Now Show' in out, repr(out))
+
+
+def test_show_all_epg_fallback(tmp):
+    print('=== show_epg all-channels: KODI empty -> config m3u/XMLTV fallback ===')
+    m3u, xml = make_current_fixtures(tmp)
+    home = tempfile.mkdtemp(prefix='aiplayer_allel_')
+    _write_config(home, m3u, epg=xml)
+    old = _set_home(home)
+    try:
+        out, ret = _capture(lambda: show_epg(MockKodi(), None))
+        check('fallback triggered', 'falling back to m3u/XMLTV EPG patch' in out, repr(out))
+        check('current programme shown', 'Live Now' in out, repr(out))
+        check('success', ret is True)
+    finally:
+        _restore_home(old)
+
+
+def test_show_all_epg_no_source():
+    print('=== show_epg all-channels: KODI empty + no m3u -> False ===')
+    home = tempfile.mkdtemp(prefix='aiplayer_allnosrc_')
+    _write_config(home, '', epg='')
+    old = _set_home(home)
+    try:
+        out, ret = _capture(lambda: show_epg(MockKodi(), None))
+        check('reports no data', 'No EPG data available' in out, repr(out))
+        check('returns False', ret is False)
+    finally:
+        _restore_home(old)
+
+
 def test_m3u_for_tv_matrix():
     print('=== _m3u_for_tv scoping matrix ===')
     check('local + config -> config', _m3u_for_tv(None, 'cfg-m3u', kodi_mode=False) == 'cfg-m3u')
@@ -159,9 +282,12 @@ def test_m3u_for_tv_matrix():
 
 
 def main():
-    import tempfile
     tmp = tempfile.mkdtemp(prefix='aiplayer_tv_patch_')
     test_m3u_for_tv_matrix()
+    test_epg_requires_channel()
+    test_show_all_epg_kodi()
+    test_show_all_epg_fallback(tmp)
+    test_show_all_epg_no_source()
     test_catchup_patch(tmp)
     test_catchup_utc_named_template_local_fill(tmp)
     test_epg_patch(tmp)
