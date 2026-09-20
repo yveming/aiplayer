@@ -43,34 +43,103 @@ class KodiAPI:
         self.password = password
         self.auth = (username, password) if username and password else None
         self.id_counter = 1
-        
-        # Determine protocol
-        if protocol == 'auto':
-            # Local IPs use TCP, remote use HTTP
-            if is_local_ip(host):
-                self.protocol = 'tcp'
-            else:
-                self.protocol = 'http'
+        self._port_explicit = port is not None
+
+        # protocol='auto': don't guess permanently. Keep an initial guess and
+        # resolve on the first request by probing HTTP then TCP (local boxes
+        # try TCP first) - remote KODI often runs TCP on 9090, which the old
+        # "remote always HTTP" guess could never reach without --protocol tcp.
+        self._auto = (protocol == 'auto')
+        self._auto_resolved = not self._auto
+        if self._auto:
+            self.protocol = 'tcp' if is_local_ip(host) else 'http'
         else:
             self.protocol = protocol
-        
+
         # Set port based on protocol
         if port is None:
             self.port = 9090 if self.protocol == 'tcp' else 8080
         else:
             self.port = port
-        
-        # Build connection URL/endpoint
-        if self.protocol == 'http':
-            self.base_url = f'http://{host}:{self.port}/jsonrpc'
+
+        self._set_base_url()
+
+        if self._auto:
+            print(f"Connected to KODI (auto-detect: {host})")
         else:
-            self.base_url = None  # TCP uses raw socket
-        
-        print(f"Connected to KODI (protocol: {self.protocol}, port: {self.port})")
-    
-    
+            print(f"Connected to KODI (protocol: {self.protocol}, port: {self.port})")
+
+    def _set_base_url(self):
+        self.base_url = (f'http://{self.host}:{self.port}/jsonrpc'
+                         if self.protocol == 'http' else None)
+
+    def _protocol_port(self, proto):
+        if self._port_explicit:
+            return self.port
+        return 9090 if proto == 'tcp' else 8080
+
+    def _probe_version(self):
+        """Best-effort JSONRPC.Version probe with no output (for auto-detect)."""
+        payload = json.dumps({"jsonrpc": "2.0", "method": "JSONRPC.Version", "id": 0})
+        data = None
+        try:
+            if self.protocol == 'http':
+                r = requests.post(self.base_url, data=payload,
+                                  auth=self.auth, timeout=3)
+                if r.status_code != 200:
+                    return False
+                data = r.json()
+            else:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(3)
+                try:
+                    sock.connect((self.host, self.port))
+                    sock.sendall((payload + '\n').encode('utf-8'))
+                    buf = b''
+                    while True:
+                        chunk = sock.recv(8192)
+                        if not chunk:
+                            break
+                        buf += chunk
+                        try:
+                            data = json.loads(buf.decode('utf-8'))
+                            break
+                        except (json.JSONDecodeError, UnicodeDecodeError):
+                            continue
+                finally:
+                    sock.close()
+        except (OSError, ValueError, requests.exceptions.RequestException):
+            return False
+        return isinstance(data, dict) and 'result' in data and 'version' in data['result']
+
+    def _auto_candidates(self):
+        """Protocols to try for 'auto'. A port pins the transport when it is
+        one of the well-known ones (8080=http, 9090=tcp); other custom ports
+        are tried with both."""
+        if self._port_explicit:
+            if self.port == 8080:
+                return ['http']
+            if self.port == 9090:
+                return ['tcp']
+        return ['tcp', 'http'] if is_local_ip(self.host) else ['http', 'tcp']
+
+    def _resolve_auto(self):
+        """Resolve protocol='auto' once, by probing the transports in order."""
+        if not self._auto or self._auto_resolved:
+            return
+        self._auto_resolved = True
+        for proto in self._auto_candidates():
+            prev = (self.protocol, self.port, self.base_url)
+            self.protocol = proto
+            self.port = self._protocol_port(proto)
+            self._set_base_url()
+            if self._probe_version():
+                return
+            self.protocol, self.port, self.base_url = prev
+
     def _request(self, method, params=None):
         """Send JSON-RPC request to KODI"""
+        self._resolve_auto()
         payload = {
             "jsonrpc": "2.0",
             "method": method,
@@ -111,14 +180,16 @@ class KodiAPI:
     
     def _request_tcp(self, payload_str):
         """Send request via TCP socket (JSON-RPC over TCP, newline-delimited)"""
+        sock = None
+        result = None
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(10)
             sock.connect((self.host, self.port))
-            
+
             # Send payload with newline delimiter
             sock.sendall((payload_str + '\n').encode('utf-8'))
-            
+
             # Read response until we get a complete JSON
             response_data = b''
             while True:
@@ -126,20 +197,14 @@ class KodiAPI:
                 if not chunk:
                     break
                 response_data += chunk
-                # Try to parse complete JSON
                 try:
                     result = json.loads(response_data.decode('utf-8'))
                     break  # Valid JSON received
-                except json.JSONDecodeError:
-                    continue  # Incomplete JSON, keep reading
-                except UnicodeDecodeError:
-                    continue  # Incomplete UTF-8, keep reading
-            
-            sock.close()
-            
-            if not response_data:
-                return None
-            
+                except (json.JSONDecodeError, UnicodeDecodeError):
+                    continue  # Incomplete JSON/UTF-8, keep reading
+
+            # A port can be open yet speak another protocol: no parseable JSON
+            # means no usable reply - return None instead of crashing.
             return result
         except socket.timeout as e:
             print(f"TCP Socket Timeout: {e}", file=sys.stderr)
@@ -151,10 +216,11 @@ class KodiAPI:
             print(f"Invalid JSON response: {e}", file=sys.stderr)
             return None
         finally:
-            try:
-                sock.close()
-            except:
-                pass
+            if sock is not None:
+                try:
+                    sock.close()
+                except OSError:
+                    pass
     
     def get_version(self):
         """Get KODI version"""
@@ -188,8 +254,8 @@ class KodiAPI:
     def player_get_item(self, player_id=0, properties=None):
         """Get the item currently loaded by a player.
 
-        KODI returns only the requested fields. The 11 box rejects most
-        properties with -32602 (it allows title/file/duration), so when an
+        KODI returns only the requested fields. Some boxes reject most
+        properties with -32602 (allowing only title/file/duration), so when an
         explicit property list fails we retry with the minimal set.
         """
         props = properties if properties is not None else ['title', 'file']
@@ -343,6 +409,13 @@ class KodiAPI:
     def playlist_clear(self, playlist_id):
         """Clear playlist"""
         return self._request('Playlist.Clear', {'playlistid': playlist_id})
+
+    def playlist_remove(self, playlist_id, position):
+        """Remove the item at `position` from a playlist"""
+        return self._request('Playlist.Remove', {
+            'playlistid': playlist_id,
+            'position': position,
+        })
     
     def playlist_play(self, playlist_id):
         """Play playlist"""

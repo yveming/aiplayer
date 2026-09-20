@@ -79,6 +79,9 @@ class KodiBackend(Player):
     def playlist_clear(self):
         return self.kodi.playlist_clear(self._playlist_id_for_write())
 
+    def playlist_remove(self, index):
+        return self.kodi.playlist_remove(self._playlist_id_for_write(), index)
+
     def playlist_play_index(self, index):
         return self.kodi.player_open_item(
             {'playlistid': self._playlist_id_for_write(), 'position': index})

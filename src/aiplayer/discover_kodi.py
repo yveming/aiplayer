@@ -112,27 +112,43 @@ def check_kodi_api_http(ip, port=8080, credentials=None):
     
     return False
 
-def check_kodi_api_tcp(ip, port=9090):
-    """Check if KODI TCP WebSocket API is available"""
+def check_kodi_api_tcp(ip, port=9090, timeout=3):
+    """Check if KODI's raw TCP JSON-RPC API is available.
+
+    KODI's TCP API is newline-delimited JSON over a plain socket - *not*
+    WebSocket. kodi_api.py talks to it with a raw socket, so discovery must do
+    the same; the old websocket-based probe never matched the real transport
+    (and needed a package that is not a dependency), so raw-TCP boxes were
+    never discovered.
+    """
+    payload = json.dumps({"jsonrpc": "2.0", "method": "JSONRPC.Version", "id": 1})
+    sock = None
     try:
-        import websocket
-        ws = websocket.create_connection(
-            f'ws://{ip}:{port}/jsonrpc',
-            timeout=3,
-            suppress_origin=True
-        )
-        ws.send('{"jsonrpc":"2.0","method":"JSONRPC.Version","id":1}')
-        response = ws.recv()
-        ws.close()
-        
-        import json
-        data = json.loads(response)
-        if 'result' in data and 'version' in data['result']:
-            return True
-    except:
-        pass
-    
-    return False
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+        sock.connect((ip, port))
+        sock.sendall((payload + '\n').encode('utf-8'))
+        data = b''
+        while True:
+            chunk = sock.recv(8192)
+            if not chunk:
+                break
+            data += chunk
+            try:
+                result = json.loads(data.decode('utf-8'))
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                continue
+            if 'result' in result and 'version' in result['result']:
+                return True
+            return False
+    except OSError:
+        return False
+    finally:
+        if sock is not None:
+            try:
+                sock.close()
+            except OSError:
+                pass
 
 def discover_mdns(timeout=5):
     """Discover devices via Zeroconf/mDNS"""
@@ -218,7 +234,7 @@ def discover_kodi(credentials=None):
                         'ip': actual_ip,
                         'port': port,
                         'name': device_name,
-                        'local': True,
+                        'local': _is_local_ip(ip),
                         'protocol': 'tcp'
                     }
             else:

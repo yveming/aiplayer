@@ -59,6 +59,10 @@ class Player(ABC):
         """Clear the playlist."""
 
     @abstractmethod
+    def playlist_remove(self, index):
+        """Remove the playlist entry at `index`."""
+
+    @abstractmethod
     def playlist_play_index(self, index):
         """Jump to a playlist index."""
 

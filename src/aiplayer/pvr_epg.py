@@ -414,6 +414,19 @@ def _play_catchup_from_http(player, channel, date_str, time_str, m3u, epg=None, 
     return True
 
 
+def _result_error(result):
+    """Return a player/API error, or None on success.
+
+    Player methods return {'result': 'OK'} / {'error': ...} for KODI, or a
+    similar dict for mpv. Anything without an error is treated as success.
+    """
+    if isinstance(result, dict):
+        err = result.get('error')
+        if err not in (None, 'success'):
+            return err
+    return None
+
+
 def play_catchup(player, channel, date_str, time_str, m3u=None, epg=None):
     """Play catch-up TV. Routes through player abstraction."""
     local_tz = LOCAL_TZ
@@ -461,10 +474,20 @@ def play_catchup(player, channel, date_str, time_str, m3u=None, epg=None):
             print(f"\nPlaying catch-up: {program.get('title', 'Unknown')}")
             print(f"Broadcast ID: {broadcast_id}")
             item = {'broadcastid': broadcast_id}
-            if player:
-                player.play_item(item)
-            else:
-                api.player_open_item(item)
+            result = player.play_item(item) if player else api.player_open_item(item)
+            err = _result_error(result)
+            if err is not None:
+                # Some PVR clients reject broadcastid with -32602, so PVR
+                # cannot produce a catch-up URL. Fall back to building the
+                # URL ourselves from the configured m3u/XMLTV.
+                print(f"PVR catch-up via broadcastid failed: {err}")
+                patch_m3u = load_config().get('iptv', {}).get('m3u', '')
+                if not patch_m3u:
+                    print("Catch-up patch needs an m3u: pass --m3u or set iptv.m3u in config.")
+                    return False
+                print("falling back to m3u/XMLTV catch-up patch...")
+                return _play_catchup_from_http(player, channel, date_str, time_str,
+                                               patch_m3u, epg, local_tz)
             return True
 
         entries = parse_m3u(m3u_text)
@@ -486,9 +509,13 @@ def play_catchup(player, channel, date_str, time_str, m3u=None, epg=None):
         print(f"\nPlaying catch-up: {program.get('title', 'Unknown')}")
         print(f"Catchup URL: {url}")
         if player:
-            player.play_url(url)
+            result = player.play_url(url)
         else:
-            api.player_open_item({'file': url})
+            result = api.player_open_item({'file': url})
+        err = _result_error(result)
+        if err is not None:
+            print(f"Playback error: {err}")
+            return False
         return True
     else:
         print("No KODI available for PVR-based catch-up. Use --m3u instead.")

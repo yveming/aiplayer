@@ -15,7 +15,8 @@ import aiplayer.local_player as lp
 from aiplayer.local_player import MpvPlayer
 from aiplayer.player_kodi import KodiBackend
 from aiplayer.player_mpv import MpvBackend
-from aiplayer.aiplayer import _print_playlist, _play_files, ACTION_CHOICES, EPILOG
+from aiplayer.aiplayer import (_print_playlist, _play_files, _remove_from_queue,
+                               ACTION_CHOICES, EPILOG)
 
 passed = failed = 0
 
@@ -143,6 +144,10 @@ class FakeKodiWrite(FakeKodiPlaylist):
         self.writes.append(('clear', playlist_id))
         return {'result': 'OK'}
 
+    def playlist_remove(self, playlist_id, position):
+        self.writes.append(('remove', playlist_id, position))
+        return {'result': 'OK'}
+
     def player_open_item(self, item):
         self.writes.append(('open', item))
         return {'result': 'OK'}
@@ -183,6 +188,43 @@ check('play_index opens the resolved playlist',
       b.kodi.writes[-1] == ('open', {'playlistid': 1, 'position': 3}),
       str(b.kodi.writes))
 
+b = KodiBackend.__new__(KodiBackend)
+b.kodi = FakeKodiWrite(ptype='video', playlistid=1)
+b.play_file('/m/x.mkv')
+b.playlist_remove(2)
+check('remove targets resolved playlist and position',
+      b.kodi.writes[-1] == ('remove', 1, 2), str(b.kodi.writes))
+
+
+# --- mpv: playlist_remove issues playlist-remove with the index -------------
+def fake_remove_cmd(ipc_path, command):
+    fake_remove_cmd.seen.append(command)
+    if command == ["get_property", "idle"]:
+        return {"error": "success", "data": False}
+    return {"error": "success"}
+
+
+fake_remove_cmd.seen = []
+lp._cmd = fake_remove_cmd
+try:
+    p = MpvPlayer.__new__(MpvPlayer)
+    p.ipc_path = 'x'
+    p._running = True
+    p.playlist_remove(1)
+    check('mpv remove sends playlist-remove',
+          ["playlist-remove", 1] in fake_remove_cmd.seen, str(fake_remove_cmd.seen))
+finally:
+    lp._cmd = real_cmd
+
+# Idle mpv -> not running, never spawns.
+lp._cmd = lambda ipc, cmd: {"error": "not running"}
+idle = MpvPlayer.__new__(MpvPlayer)
+idle.ipc_path = 'x'
+idle._running = False
+check('mpv remove idle -> not running',
+      idle.playlist_remove(0).get('error') == 'not running')
+lp._cmd = real_cmd
+
 
 # --- playfiles batch: open first, append rest, never pre-clear --------------
 class FakeBatchPlayer:
@@ -222,6 +264,42 @@ check('playfiles does not append after an error',
       [c for c in fp2.calls if c[0] == 'append'] == [], str(fp2.calls))
 
 
+# --- remove: resolve a path to a queue index --------------------------------
+class FakeQueuePlayer:
+    def __init__(self):
+        self.removed = []
+        self.items = [
+            {'index': 0, 'title': 'a.mp3', 'path': '/m/a.mp3', 'current': False},
+            {'index': 1, 'title': 'b.mp3', 'path': '/m/sub/b.mp3', 'current': True},
+        ]
+
+    def playlist_items(self):
+        return self.items
+
+    def playlist_remove(self, index):
+        self.removed.append(index)
+        return {'result': 'OK'}
+
+
+qp = FakeQueuePlayer()
+with contextlib.redirect_stdout(io.StringIO()):
+    ok = _remove_from_queue(qp, '/m/sub/b.mp3')
+check('remove matches full path', ok is True and qp.removed == [1], str(qp.removed))
+
+qp = FakeQueuePlayer()
+with contextlib.redirect_stdout(io.StringIO()):
+    ok = _remove_from_queue(qp, 'a.mp3')
+check('remove falls back to basename', ok is True and qp.removed == [0], str(qp.removed))
+
+qp = FakeQueuePlayer()
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    ok = _remove_from_queue(qp, 'zzz.mp3')
+check('remove reports a path not in queue', ok is False and qp.removed == [])
+check('remove prints not-in-queue message', 'Not in queue: zzz.mp3' in buf.getvalue(),
+      repr(buf.getvalue()))
+
+
 # --- CLI formatting ---------------------------------------------------------
 def render(entries, as_json=False):
     buf = io.StringIO()
@@ -243,12 +321,21 @@ js = render(sample, as_json=True)
 check('json output round-trips', json.loads(js) == sample, js)
 
 
-# --- action ordering: playlist must come immediately before status ----------
-check('action list has playlist before status',
-      ACTION_CHOICES.index('playlist') + 1 == ACTION_CHOICES.index('status'),
+# --- action ordering: file/queue actions grouped before control -------------
+check('action list has append/list/remove',
+      all(a in ACTION_CHOICES for a in ('append', 'list', 'remove')),
       str(ACTION_CHOICES))
-check('EPILOG lists playlist before status',
-      EPILOG.index('playlist') < EPILOG.index('status'))
+check('old action names removed',
+      'enqueue' not in ACTION_CHOICES and 'playlist' not in ACTION_CHOICES,
+      str(ACTION_CHOICES))
+check('status stays last',
+      ACTION_CHOICES.index('status') == len(ACTION_CHOICES) - 1, str(ACTION_CHOICES))
+check('EPILOG groups file/queue actions on one line',
+      'files    playfile | playfiles | append | list | remove' in EPILOG, EPILOG)
+check('EPILOG files group precedes control',
+      EPILOG.index('files    playfile') < EPILOG.index('control  pause'), EPILOG)
+check('EPILOG does not mention old names',
+      'enqueue' not in EPILOG and 'playlist' not in EPILOG, EPILOG)
 
 print()
 print('TOTAL: %d passed, %d failed' % (passed, failed))

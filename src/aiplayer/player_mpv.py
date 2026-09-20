@@ -44,6 +44,9 @@ class MpvBackend(Player):
     def playlist_clear(self):
         return self.local.playlist_clear()
 
+    def playlist_remove(self, index):
+        return self.local.playlist_remove(index)
+
     def playlist_play_index(self, index):
         return self.local.playlist_play_index(index)
 
