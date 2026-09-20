@@ -16,15 +16,21 @@ Offline test suite for aiplayer (KODI + local mpv unified player).
 | `test_priority_order.py`      | offline     | no    | CLI > config > derived priority: EPG source resolution + mpv path chain |
 | `test_kodi_api_contract.py`   | offline     | no    | KodiAPI `player_get_item`/`player_get_properties` + KodiBackend echo paths |
 | `test_playlist.py`            | offline     | no    | mpv + KODI playlist view + CLI formatting + action ordering |
+| `test_discovery.py`             | offline     | no    | sentinel `--host`, raw-socket TCP probe, creds, multi-instance |
 | `run_all.py`                    | runner      | no    | Run every offline suite + summarise                         |
 | `REAL_KODI_TESTS.md`            | checklist   | YES   | Manual real-KODI test commands (movie / music / tv / pvr)   |
-| `test_e2e_real_kodi.py`         | integration | YES   | Auto smoke-test against a real KODI box                     |
+| `test_e2e_real_kodi.py`         | integration | YES   | Read-only smoke-test against a real KODI box (`--box`)      |
+| `real_playback_check.py`        | integration | YES   | Playback checks: tv / catchup / queue (plays media!)        |
 | `archive/`                      | archived    | YES   | 32 one-off `diag_*.py` probes (see `archive/README.md`)     |
 
 Offline suites never hit the network: online metadata (Douban) only
 activates on empty search results, which the mocks never produce, and
 can be force-disabled with `"metadata": {"enabled": false}` in
 `~/.config/aiplayer/config.json`.
+
+The m3u/XMLTV HTTP round-trip checks in `test_m3u_catchup.py` are opt-in:
+set `AIPLAYER_IPTV_TEST_URL` (e.g. `http://iptv.example/iptv/`) to enable
+them; otherwise they are skipped.
 
 ## Running
 
@@ -47,8 +53,9 @@ return code for bare scripts (pvr_units). Any non-zero failure exits 1.
   cover the search/matching logic (ordinals, year extraction, fuzzy
   path matching, time-zone math) without needing a KODI instance.
 - **Real KODI** tests in `REAL_KODI_TESTS.md` verify the same scenarios
-  end-to-end on the user's actual KODI server (192.168.100.11:9090).
-  These were the source of every bug fix in the changelog.
+  end-to-end on a real KODI box (TCP and/or HTTP + auth). These were the source
+  of every bug fix in the changelog. `test_e2e_real_kodi.py` is read-only;
+  `real_playback_check.py` actually plays and is meant to be run deliberately.
 
 ## When a test fails
 

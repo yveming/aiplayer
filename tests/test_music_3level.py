@@ -13,32 +13,32 @@ from aiplayer.search_play import search_remote_directory, parse_tv_query, extrac
 class MockKodiAPI:
     """Mock KODI API that serves a hardcoded 3-level music directory tree."""
     TREE = {
-        'nfs://192.168.100.2/Public/music/': [
-            {'filetype': 'directory', 'label': '赵传', 'file': 'nfs://192.168.100.2/Public/music/赵传/'},
-            {'filetype': 'directory', 'label': '周杰伦', 'file': 'nfs://192.168.100.2/Public/music/周杰伦/'},
-            {'filetype': 'directory', 'label': '李佳薇', 'file': 'nfs://192.168.100.2/Public/music/李佳薇/'},
+        'nfs://media.example/Public/music/': [
+            {'filetype': 'directory', 'label': '赵传', 'file': 'nfs://media.example/Public/music/赵传/'},
+            {'filetype': 'directory', 'label': '周杰伦', 'file': 'nfs://media.example/Public/music/周杰伦/'},
+            {'filetype': 'directory', 'label': '李佳薇', 'file': 'nfs://media.example/Public/music/李佳薇/'},
         ],
-        'nfs://192.168.100.2/Public/music/赵传/': [
-            {'filetype': 'directory', 'label': '我是一只小小鸟', 'file': 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/'},
-            {'filetype': 'directory', 'label': '我终于失去了你', 'file': 'nfs://192.168.100.2/Public/music/赵传/我终于失去了你/'},
+        'nfs://media.example/Public/music/赵传/': [
+            {'filetype': 'directory', 'label': '我是一只小小鸟', 'file': 'nfs://media.example/Public/music/赵传/我是一只小小鸟/'},
+            {'filetype': 'directory', 'label': '我终于失去了你', 'file': 'nfs://media.example/Public/music/赵传/我终于失去了你/'},
         ],
-        'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/': [
-            {'filetype': 'file', 'label': '我是一只小小鸟.mp3', 'file': 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我是一只小小鸟.mp3'},
-            {'filetype': 'file', 'label': '我终于失去了你.mp3', 'file': 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我终于失去了你.mp3'},
-            {'filetype': 'file', 'label': '我很丑可是我很温柔.mp3', 'file': 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我很丑可是我很温柔.mp3'},
+        'nfs://media.example/Public/music/赵传/我是一只小小鸟/': [
+            {'filetype': 'file', 'label': '我是一只小小鸟.mp3', 'file': 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我是一只小小鸟.mp3'},
+            {'filetype': 'file', 'label': '我终于失去了你.mp3', 'file': 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我终于失去了你.mp3'},
+            {'filetype': 'file', 'label': '我很丑可是我很温柔.mp3', 'file': 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我很丑可是我很温柔.mp3'},
         ],
-        'nfs://192.168.100.2/Public/music/赵传/我终于失去了你/': [
-            {'filetype': 'file', 'label': '我终于失去了你.mp3', 'file': 'nfs://192.168.100.2/Public/music/赵传/我终于失去了你/我终于失去了你.mp3'},
+        'nfs://media.example/Public/music/赵传/我终于失去了你/': [
+            {'filetype': 'file', 'label': '我终于失去了你.mp3', 'file': 'nfs://media.example/Public/music/赵传/我终于失去了你/我终于失去了你.mp3'},
         ],
-        'nfs://192.168.100.2/Public/music/周杰伦/': [
-            {'filetype': 'directory', 'label': '范特西', 'file': 'nfs://192.168.100.2/Public/music/周杰伦/范特西/'},
+        'nfs://media.example/Public/music/周杰伦/': [
+            {'filetype': 'directory', 'label': '范特西', 'file': 'nfs://media.example/Public/music/周杰伦/范特西/'},
         ],
-        'nfs://192.168.100.2/Public/music/周杰伦/范特西/': [
-            {'filetype': 'file', 'label': '双截棍.mp3', 'file': 'nfs://192.168.100.2/Public/music/周杰伦/范特西/双截棍.mp3'},
-            {'filetype': 'file', 'label': '爱在西元前.mp3', 'file': 'nfs://192.168.100.2/Public/music/周杰伦/范特西/爱在西元前.mp3'},
+        'nfs://media.example/Public/music/周杰伦/范特西/': [
+            {'filetype': 'file', 'label': '双截棍.mp3', 'file': 'nfs://media.example/Public/music/周杰伦/范特西/双截棍.mp3'},
+            {'filetype': 'file', 'label': '爱在西元前.mp3', 'file': 'nfs://media.example/Public/music/周杰伦/范特西/爱在西元前.mp3'},
         ],
-        'nfs://192.168.100.2/Public/music/李佳薇/': [
-            {'filetype': 'file', 'label': '煎熬.mp3', 'file': 'nfs://192.168.100.2/Public/music/李佳薇/煎熬.mp3'},
+        'nfs://media.example/Public/music/李佳薇/': [
+            {'filetype': 'file', 'label': '煎熬.mp3', 'file': 'nfs://media.example/Public/music/李佳薇/煎熬.mp3'},
         ],
     }
 
@@ -50,7 +50,7 @@ def run_test(name, query, expected_paths):
     print(f'\n=== Test: {name} ===')
     print(f'  query: {query!r}')
     api = MockKodiAPI()
-    matches = search_remote_directory(api, 'nfs://192.168.100.2/Public/music/', query, max_depth=10)
+    matches = search_remote_directory(api, 'nfs://media.example/Public/music/', query, max_depth=10)
     print(f'  matches: {len(matches)}')
     for m in matches:
         print(f'    - [{m["type"]}] {m.get("display", m["label"])}')
@@ -70,38 +70,38 @@ if __name__ == '__main__':
              '赵传',
              [
                  # All directory levels that contain the show name
-                 'nfs://192.168.100.2/Public/music/赵传/',
-                 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/',
-                 'nfs://192.168.100.2/Public/music/赵传/我终于失去了你/',
+                 'nfs://media.example/Public/music/赵传/',
+                 'nfs://media.example/Public/music/赵传/我是一只小小鸟/',
+                 'nfs://media.example/Public/music/赵传/我终于失去了你/',
                  # All songs
-                 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我是一只小小鸟.mp3',
-                 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我终于失去了你.mp3',
-                 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我很丑可是我很温柔.mp3',
-                 'nfs://192.168.100.2/Public/music/赵传/我终于失去了你/我终于失去了你.mp3',
+                 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我是一只小小鸟.mp3',
+                 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我终于失去了你.mp3',
+                 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我很丑可是我很温柔.mp3',
+                 'nfs://media.example/Public/music/赵传/我终于失去了你/我终于失去了你.mp3',
              ])
 
     # Test 2: search by artist + album (3-level target: album directory)
     run_test('Artist + Album - "赵传 我是一只小小鸟"',
              '赵传我是一只小小鸟',
              [
-                 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/',
-                 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我是一只小小鸟.mp3',
-                 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我终于失去了你.mp3',
-                 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我很丑可是我很温柔.mp3',
+                 'nfs://media.example/Public/music/赵传/我是一只小小鸟/',
+                 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我是一只小小鸟.mp3',
+                 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我终于失去了你.mp3',
+                 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我很丑可是我很温柔.mp3',
              ])
 
     # Test 3: search by artist + album + song (full path query)
     run_test('Full path - "赵传我是一只小小鸟的我是一只小小鸟"',
              '赵传我是一只小小鸟的我是一只小小鸟',
              [
-                 'nfs://192.168.100.2/Public/music/赵传/我是一只小小鸟/我是一只小小鸟.mp3',
+                 'nfs://media.example/Public/music/赵传/我是一只小小鸟/我是一只小小鸟.mp3',
              ])
 
     # Test 4: search by song only (might be too broad)
     run_test('Song only - "双截棍"',
              '双截棍',
              [
-                 'nfs://192.168.100.2/Public/music/周杰伦/范特西/双截棍.mp3',
+                 'nfs://media.example/Public/music/周杰伦/范特西/双截棍.mp3',
              ])
 
     # Test 5: parse_tv_query

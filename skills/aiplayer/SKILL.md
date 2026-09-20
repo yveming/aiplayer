@@ -93,15 +93,15 @@ Typical example (local media + one KODI box + IPTV):
 
 ```json
 {
-  "kodi":  {"host": "192.168.100.11", "port": 9090, "username": "", "password": "", "protocol": "tcp"},
-  "iptv":  {"m3u": "http://192.168.100.2:8000/iptv/iptv.m3u", "epg": ""},
+  "kodi":  {"host": "kodi.local", "port": 9090, "username": "", "password": "", "protocol": "tcp"},
+  "iptv":  {"m3u": "http://iptv.example/iptv/iptv.m3u", "epg": ""},
   "mpv":   {"path": ""},
   "media": {"movie": ["G:\\movie"], "video": ["G:\\video"], "music": ["G:\\music"]}
 }
 ```
 
-With this config, `aiplayer tv "CCTV1"` talks to the KODI box, `aiplayer movie "阿凡达"`
-searches local dirs, and `aiplayer catchup "CCTV1" --date yesterday --time 21:00` uses the
+With this config, `aiplayer tv "CCTV-1"` talks to the KODI box, `aiplayer movie "阿凡达"`
+searches local dirs, and `aiplayer catchup "CCTV-1" --date yesterday --time 21:00` uses the
 configured m3u - **zero connection flags**.
 
 ---
@@ -126,11 +126,12 @@ configured m3u - **zero connection flags**.
 | `volume_up` | Volume +10% | no | both |
 | `volume_down` | Volume -10% | no | both |
 | `mute` | Toggle mute | no | both |
-| `playlist` | List the current playlist, marking the playing entry | no | both |
-| `status` | Show current playback info | no | both |
 | `playfile` | Play/replace a file by path | yes (path) | both |
-| `enqueue` | Append a file to playlist | yes (path) | both |
 | `playfiles` | Clear playlist, play multiple files by path | yes (paths...) | both |
+| `append` | Append a file to the playlist | yes (path) | both |
+| `list` | List the current queue, marking the playing entry | no | both |
+| `remove` | Remove a queued file by path | yes (path) | both |
+| `status` | Show current playback info | no | both |
 
 ---
 
@@ -174,7 +175,7 @@ aiplayer movie "阿凡达"
 aiplayer movie "Avatar" --json
 
 # temporary override (different box than config)
-aiplayer --host 192.168.100.11 --port 9090 --protocol http --username kodi --password hermes movie "Interstellar"
+aiplayer --host 192.168.1.50 --port 8080 --protocol http --username kodi --password <pass> movie "Interstellar"
 ```
 
 Keywords: `放电影`, `电影`, `movie`
@@ -191,7 +192,7 @@ aiplayer video "黑暗物质第三季第四集"
 aiplayer video "Dark Matter S03E04" --json
 
 # temporary override
-aiplayer --host 192.168.100.11 --port 9090 video "Dark Matter S03E04"
+aiplayer --host 192.168.1.50 --port 8080 --protocol http --username kodi --password <pass> video "Dark Matter S03E04"
 ```
 
 Keywords: `放视频`, `剧集`, `视频`, `连续`, `video`, `episode`
@@ -216,14 +217,14 @@ Keywords: `放音乐`, `音乐`, `music`, `song`
 
 ```
 # play a channel (KODI PVR when kodi.host is set; m3u stream in local mode)
-aiplayer tv "CCTV1"
+aiplayer tv "CCTV-1"
 aiplayer tv "湖南卫视"
 
 # list channels (no query)
 aiplayer tv
 
 # temporary override: use a different m3u
-aiplayer tv "CCTV1" --m3u http://192.168.100.2:8000/iptv/iptv.m3u
+aiplayer tv "CCTV-1" --m3u http://iptv.example/iptv/iptv.m3u
 ```
 
 In KODI mode without `--m3u`, PVR is used. In local mode, config `iptv.m3u` is used.
@@ -242,14 +243,14 @@ or config `iptv.m3u`.
 
 ```
 # KODI PVR first, config m3u fallback if PVR has no EPG
-aiplayer epg "CCTV1"
-aiplayer epg "CCTV1" --date today
-aiplayer epg "CCTV1" --date yesterday
+aiplayer epg "CCTV-1"
+aiplayer epg "CCTV-1" --date today
+aiplayer epg "CCTV-1" --date yesterday
 aiplayer epg                              # all channels' current programs
 
 # temporary override (forces m3u/XMLTV)
-aiplayer epg --m3u http://192.168.100.2:8000/iptv/iptv.m3u
-aiplayer epg "CCTV1" --m3u http://192.168.100.2:8000/iptv/iptv.m3u --date yesterday
+aiplayer epg --m3u http://iptv.example/iptv/iptv.m3u
+aiplayer epg "CCTV-1" --m3u http://iptv.example/iptv/iptv.m3u --date yesterday
 ```
 
 Keywords: `节目单`, `epg`, `节目表`
@@ -260,14 +261,16 @@ Requires `--date` and `--time`. Date keywords: yesterday/today/tomorrow/昨天/�
 
 ```
 # config-driven (m3u/epg from config; local mode)
-aiplayer catchup "CCTV1" --date yesterday --time 21:00
+aiplayer catchup "CCTV-1" --date yesterday --time 21:00
 
-# KODI Sony box (broadcastid; config m3u is ignored in KODI mode)
-aiplayer --host 192.168.100.43 --port 8080 --protocol http --username kodi --password hermes catchup "CCTV1" --date yesterday --time "晚上9点"
+# PVR with broadcastid catch-up support
+aiplayer --host 192.168.1.50 --port 8080 --protocol http --username kodi --password <pass> catchup "CCTV-1" --date yesterday --time "晚上9点"
 
-# KODI box without catch-up support: pass --m3u explicitly (or the config
-# m3u/epg patch kicks in automatically when KODI returns no EPG)
-aiplayer --host 192.168.100.11 --port 9090 catchup "CCTV1" --date yesterday --time 21:00 --m3u http://192.168.100.2:8000/iptv/iptv.m3u
+# PVR whose broadcastid catch-up is rejected (-32602): with config iptv.m3u/epg
+# (or --m3u/--epg) it falls back to a self-built m3u/XMLTV URL automatically;
+# --m3u forces the self-built path explicitly.
+aiplayer --host kodi.local --port 9090 catchup "CCTV-1" --date yesterday --time 21:00
+aiplayer --host kodi.local --port 9090 catchup "CCTV-1" --date yesterday --time 21:00 --m3u http://iptv.example/iptv.m3u
 ```
 
 Keywords: `回看`, `电视回看`, `catchup`
@@ -279,11 +282,20 @@ Same connection flags as the last play command (config kodi.host -> no flags for
 ```
 aiplayer pause / play / playpause / next / prev / stop / restart
 aiplayer volume_up / volume_down / mute
-aiplayer playlist
-aiplayer status
+aiplayer list / status
 ```
 
-Keywords: `暂停`(pause), `继续`/`播放`(play), `下一首`/`下一集`(next), `上一首`/`上一集`(prev), `重播`/`从头开始`(restart), `停止`(stop), `大声点`(volume_up), `小声点`(volume_down), `静音`(mute), `队列`/`播放列表`/`排队`(playlist), `当前播放`/`状态`(status)
+Queue operations (same connection flags as the last play command):
+
+```
+aiplayer playfile "G:/music/a.flac"      # replace queue, play one file
+aiplayer playfiles "a.flac" "b.flac"     # clear queue, play many (starts at 0)
+aiplayer append "G:/music/c.flac"        # add one file to the queue
+aiplayer list                            # show numbered queue (▶ = playing)
+aiplayer remove "G:/music/c.flac"        # drop a queued file by path
+```
+
+Keywords: `暂停`(pause), `继续`/`播放`(play), `下一首`/`下一集`(next), `上一首`/`上一集`(prev), `重播`/`从头开始`(restart), `停止`(stop), `大声点`(volume_up), `小声点`(volume_down), `静音`(mute), `队列`/`播放列表`/`排队`(list), `当前播放`/`状态`(status)
 
 ---
 
@@ -322,7 +334,7 @@ aiplayer playfiles "G:/music/我恨.flac" "G:/music/另一首.flac"
 ```
 
 `playfiles` clears the playlist, appends all paths, and starts at index 0 - so there is
-no need to branch between `playfile` and `enqueue`.
+no need to branch between `playfile` and `append`.
 
 ---
 
@@ -331,16 +343,16 @@ no need to branch between `playfile` and `enqueue`.
 If `kodi.host`, `media.*`, or `iptv.m3u/epg` are missing when an action needs them, ask the
 user once and write the values into `~/.config/aiplayer/config.json` (keep the JSON valid)
 instead of asking again on later runs. Example IPTV backend:
-http://192.168.100.2:8000/iptv/iptv.m3u
+http://iptv.example/iptv/iptv.m3u
 
 ---
 
 ## Important Notes
 
-- **Discovery is slow (~5s)**: never `--auto` unless the user asks; prefer config `kodi.host` or `--host`.
-- **CoreELEC/11-box catch-up**: PVR catch-up returns -32602. Either pass `--m3u` explicitly, or let the automatic m3u/XMLTV patch use config `iptv.m3u`/`iptv.epg`.
-- **Sony TV catch-up**: broadcastid from PVR works; config m3u is ignored in KODI mode, so catchup stays on broadcastid.
-- **m3u scoping**: config `iptv.m3u` applies in local mode only; in KODI mode pass `--m3u` explicitly (PVR actions are never hijacked). When KODI returns no EPG, `catchup`/`epg` fall back to the m3u/XMLTV patch automatically (config or `--m3u`/`--epg`).
+- **Discovery is slow (~5s)**: never `--auto` unless the user asks; prefer config `kodi.host` or `--host`. `--auto` probes HTTP (8080) and TCP (9090) and, with several instances, needs `--host` to choose. For DHCP boxes use an mDNS name (e.g. `kodi.local`), not the IP. With no action, `--auto` only discovers and lists instances (`aiplayer --auto`, or `--auto --json` for a JSON array; exit 0 if any found, else 1) - it does not connect.
+- **Catch-up without broadcastid support**: if the PVR client rejects broadcastid with -32602, `catchup` detects that and automatically falls back to a self-built m3u/XMLTV URL (config `iptv.m3u`/`iptv.epg`, or `--m3u`/`--epg`); with no m3u it fails loudly. `--m3u` forces the self-built path.
+- **Catch-up with broadcastid support**: the PVR client builds the URL from the m3u; `catchup` stays on broadcastid (no fallback needed).
+- **m3u scoping**: config `iptv.m3u` applies in local mode; in KODI mode `tv` uses PVR. When KODI returns no EPG, or catch-up broadcastid is rejected, `catchup`/`epg` fall back to the m3u/XMLTV patch automatically (config or `--m3u`/`--epg`).
 - **Catchup time filling**: catchup placeholders (incl. `{utc:}`-named ones) are filled with box-local wall clock - mirrors KODI pvr.iptvsimple's actual behaviour (field-verified: the backend interprets playseek as local time).
 - **Local media roots**: from config "media" section (no built-in defaults).
 - **Online metadata (Douban)**: when a movie/video search finds nothing, Douban expands the query into alias titles (zh<->en) and retries; person names fall back to filmography. Unofficial endpoints - failures degrade silently to local-only search. Music search never goes online.

@@ -441,6 +441,13 @@ class MpvPlayer:
         self._ensure_running()
         return self._cmd(["playlist-clear"])
 
+    def playlist_remove(self, index):
+
+        # Removing only makes sense against a live playlist; do not spawn mpv.
+        if not self._probe():
+            return {"error": "not running"}
+        return self._cmd(["playlist-remove", index])
+
     def playlist_play_index(self, index):
 
         self._ensure_running()

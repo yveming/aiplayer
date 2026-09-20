@@ -73,12 +73,13 @@ aiplayer [连接参数] <动作> [查询词] [动作参数]
 
 | 方式 | 说明 |
 |---|---|
-| 无参数（默认） | 本地 mpv 模式，搜索 config.json 中配置的媒体目录 |
-| `--host <IP> [--port] [--protocol tcp\|http] [--username --password]` | 直连 KODI |
-| `--auto` | SSDP/mDNS 自动发现 KODI（约 5 秒，慢，偶尔用一次） |
+| 无参数（默认） | 配了 `kodi.host` 则用 KODI，否则本地 mpv（搜索 config.json 中的媒体目录） |
+| `--host <IP\|主机名> [--port] [--protocol tcp\|http] [--username --password]` | 直连 KODI（可写 mDNS 名，如 `kodi.local`） |
+| `--auto` | SSDP/mDNS 自动发现 KODI（约 5 秒，慢，偶尔用一次）；**不带动作时只列出可发现实例**（`--auto --json` 输出 JSON，有实例退出 0、无则 1） |
+| `--local` | 强制本地 mpv，忽略 config/`--host` 的 KODI |
 
 **动作**：必填。`movie` 电影 | `video` 剧集 | `music` 音乐 | `tv` 电视直播/频道 |
-`epg` 节目单 | `catchup` 回看 | `playfile`/`playfiles`/`enqueue` 文件播放 |
+`epg` 节目单 | `catchup` 回看 | `playfile`/`playfiles`/`append`/`list`/`remove` 文件播放与队列 |
 其余为播放控制；`stop` 会停止播放并退出本地 mpv 进程（下次播放重新启动），
 mpv 未运行时这些动作提示 Nothing playing。不做任何自动推断。
 
@@ -89,25 +90,31 @@ aiplayer video "黑暗物质 S03E04"
 aiplayer music --artist "赵传" --album "我是一只小小鸟"
 
 # IPTV（--m3u 接受 http(s) URL 或本地文件路径，也可来自配置）
-aiplayer tv "湖南卫视" --m3u "http://192.168.100.2:8000/iptv/iptv.m3u"
+aiplayer tv "湖南卫视" --m3u "http://iptv.example/iptv/iptv.m3u"
 aiplayer tv --m3u "iptv.m3u"
 aiplayer epg "湖南卫视" --m3u "http://..." --date yesterday
 aiplayer epg --m3u "http://..."                      # 不接频道 = 所有频道当前节目
 aiplayer catchup "湖南卫视" --m3u "http://..." --date yesterday --time 18:30
 
-# KODI 模式
-aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达三"
+# KODI 模式（动态 IP 用 mDNS 名，如 kodi.local；或配好 kodi.host 后免传）
+aiplayer --host kodi.local --port 9090 --protocol tcp movie "阿凡达三"
 aiplayer epg                                         # KODI PVR 优先，列出所有频道当前节目（无数据回退 m3u/XMLTV）
+aiplayer --host kodi.local --port 9090 --protocol tcp catchup "CCTV-1" --date yesterday --time 21:00
+# ↑ 部分盒子的 PVR broadcastid 回看不可用，会自动回退到 m3u/XMLTV 自建 URL
 
 # 按路径直接播放
 aiplayer playfile "G:/music/歌.flac"
 aiplayer playfiles "G:/music/a.flac" "G:/music/b.flac"
 
+# 队列操作（list 显示编号；append/remove 按路径操作）
+aiplayer list
+aiplayer append "G:/music/歌.flac"
+aiplayer remove "G:/music/歌.flac"
+
 # 播放控制（作用于最近一次播放所在的模式）
 aiplayer pause
 aiplayer next
 aiplayer volume_up
-aiplayer playlist
 aiplayer status
 
 # JSON 输出（面向 AI/脚本，无交互提示）
@@ -186,19 +193,22 @@ python tests/test_movie_smoke.py
    新命令复用已运行的 mpv 实例；`stop` 后进程退出，下次播放重新启动。
 4. **播放控制跟随模式**：pause/next/volume 等作用于"最近一次播放"的模式，
    需带与播放时相同的 `--host`/`--auto` 参数（默认本地模式则不带）。
-5. **回看兼容性**：部分盒子 PVR broadcastid 回看返回 -32602（如 CoreELEC），
-   请使用 `--m3u <URL>` 自建回看 URL。
+5. **回看兼容性**：部分盒子的 PVR broadcastid 回看返回 -32602。
+   此时若配置了 `iptv.m3u`（或传了 `--m3u`），`catchup` 会**自动回退**到
+   m3u/XMLTV 自建 URL；都没有则明确报错。也可直接 `--m3u <URL>` 强制自建。
 6. **EPG 来源优先级**：`--epg` > 配置 `iptv.epg` > m3u 的 `x-tvg-url`；
    三者都没有时程序会提示配置。
 7. **Windows 控制台乱码**：中文输出异常时先执行 `chcp 65001` 或设置
    `PYTHONIOENCODING=utf-8`。
 8. **`--json` 模式**：搜索结果以 JSON 数组输出且无交互提示，供 AI/脚本
-   消费；**永不直接播放**（单命中也返回单元素数组），用 `playfile`/`playfiles`/`enqueue` 二次播放。
-9. **自动发现很慢**：`--auto` 触发 SSDP/mDNS（约 5 秒），日常请用配置或
-    `--host` 直连。
-10. **config m3u 作用域**：`iptv.m3u` 仅在本地模式自动生效；KODI 模式需显式 `--m3u`，
-    否则 PVR 动作（tv/epg/catchup）不会被劫持。KODI 不回 EPG 时，`catchup`/`epg`
-    会自动用 m3u/XMLTV（config 或 `--m3u`/`--epg`）打补丁。
-
+   消费；**永不直接播放**（单命中也返回单元素数组），用 `playfile`/`playfiles`/`append` 二次播放。
+9. **自动发现**：`--auto` 触发 SSDP/mDNS（约 5 秒，慢，偶尔用一次），可发现
+   HTTP(8080) 与 TCP(9090) 的 KODI。不带动作时只做发现并列出结果：
+   `aiplayer --auto`（`--auto --json` 输出实例数组）。日常建议用 `--host` 直连，
+   动态 IP 可写 mDNS 名（如 `kodi.local`）或配好 `kodi.host`。
+10. **config m3u 作用域**：`iptv.m3u` 仅在本地模式直接生效；KODI 模式的 `tv`
+    用 PVR。但 KODI 不回 EPG、或 `catchup` 的 broadcastid 被拒（-32602）时，
+    `catchup`/`epg` 会自动用 config `iptv.m3u`/`--m3u`（+ `iptv.epg`/`--epg`/
+    m3u `x-tvg-url`）打补丁，不会劫持正常的 PVR 动作。
 11. **catchup 占位符时区**：`catchup-source` 模板占位符（含 `{utc:}` 命名）统一按本地时间填充，
     与 KODI iptvsimple 的实际行为一致（实测后端 playseek 按本地解释）。

@@ -3,7 +3,7 @@
 that mirrors a typical configured media root (config.json "media" section).
 
 Layout:
-  nfs://192.168.100.2/Public/movie/
+  nfs://media.example/Public/movie/
     阿凡达/
       Avatar.2009.EXTENDED.1080p.BluRay.REMUX.AVC.DTS-HD.MA.5.1-FGT.mkv
       Avatar.The.Way.of.Water.2022.2160p.WEB-DL.DDP5.1.Atmos.HEVC-CMRG.mkv
@@ -18,20 +18,20 @@ from aiplayer.search_play import (
     _pick_ordinal_files, extract_movie_year,
 )
 
-AVATAR_2009 = 'nfs://192.168.100.2/Public/movie/阿凡达/Avatar.2009.EXTENDED.1080p.BluRay.REMUX.AVC.DTS-HD.MA.5.1-FGT.mkv'
-AVATAR_2022 = 'nfs://192.168.100.2/Public/movie/阿凡达/Avatar.The.Way.of.Water.2022.2160p.WEB-DL.DDP5.1.Atmos.HEVC-CMRG.mkv'
-AVATAR_2025 = 'nfs://192.168.100.2/Public/movie/阿凡达/Avatar.Fire.and.Ash.2025.2160p.iTunes.WEB-DL.DDP.7.1.Atmos.DV.H.265-DreamHD.mkv'
+AVATAR_2009 = 'nfs://media.example/Public/movie/阿凡达/Avatar.2009.EXTENDED.1080p.BluRay.REMUX.AVC.DTS-HD.MA.5.1-FGT.mkv'
+AVATAR_2022 = 'nfs://media.example/Public/movie/阿凡达/Avatar.The.Way.of.Water.2022.2160p.WEB-DL.DDP5.1.Atmos.HEVC-CMRG.mkv'
+AVATAR_2025 = 'nfs://media.example/Public/movie/阿凡达/Avatar.Fire.and.Ash.2025.2160p.iTunes.WEB-DL.DDP.7.1.Atmos.DV.H.265-DreamHD.mkv'
 
 ALL_THREE = {AVATAR_2009, AVATAR_2022, AVATAR_2025}
 
 
 class MockKodiAPI:
     TREE = {
-        'nfs://192.168.100.2/Public/movie/': [
+        'nfs://media.example/Public/movie/': [
             {'filetype': 'directory', 'label': '阿凡达',
-             'file': 'nfs://192.168.100.2/Public/movie/阿凡达/'},
+             'file': 'nfs://media.example/Public/movie/阿凡达/'},
         ],
-        'nfs://192.168.100.2/Public/movie/阿凡达/': [
+        'nfs://media.example/Public/movie/阿凡达/': [
             {'filetype': 'file', 'label': os.path.basename(AVATAR_2009), 'file': AVATAR_2009},
             {'filetype': 'file', 'label': os.path.basename(AVATAR_2022), 'file': AVATAR_2022},
             {'filetype': 'file', 'label': os.path.basename(AVATAR_2025), 'file': AVATAR_2025},
@@ -45,7 +45,7 @@ class MockKodiAPI:
 def test_no_ordinal_returns_all_three():
     print('\n=== Test: 阿凡达 (no ordinal) -> all 3 files ===')
     api = MockKodiAPI()
-    matches = search_remote_directory(api, 'nfs://192.168.100.2/Public/movie/', '阿凡达')
+    matches = search_remote_directory(api, 'nfs://media.example/Public/movie/', '阿凡达')
     files = {m['file'] for m in matches if m['type'] == 'file'}
     print('  matches:', [m.get('label') for m in matches])
     if files == ALL_THREE:
@@ -63,7 +63,7 @@ def test_ordinal_3_picks_2025():
     ord_n = extract_movie_ordinal(q)
     base = strip_movie_ordinal(q)
     print(f'  parsed: ord={ord_n}, base={base!r}')
-    matches = search_remote_directory(api, 'nfs://192.168.100.2/Public/movie/', base)
+    matches = search_remote_directory(api, 'nfs://media.example/Public/movie/', base)
     if ord_n:
         matches = _pick_ordinal_files(matches, ord_n)
     files = {m['file'] for m in matches if m['type'] == 'file'}
@@ -83,7 +83,7 @@ def test_ordinal_1_picks_2009():
     q = '阿凡达一'
     ord_n = extract_movie_ordinal(q)
     base = strip_movie_ordinal(q)
-    matches = search_remote_directory(api, 'nfs://192.168.100.2/Public/movie/', base)
+    matches = search_remote_directory(api, 'nfs://media.example/Public/movie/', base)
     matches = _pick_ordinal_files(matches, ord_n)
     files = {m['file'] for m in matches if m['type'] == 'file'}
     print('  picked:', [m.get('label') for m in matches])
@@ -101,7 +101,7 @@ def test_ordinal_arabic_2_picks_2022():
     q = '阿凡达 2'
     ord_n = extract_movie_ordinal(q)
     base = strip_movie_ordinal(q)
-    matches = search_remote_directory(api, 'nfs://192.168.100.2/Public/movie/', base)
+    matches = search_remote_directory(api, 'nfs://media.example/Public/movie/', base)
     matches = _pick_ordinal_files(matches, ord_n)
     files = {m['file'] for m in matches if m['type'] == 'file'}
     print('  picked:', [m.get('label') for m in matches])
@@ -119,7 +119,7 @@ def test_ordinal_arabic_3_attached():
     q = '阿凡达3'
     ord_n = extract_movie_ordinal(q)
     base = strip_movie_ordinal(q)
-    matches = search_remote_directory(api, 'nfs://192.168.100.2/Public/movie/', base)
+    matches = search_remote_directory(api, 'nfs://media.example/Public/movie/', base)
     matches = _pick_ordinal_files(matches, ord_n)
     files = {m['file'] for m in matches if m['type'] == 'file'}
     print('  picked:', [m.get('label') for m in matches])
@@ -137,7 +137,7 @@ def test_di_picks_3():
     q = '阿凡达第三部'
     ord_n = extract_movie_ordinal(q)
     base = strip_movie_ordinal(q)
-    matches = search_remote_directory(api, 'nfs://192.168.100.2/Public/movie/', base)
+    matches = search_remote_directory(api, 'nfs://media.example/Public/movie/', base)
     matches = _pick_ordinal_files(matches, ord_n)
     files = {m['file'] for m in matches if m['type'] == 'file'}
     print('  picked:', [m.get('label') for m in matches])

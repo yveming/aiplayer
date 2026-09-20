@@ -5,6 +5,8 @@ Auto-discovers KODI or falls back to local mpv playback with HTTP m3u/EPG for TV
 """
 
 import argparse
+import contextlib
+import io
 import json
 import sys
 import os
@@ -67,6 +69,43 @@ def _player_kind(args):
     return 'local'
 
 
+def _select_instance(instances, preferred_host):
+    """Pick one discovered KODI instance.
+
+    A single instance is returned as-is. With several, match the configured
+    host against the discovered IP or name; return None when there is no
+    unique match so the caller can list the choices instead of guessing.
+    """
+    if not instances:
+        return None
+    if len(instances) == 1:
+        return instances[0]
+    if preferred_host:
+        wanted = preferred_host.lower()
+        for inst in instances:
+            if inst.get('ip', '').lower() == wanted or \
+                    inst.get('name', '').lower() == wanted:
+                return inst
+    return None
+
+
+def _discovery_only(credentials=None, json_output=False):
+    """Run discovery for `aiplayer --auto` with no action.
+
+    Human mode lets discover_player() print the process and the instance
+    list (falling back to local mode info). JSON mode suppresses that and
+    prints just the discovered KODI instances. Returns the instance list.
+    """
+    if json_output:
+        with contextlib.redirect_stdout(io.StringIO()):
+            discovery = discover_player(credentials=credentials)
+        instances = discovery.get('instances') or []
+        print(json.dumps(instances, ensure_ascii=False))
+        return instances
+    discovery = discover_player(credentials=credentials)
+    return discovery.get('instances') or []
+
+
 def _epg_requires_channel(player, query, m3u):
     """True when an EPG request cannot list anything.
 
@@ -96,6 +135,30 @@ def _print_playlist(entries, json_output=False):
         print(f"{mark} {e['index'] + 1}. {e['title']}")
 
 
+def _remove_from_queue(player, path):
+    """Remove the first queue entry matching `path`.
+
+    `list` only shows basenames, so match the full path first, then fall
+    back to basename/title. Returns True on success.
+    """
+    entries = player.playlist_items()
+    target = os.path.basename(path)
+    match = next((e for e in entries if e.get('path') == path), None)
+    if match is None:
+        match = next((e for e in entries
+                      if os.path.basename(e.get('path', '')) == target
+                      or e.get('title') == path), None)
+    if match is None:
+        print(f"Not in queue: {path}")
+        return False
+    result = player.playlist_remove(match['index'])
+    if isinstance(result, dict) and result.get('error') not in (None, 'success'):
+        print(f"Remove error: {result['error']}")
+        return False
+    print(f"Removed: {match['title']}")
+    return True
+
+
 def _play_files(player, paths):
     """Play a batch: open the first file, then append the rest.
 
@@ -116,24 +179,24 @@ def _play_files(player, paths):
 
 ACTION_CHOICES = [
     'movie', 'video', 'tv', 'music', 'catchup', 'epg',
+    'playfile', 'playfiles', 'append', 'list', 'remove',
     'pause', 'play', 'playpause', 'next', 'prev', 'stop',
-    'restart', 'volume_up', 'volume_down', 'mute',
-    'playlist', 'status', 'playfile', 'enqueue', 'playfiles',
+    'restart', 'volume_up', 'volume_down', 'mute', 'status',
 ]
 
 
 EPILOG = """actions:
   media    movie | video (TV episodes, SxxEyy) | music
   live TV  tv (play/list channels) | epg (guide) | catchup (needs --date --time)
-  files    playfile | enqueue | playfiles
+  files    playfile | playfiles | append | list | remove
   control  pause | play | playpause | next | prev | stop | restart |
-           volume_up | volume_down | mute | playlist | status
+           volume_up | volume_down | mute | status
 
 examples:
-  aiplayer video "黑暗物质第三季第四集" --json    # episodes
-  aiplayer movie "阿凡达"                          # movie
-  aiplayer tv "CCTV1"                              # live TV (config-driven)
-  aiplayer catchup "CCTV1" --date yesterday --time 21:00"""
+  aiplayer video "黑暗物质第三季第四集" --json # episodes
+  aiplayer movie "阿凡达"                      # movie
+  aiplayer tv "CCTV-1"                         # live TV
+  aiplayer catchup "CCTV-1" --date yesterday --time 21:00"""
 
 
 def main():
@@ -154,20 +217,24 @@ def main():
                         help='Search query or file paths')
 
     g_kodi = parser.add_argument_group('KODI connection')
-    g_kodi.add_argument('--host', default=kodi_cfg.get('host', ''),
-                        help='KODI host IP (default from config)')
-    g_kodi.add_argument('--port', type=int, default=kodi_cfg.get('port') or None,
-                        help='KODI port')
-    g_kodi.add_argument('--username', default=kodi_cfg.get('username', ''),
-                        help='KODI username')
-    g_kodi.add_argument('--password', default=kodi_cfg.get('password', ''),
-                        help='KODI password')
+    # Defaults stay None so an *explicit* --host/--auto can be told apart from
+    # config values: argparse defaults derived from config made --host always
+    # truthy, which permanently shadowed --auto in _player_kind().
+    g_kodi.add_argument('--host', default=None,
+                        help='KODI host IP/hostname (default from config)')
+    g_kodi.add_argument('--port', type=int, default=None,
+                        help='KODI port (default from config)')
+    g_kodi.add_argument('--username', default=None,
+                        help='KODI username (default from config)')
+    g_kodi.add_argument('--password', default=None,
+                        help='KODI password (default from config)')
     _cfg_protocol = kodi_cfg.get('protocol') or 'auto'
     g_kodi.add_argument('--protocol', choices=['tcp', 'http', 'auto'],
                         default=_cfg_protocol if _cfg_protocol in ('tcp', 'http', 'auto') else 'auto',
                         help='Connection protocol')
     g_kodi.add_argument('--auto', action='store_true',
-                        help='Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv')
+                        help='Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv; '
+                             'with no action, just list discoverable instances (JSON with --json)')
 
     g_iptv = parser.add_argument_group('IPTV')
     g_iptv.add_argument('--m3u', default=None,
@@ -195,14 +262,39 @@ def main():
                        help='Path to mpv executable (default from config)')
 
     args = parser.parse_args()
+    # Resolve connection settings CLI > config. args.host stays untouched so
+    # _player_kind() only treats an explicit --host as KODI mode.
+    kodi_host = args.host if args.host is not None else kodi_cfg.get('host', '')
+    # An explicit --host selects a different box; do not inherit the configured
+    # port (which belongs to the configured host). Let protocol='auto' pick the
+    # right default (8080/9090) instead.
+    if args.port is not None:
+        kodi_port = args.port
+    elif args.host is not None and args.host != kodi_cfg.get('host'):
+        kodi_port = None
+    else:
+        kodi_port = kodi_cfg.get('port') or None
+    kodi_user = args.username if args.username is not None else kodi_cfg.get('username', '')
+    kodi_pass = args.password if args.password is not None else kodi_cfg.get('password', '')
+    kodi_creds = [(kodi_user, kodi_pass)] if (kodi_user and kodi_pass) else None
+
     if args.action is None:
+        if args.auto:
+            # `aiplayer --auto` with no action just discovers and reports.
+            found = _discovery_only(kodi_creds, json_output=args.json)
+            sys.exit(0 if found else 1)
         print("No action provided. Run 'aiplayer --help' for the action list.")
         sys.exit(1)
+
     m3u_explicit = args.m3u is not None
     m3u_cfg = iptv_cfg.get('m3u', '')
     m3u_source = args.m3u if m3u_explicit else m3u_cfg
     kind = _player_kind(args)
     # KODI mode ignores config m3u unless --m3u is given explicitly (no wrong-action hijacking)
+    # Default (no --host/--auto/--local) follows config: a configured
+    # kodi.host means KODI, otherwise local mpv. --local always wins.
+    if kind == 'local' and not args.local and kodi_cfg.get('host'):
+        kind = 'kodi'
     m3u_for_tv = _m3u_for_tv(args.m3u, m3u_cfg, kind == 'kodi')
 
     # Determine player
@@ -212,30 +304,35 @@ def main():
         local_config['mpv_path'] = args.mpv_path
 
     if kind == 'kodi':
-        # User specified a KODI host directly
+        # An explicit --host was passed
         player = create_player(
             PlayerMode.KODI,
             kodi_config={
-                "host": args.host,
-                "port": args.port,
-                "username": args.username,
-                "password": args.password,
+                "host": kodi_host,
+                "port": kodi_port,
+                "username": kodi_user,
+                "password": kodi_pass,
                 "protocol": args.protocol,
             },
         )
-        print(f"Mode: KODI ({args.host}:{args.port or 9090})")
+        print(f"Mode: KODI ({kodi_host}:{kodi_port or 9090})")
     elif kind == 'auto':
         # --auto: auto-discover KODI, fall back to local
-        discovery = discover_player()
+        discovery = discover_player(credentials=kodi_creds)
         if discovery['mode'] == 'kodi':
-            inst = discovery['instances'][0]
+            inst = _select_instance(discovery['instances'], kodi_host)
+            if inst is None:
+                print("Multiple KODI instances found; pass --host to choose one:")
+                for i in discovery['instances']:
+                    print(f"  - {i['name']} ({i['ip']}:{i['port']})")
+                sys.exit(1)
             player = create_player(
                 PlayerMode.KODI,
                 kodi_config={
                     'host': inst['ip'],
                     'port': inst['port'],
-                    'username': args.username,
-                    'password': args.password,
+                    'username': kodi_user,
+                    'password': kodi_pass,
                     'protocol': inst.get('protocol', 'auto'),
                 },
             )
@@ -278,7 +375,7 @@ def main():
                     print(f"Stream URL: {url}")
                     print("Launching mpv...")
                     result = player.play_url(url)
-                    if isinstance(result, dict) and 'error' in result:
+                    if isinstance(result, dict) and result.get('error') not in (None, 'success'):
                         print(f"Playback error: {result['error']}")
                         success = False
                     else:
@@ -331,25 +428,30 @@ def main():
         else:
             print(f"Playing: {query}")
             success = True
-    elif action == 'enqueue':
+    elif action == 'append':
         if not query:
             print("File path required.")
             sys.exit(1)
         result = player.playlist_append(query)
         if isinstance(result, dict) and result.get('error') not in (None, 'success'):
-            print(f"Enqueue error: {result['error']}")
+            print(f"Append error: {result['error']}")
             success = False
         else:
-            print(f"Enqueued: {query}")
+            print(f"Appended: {query}")
             success = True
     elif action == 'playfiles':
         if not query_list:
             print("File paths required.")
             sys.exit(1)
         success = _play_files(player, query_list)
-    elif action == 'playlist':
+    elif action == 'list':
         _print_playlist(player.playlist_items(), json_output=args.json)
         success = True
+    elif action == 'remove':
+        if not query:
+            print("File path required.")
+            sys.exit(1)
+        success = _remove_from_queue(player, query)
     elif action == 'status':
         info = player.status()
         if not info:

@@ -10,14 +10,13 @@ and verifies that:
 Doesn't play anything. Safe to run on a live KODI.
 
 Usage:
-    # Default: 11 box (TCP, no auth)
-    python tests/test_e2e_real_kodi.py
-    # Sony TV (HTTP + auth)
-    python tests/test_e2e_real_kodi.py --host 192.168.100.43 --port 8080 --protocol http --username kodi --password hermes
-    # Other KODI
+    # Connection presets (override any field with --host/--port/...)
+    python tests/test_e2e_real_kodi.py --box tcp
+    python tests/test_e2e_real_kodi.py --box http
+    # Explicit connection
     python tests/test_e2e_real_kodi.py --host 1.2.3.4 --port 9090
     # Find the catchup channel id and broadcast structure
-    python tests/test_e2e_real_kodi.py --probe-channel "湖南卫视"
+    python tests/test_e2e_real_kodi.py --probe-channel "CCTV-1"
 """
 import argparse
 import os
@@ -37,16 +36,43 @@ def check(label, ok, detail=''):
     return 0 if ok else 1
 
 
+BOX_PRESETS = {
+    # Transport-based presets with example defaults; override with CLI flags.
+    'tcp': dict(host='kodi.local', port=9090, protocol='tcp',
+                username='', password=''),
+    'http': dict(host='kodi.local', port=8080, protocol='http',
+                 username='kodi', password=''),
+}
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--host', default='192.168.100.11')
-    ap.add_argument('--port', type=int, default=9090)
-    ap.add_argument('--protocol', choices=['tcp', 'http'], default='tcp')
-    ap.add_argument('--username', default='')
-    ap.add_argument('--password', default='')
-    ap.add_argument('--probe-channel', default='湖南卫视',
-                    help='Channel name to look up for the broadcast check (default 湖南卫视)')
+    ap.add_argument('--box', choices=list(BOX_PRESETS), default=None,
+                    help='Connection preset (tcp / http)')
+    ap.add_argument('--host', default=None)
+    ap.add_argument('--port', type=int, default=None)
+    ap.add_argument('--protocol', choices=['tcp', 'http'], default=None)
+    ap.add_argument('--username', default=None)
+    ap.add_argument('--password', default=None)
+    ap.add_argument('--probe-channel', default='CCTV-1综合',
+                    help='Channel name to look up for the broadcast check')
     args = ap.parse_args()
+
+    if args.box:
+        preset = BOX_PRESETS[args.box]
+        args.host = args.host if args.host is not None else preset['host']
+        args.port = args.port if args.port is not None else preset['port']
+        args.protocol = args.protocol if args.protocol is not None else preset['protocol']
+        args.username = args.username if args.username is not None else preset['username']
+        args.password = args.password if args.password is not None else preset['password']
+    if args.host is None:
+        args.host = 'kodi.local'
+    if args.port is None:
+        args.port = 9090
+    if args.protocol is None:
+        args.protocol = 'tcp'
+    args.username = args.username or ''
+    args.password = args.password or ''
 
     api = KodiAPI(host=args.host, port=args.port, protocol=args.protocol,
                   username=args.username, password=args.password)

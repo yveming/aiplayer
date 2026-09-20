@@ -9,6 +9,11 @@ from aiplayer.m3u_catchup import parse_m3u, find_channel, build_catchup_url, _re
 from aiplayer.m3u_catchup import (parse_xmltv, get_x_tvg_url, find_program_in_xmltv,
                          _parse_xmltv_time)
 
+# Optional live IPTV backend for the HTTP integration checks. Set
+# AIPLAYER_IPTV_TEST_URL (e.g. http://iptv.example/iptv/) to enable them;
+# unset means those checks are skipped so the suite stays offline.
+IPTV_TEST_BASE = os.environ.get('AIPLAYER_IPTV_TEST_URL', '').rstrip('/')
+
 
 SAMPLE_M3U = '''#EXTM3U
 #EXTINF:-1 tvg-id="cctv1" tvg-name="CCTV-1" catchup-source="http://example.com/cctv1/{utc}-{duration}.m3u8" catchup-days="7" group-title="央视频道",CCTV-1
@@ -162,25 +167,29 @@ def test_read_text_local(tmpfile):
 
 
 def test_read_text_http():
-    """_read_text fetches an HTTP URL. Uses the user's IPTV backend."""
-    text = _read_text('http://192.168.100.2:8000/iptv/iptv-10.m3u')
+    """_read_text fetches an HTTP URL (needs AIPLAYER_IPTV_TEST_URL)."""
+    if not IPTV_TEST_BASE:
+        print('  _read_text(http) skipped (set AIPLAYER_IPTV_TEST_URL)')
+        return
+    url = IPTV_TEST_BASE + '/iptv-10.m3u'
+    text = _read_text(url)
     assert text.startswith('#EXTM3U')
     assert 'EXTINF' in text
-    print(f'  _read_text(http://192.168.100.2:8000/iptv/iptv-10.m3u)  '
-          f'OK ({len(text)} bytes)')
+    print(f'  _read_text({url})  OK ({len(text)} bytes)')
 
 
 def test_discover_m3u_picks_best_overlap():
     """discover_m3u probes a directory and picks the m3u with the
     highest overlap with the KODI channel list."""
+    if not IPTV_TEST_BASE:
+        print('  discover_m3u skipped (set AIPLAYER_IPTV_TEST_URL)')
+        return
     channel_names = ['CCTV-1综合', 'CCTV-2财经', 'CCTV-3综艺',
                      '湖南卫视', 'CCTV-5体育', 'CCTV-6电影']
-    best_url, entries, overlap = discover_m3u(
-        'http://192.168.100.2:8000/iptv/', channel_names)
+    best_url, entries, overlap = discover_m3u(IPTV_TEST_BASE + '/', channel_names)
     assert best_url, 'expected to find at least one m3u'
-    # Should pick iptv-10.m3u (46 channels, matches the 46-channel
-    # 11 box profile) rather than iptv-full.m3u (177 channels with
-    # different channel names like 湖南卫视4K).
+    # Should pick the smaller m3u whose channels overlap the target names
+    # rather than a large one with different channel names.
     print(f'  picked: {best_url}  overlap={overlap}/{len(channel_names)}  '
           f'entries={len(entries)}')
     # We don't hardcode which one is picked - just require overlap > 0
@@ -347,12 +356,15 @@ def test_find_program_xmltv_exclusive_end():
         os.remove(tmp)
 
 def test_xmltv_http():
-    """Round-trip: real backend, real gzipped XMLTV."""
+    """Round-trip: real backend, real gzipped XMLTV (needs AIPLAYER_IPTV_TEST_URL)."""
     print('--- parse_xmltv (HTTP gzipped) ---')
-    text = _read_text('http://192.168.100.2:8000/iptv/iptv-10.m3u')
+    if not IPTV_TEST_BASE:
+        print('  parse_xmltv(http) skipped (set AIPLAYER_IPTV_TEST_URL)')
+        return
+    text = _read_text(IPTV_TEST_BASE + '/iptv-10.m3u')
     epg_url = get_x_tvg_url(text)
     if not epg_url:
-        base = 'http://192.168.100.2:8000/iptv/'
+        base = IPTV_TEST_BASE + '/'
         for candidate in ('iptv-epg.xml.gz', 'iptv-epg.xml', 'epg.xml.gz', 'epg.xml'):
             try:
                 _read_text(base + candidate)

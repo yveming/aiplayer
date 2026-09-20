@@ -27,11 +27,12 @@ SUITES = [
     ('priority order',       'test_priority_order.py',     'CLI > config > derived: EPG source + mpv path tiers'),
     ('kodi api contract',    'test_kodi_api_contract.py',  'player_get_item / player_get_properties + echo paths'),
     ('playlist view',        'test_playlist.py',           'mpv + KODI playlist_items + CLI formatting'),
+    ('discovery',            'test_discovery.py',          'sentinel --host + raw TCP probe + creds + multi-instance'),
 ]
 
 # Real-KODI suite - skipped by default
 E2E_SUITE = (
-    'kodi e2e smoke',         'test_e2e_real_kodi.py',       'real KODI: version + GetSources + 46 channels + 68 broadcasts',
+    'kodi e2e smoke',         'test_e2e_real_kodi.py',       'real KODI (tcp/http): version + GetSources + channels + broadcasts',
 )
 
 
@@ -88,7 +89,7 @@ def main():
     ap.add_argument('--verbose', '-v', action='store_true',
                     help='Print full output of every suite')
     ap.add_argument('--e2e', action='store_true',
-                    help='Also run the real-KODI E2E smoke test (requires KODI at 192.168.100.11:9090)')
+                    help='Also run the real-KODI E2E smoke test (requires a reachable KODI)')
     args = ap.parse_args()
 
     suites = list(SUITES)

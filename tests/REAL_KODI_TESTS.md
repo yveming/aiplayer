@@ -1,13 +1,17 @@
 # Real-KODI Test Commands
 
-Manual test commands against the user's actual KODI servers. Run with the
-installed tool (`aiplayer`, after `uv tool install .`) or `uv run aiplayer`
-from the repo root.
+Manual test commands against real KODI servers. Run with the installed tool
+(`aiplayer`, after `uv tool install .`) or `uv run aiplayer` from the repo root.
 
-| Box     | Address             | Protocol | Auth        | Catch-up                                          |
-|---------|---------------------|----------|-------------|---------------------------------------------------|
-| 11 box  | 192.168.100.11:9090 | TCP      | none        | NO via broadcastid (-32602) - use `--m3u <URL>`   |
-| Sony TV | 192.168.100.43:8080 | HTTP     | kodi/hermes | YES (broadcastid)                                 |
+Two example boxes are used below (replace hosts/credentials with your own):
+
+| Box   | Address              | Protocol | Auth         | Catch-up                                        |
+|-------|----------------------|----------|--------------|-------------------------------------------------|
+| Box A | kodi-tcp.local:9090  | TCP      | none         | PVR broadcastid rejected (-32602) -> **auto m3u fallback** (see below) |
+| Box B | 192.168.1.50:8080    | HTTP     | kodi/<pass>  | YES (broadcastid)                               |
+
+Box A gets its IP from DHCP, so use an mDNS name (`kodi-tcp.local`) instead of
+the IP; Box B has no mDNS name, so use its IP (or give it a DHCP reservation).
 
 TCP does **not** require `--username` / `--password`.
 KODI under test: v21.3, JSON-RPC API 13.5.
@@ -19,20 +23,26 @@ work without `--host`/`--port`.
 ## Connection check / auto-discovery
 
 ```
-aiplayer --host 192.168.100.11 --port 9090 --protocol tcp tv
-aiplayer --auto status          # SSDP/mDNS discovery, slow (~5s)
+aiplayer --host kodi-tcp.local --port 9090 --protocol tcp tv
+aiplayer --auto status          # SSDP/mDNS discovery, slow (~5s), then status
+aiplayer --auto                 # discovery only: list discoverable instances
+aiplayer --auto --json          # same, JSON array (exit 0 if any found, else 1)
 ```
 
-Expected: `Mode: KODI (192.168.100.11:9090)` + channel list.
+Expected: `Mode: KODI (kodi-tcp.local:9090)` + channel list. `--auto` with no
+action only lists instances and does not connect.
+
+Note: boxes that do not advertise SSDP/mDNS (e.g. some Android TV boxes) will
+not appear; use `kodi.host`/`--host` for those.
 
 ## Movie Search
 
 ```
 # Ordinal - Chinese / 第N部 / Arabic / none (all 3 Avatars)
-aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达三" --debug
-aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达第三部" --debug
-aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达 2" --debug
-aiplayer --host 192.168.100.11 --port 9090 movie "阿凡达" --debug
+aiplayer --host kodi-tcp.local --port 9090 movie "阿凡达三" --debug
+aiplayer --host kodi-tcp.local --port 9090 movie "阿凡达第三部" --debug
+aiplayer --host kodi-tcp.local --port 9090 movie "阿凡达 2" --debug
+aiplayer --host kodi-tcp.local --port 9090 movie "阿凡达" --debug
 ```
 
 Expected: KODI returns `result: "OK"` and the right Avatar file plays.
@@ -43,8 +53,8 @@ via Douban alias expansion (needs network; silently skipped offline).
 ## Music Search (artist / album / song)
 
 ```
-aiplayer --host 192.168.100.11 --port 9090 music --artist "赵传" --debug
-aiplayer --host 192.168.100.11 --port 9090 music --artist "赵传" --album "我是一只小小鸟" --debug
+aiplayer --host kodi-tcp.local --port 9090 music --artist "赵传" --debug
+aiplayer --host kodi-tcp.local --port 9090 music --artist "赵传" --album "我是一只小小鸟" --debug
 ```
 
 The `--song` form matches files named with the song title. Track-numbered
@@ -53,15 +63,15 @@ files (`01.mp3`) have nothing to match - navigate by album instead.
 ## TV Episode Search
 
 ```
-aiplayer --host 192.168.100.11 --port 9090 tv "黑暗物质第三季第四集" --debug
-aiplayer --host 192.168.100.11 --port 9090 tv "黑暗物质 S03E04" --debug
-aiplayer --host 192.168.100.11 --port 9090 tv "黑暗物质 3x04" --debug
+aiplayer --host kodi-tcp.local --port 9090 tv "黑暗物质第三季第四集" --debug
+aiplayer --host kodi-tcp.local --port 9090 tv "黑暗物质 S03E04" --debug
+aiplayer --host kodi-tcp.local --port 9090 tv "黑暗物质 3x04" --debug
 ```
 
 Expected output (verified):
 
 ```
-[debug] Searched 'video' (nfs://192.168.100.2/Public/video/): 1 candidate match(es)
+[debug] Searched 'video' (nfs://server/Public/video/): 1 candidate match(es)
 Playing from video: Dark Matter / Season 3 / 黑暗物质.Dark.Matter.S03E04.720p...
 {"id": 164, "jsonrpc": "2.0", "result": "OK"}
 ```
@@ -69,12 +79,12 @@ Playing from video: Dark Matter / Season 3 / 黑暗物质.Dark.Matter.S03E04.720
 ## PVR Live TV + Channels
 
 ```
-aiplayer --host 192.168.100.11 --port 9090 tv
-aiplayer --host 192.168.100.11 --port 9090 tv "湖南卫视"
+aiplayer --host kodi-tcp.local --port 9090 tv
+aiplayer --host kodi-tcp.local --port 9090 tv "湖南卫视"
 ```
 
 Expected: prints `Found channel`, current program, and KODI tunes in.
-Same works on the Sony box with `--protocol http --username kodi --password hermes`.
+Same works on Box B with `--protocol http --username kodi --password <pass>`.
 
 ## PVR Catch-up
 
@@ -85,33 +95,51 @@ The user's IPTV m3u mixes two placeholder families channel-by-channel:
 `m3u_catchup.py` supports four families (KODI native seconds/strings,
 iptvsimple strftime, VLC shorthand).
 
-### Mode 1: broadcastid (Sony TV only)
+### Mode 1: broadcastid (Box B only)
 
 ```
-aiplayer --host 192.168.100.43 --port 8080 --protocol http --username kodi --password hermes \
+aiplayer --host 192.168.1.50 --port 8080 --protocol http --username kodi --password <pass> \
     catchup "湖南卫视" --date yesterday --time 18:30
 ```
 
 Verified: KODI returns `result: "OK"`; PVR client builds the URL from the m3u.
 
+### Mode 1b: automatic fallback (Box A)
+
+On Box A, `Player.Open({broadcastid})` returns -32602. Without `--m3u`,
+`catchup` now detects that and automatically rebuilds the URL from the
+configured `iptv.m3u` + XMLTV (config `iptv.epg` or the m3u `x-tvg-url`):
+
+```
+aiplayer --host kodi-tcp.local --port 9090 catchup "CCTV-1综合" --date yesterday --time 21:00
+# -> PVR catch-up via broadcastid failed: {'code': -32602, ...}
+# -> falling back to m3u/XMLTV catch-up patch...
+# -> Catchup URL: ...
+```
+
+If no m3u is configured it fails loudly (no more silent success). This is
+covered offline by `tests/test_tv_patch.py` (broadcastid-rejected mock).
+Note: the fallback needs an EPG source; `iptv.m3u`'s `x-tvg-url` or
+`iptv.epg`/`--epg` must resolve.
+
 ### Mode 2: self-built URL (`--m3u`, works on both boxes)
 
 Parse the m3u ourselves, substitute the channel's `catchup-source`
 template, and `Player.Open({file: <url>})`. Bypasses the PVR client
-entirely - required on the 11 box where `Player.Open({broadcastid})`
-returns -32602.
+entirely. Still useful to force a specific m3u, or when XMLTV comes from a
+source other than the configured one.
 
 `--m3u` accepts an http(s) URL **or** a local file path (default from
 config `iptv.m3u`):
 
 ```
 # URL
-aiplayer --host 192.168.100.11 --port 9090 catchup "湖南卫视" \
+aiplayer --host kodi-tcp.local --port 9090 catchup "湖南卫视" \
     --date yesterday --time 18:30 \
-    --m3u "http://192.168.100.2:8000/iptv/iptv-10.m3u"
+    --m3u "http://iptv.example/iptv/iptv-10.m3u"
 
 # Local file (m3u must be readable from this machine)
-aiplayer --host 192.168.100.11 --port 9090 catchup "湖南卫视" \
+aiplayer --host kodi-tcp.local --port 9090 catchup "湖南卫视" \
     --date yesterday --time 18:30 --m3u "G:\Public\iptv.m3u"
 ```
 
@@ -119,28 +147,59 @@ EPG XMLTV resolution order: `--epg` > config `iptv.epg` > m3u
 `x-tvg-url`. Override with `--epg` when the m3u carries no `x-tvg-url`:
 
 ```
-aiplayer --host 192.168.100.11 --port 9090 catchup "湖南卫视" \
+aiplayer --host kodi-tcp.local --port 9090 catchup "湖南卫视" \
     --date yesterday --time 18:30 \
-    --m3u "http://192.168.100.2:8000/iptv/iptv-10.m3u" \
-    --epg "http://192.168.100.2:8000/iptv/iptv-epg.xml.gz"
+    --m3u "http://iptv.example/iptv/iptv-10.m3u" \
+    --epg "http://iptv.example/iptv/iptv-epg.xml.gz"
 ```
 
-Verified on 11 box (2026-06-08): 湖南卫视 yesterday 18:30 → URL
+Verified on Box A (2026-06-08): 湖南卫视 yesterday 18:30 → URL
 `rtsp://118.123.55.74/.../...smil?playseek=20260607180000-20260607183000`
 → KODI `Player.Open` result "OK", `Player.GetItem` shows the same URL.
+
+## Queue / files
+
+```
+aiplayer --host kodi-tcp.local --port 9090 playfile  "<url-or-path>"
+aiplayer --host kodi-tcp.local --port 9090 playfiles "<url1>" "<url2>"   # replace queue
+aiplayer --host kodi-tcp.local --port 9090 append    "<url-or-path>"     # add one
+aiplayer --host kodi-tcp.local --port 9090 list                          # numbered queue
+aiplayer --host kodi-tcp.local --port 9090 remove    "<url-or-path>"     # drop one by path
+```
+
+`list` prints `▶` on the playing entry. `remove` matches the full path first,
+then falls back to basename/title (since `list` only shows basenames). Works
+on local mpv too (no `--host`).
+
+## Discovery
+
+`--auto` discovers KODI over SSDP/mDNS and probes both HTTP (8080) and TCP
+(9090, raw JSON-RPC). With multiple instances, pass `--host` to choose:
+
+```
+aiplayer --auto status
+aiplayer --auto --host kodi-tcp.local status
+```
+
+## Automated checks
+
+Read-only smoke (no playback): `python tests/test_e2e_real_kodi.py --box tcp`
+(or `--box http`). Playback checks for tv/catchup/queue:
+`python tests/real_playback_check.py --box tcp` (also `--box http` /
+`--box local`) - this one tunes and mutates the queue, so run it deliberately.
 
 ## Playback Control
 
 ```
-aiplayer --host 192.168.100.11 --port 9090 pause
-aiplayer --host 192.168.100.11 --port 9090 play
-aiplayer --host 192.168.100.11 --port 9090 next
-aiplayer --host 192.168.100.11 --port 9090 prev
-aiplayer --host 192.168.100.11 --port 9090 stop
-aiplayer --host 192.168.100.11 --port 9090 status
-aiplayer --host 192.168.100.11 --port 9090 volume_up
-aiplayer --host 192.168.100.11 --port 9090 volume_down
-aiplayer --host 192.168.100.11 --port 9090 mute
+aiplayer --host kodi-tcp.local --port 9090 pause
+aiplayer --host kodi-tcp.local --port 9090 play
+aiplayer --host kodi-tcp.local --port 9090 next
+aiplayer --host kodi-tcp.local --port 9090 prev
+aiplayer --host kodi-tcp.local --port 9090 stop
+aiplayer --host kodi-tcp.local --port 9090 status
+aiplayer --host kodi-tcp.local --port 9090 volume_up
+aiplayer --host kodi-tcp.local --port 9090 volume_down
+aiplayer --host kodi-tcp.local --port 9090 mute
 ```
 
 Control commands act on whichever mode the *last play command* used -
@@ -149,8 +208,8 @@ pass the same `--host`/`--auto` flags (or none for default local mode).
 ## EPG Browsing
 
 ```
-aiplayer --host 192.168.100.11 --port 9090 epg "湖南卫视" --date today
-aiplayer epg "湖南卫视" --m3u "http://192.168.100.2:8000/iptv/iptv-10.m3u" --date yesterday
+aiplayer --host kodi-tcp.local --port 9090 epg "湖南卫视" --date today
+aiplayer epg "湖南卫视" --m3u "http://iptv.example/iptv/iptv-10.m3u" --date yesterday
 ```
 
 ## When something breaks

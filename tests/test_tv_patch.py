@@ -62,6 +62,35 @@ class MockKodiWithEPG(MockKodi):
         return {'result': {'broadcasts': [self._broadcast]}}
 
 
+class MockKodiBroadcast(MockKodi):
+    """PVR box with EPG that records the broadcastid play result.
+
+    Simulates both a box that supports PVR catch-up (play_item returns OK)
+    and one that rejects {broadcastid} with -32602.
+    """
+
+    def __init__(self, play_result):
+        # Yesterday 21:00-23:00 local (+8) == 13:00-15:00 UTC.
+        yest = datetime.now(timezone.utc) - timedelta(days=1)
+        self._broadcast = {
+            'title': 'Evening News',
+            'starttime': yest.replace(hour=13, minute=0, second=0, microsecond=0)
+                               .strftime('%Y-%m-%dT%H:%M:%S+00:00'),
+            'endtime': yest.replace(hour=15, minute=0, second=0, microsecond=0)
+                             .strftime('%Y-%m-%dT%H:%M:%S+00:00'),
+            'broadcastid': 42,
+        }
+        self.play_result = play_result
+        self.opened = []
+
+    def pvr_get_broadcasts(self, channel_id, fields=None, limits=None):
+        return {'result': {'broadcasts': [self._broadcast]}}
+
+    def play_item(self, item):
+        self.opened.append(item)
+        return self.play_result
+
+
 def make_fixtures(tmp):
     tz = timezone(timedelta(hours=8))
     now = datetime.now(tz)
@@ -131,6 +160,50 @@ def test_catchup_utc_named_template_local_fill(tmp):
     check('local start filled (200000 not 120000)', (yest + '200000') in url)
     check('local end filled (220000 not 140000)', (yest + '220000') in url)
     check('success', ok is True)
+
+
+def test_catchup_broadcastid_fallback(tmp):
+    print('=== play_catchup: broadcastid rejected -> m3u/XMLTV fallback ===')
+    m3u, xml = make_fixtures(tmp)
+    home = tempfile.mkdtemp(prefix='aiplayer_bidfb_')
+    _write_config(home, m3u, epg=xml)
+    old = _set_home(home)
+    try:
+        api = MockKodiBroadcast({'error': {'code': -32602, 'message': 'Invalid params'}})
+        out, ret = _capture(lambda: play_catchup(api, 'CCTV-1', 'yesterday', '21:00'))
+        check('broadcastid failure reported', 'broadcastid failed' in out, repr(out))
+        check('fallback triggered', 'falling back to m3u/XMLTV catch-up patch' in out, repr(out))
+        url = getattr(api, 'played_url', '')
+        check('self-built catchup URL played',
+              url.startswith('http://example.com/cctv1?playseek='), url)
+        check('success', ret is True)
+    finally:
+        _restore_home(old)
+
+
+def test_catchup_broadcastid_no_m3u():
+    print('=== play_catchup: broadcastid rejected + no m3u -> clean failure ===')
+    home = tempfile.mkdtemp(prefix='aiplayer_bidno_')
+    _write_config(home, '', epg='')
+    old = _set_home(home)
+    try:
+        api = MockKodiBroadcast({'error': {'code': -32602, 'message': 'Invalid params'}})
+        out, ret = _capture(lambda: play_catchup(api, 'CCTV-1', 'yesterday', '21:00'))
+        check('broadcastid failure reported', 'broadcastid failed' in out, repr(out))
+        check('asks for an m3u', 'Catch-up patch needs an m3u' in out, repr(out))
+        check('returns False (no fake success)', ret is False)
+    finally:
+        _restore_home(old)
+
+
+def test_catchup_broadcastid_ok():
+    print('=== play_catchup: broadcastid accepted -> no fallback ===')
+    api = MockKodiBroadcast({'result': 'OK'})
+    out, ret = _capture(lambda: play_catchup(api, 'CCTV-1', 'yesterday', '21:00'))
+    check('broadcastid path used', 'Broadcast ID: 42' in out, repr(out))
+    check('no fallback', 'falling back' not in out, repr(out))
+    check('opened broadcastid 42', api.opened == [{'broadcastid': 42}], str(api.opened))
+    check('success', ret is True)
 
 
 def test_epg_patch(tmp):
@@ -290,6 +363,9 @@ def main():
     test_show_all_epg_no_source()
     test_catchup_patch(tmp)
     test_catchup_utc_named_template_local_fill(tmp)
+    test_catchup_broadcastid_fallback(tmp)
+    test_catchup_broadcastid_no_m3u()
+    test_catchup_broadcastid_ok()
     test_epg_patch(tmp)
     print()
     print('TOTAL: %d passed, %d failed' % (PASS, FAIL))
