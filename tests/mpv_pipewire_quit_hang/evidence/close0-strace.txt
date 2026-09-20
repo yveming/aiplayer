@@ -1,0 +1,17 @@
+# strace excerpt: first close(0) by the vo thread (single loadfile, v0.41.0)
+3343-168878 00:08:11.993181 +++ exited with 0 +++
+3344-168877 00:08:11.997608 +++ exited with 0 +++
+3345-168874 00:08:11.997718 close(11</dev/dri/card0<char 226:0>>) = 0
+3346-168876 00:08:11.997926 +++ exited with 0 +++
+3347-168874 00:08:11.998704 close(9</dev/dri/card0<char 226:0>>) = 0
+3348-168874 00:08:11.999159 close(10</dev/dri/card0<char 226:0>>) = 0
+3349-168874 00:08:11.999213 close(8</dev/dri/card0<char 226:0>>) = 0
+3350-168875 00:08:11.999872 +++ exited with 0 +++
+3351:168874 00:08:11.999905 close(0</dev/null<char 1:3>>) = 0
+3352-168874 00:08:12.000144 openat(AT_FDCWD</home/hermes/aiplayer>, "/home/hermes/.config/vulkan/implicit_layer.d", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = -1 ENOENT (没有那个文件或目录)
+3353-168874 00:08:12.000242 openat(AT_FDCWD</home/hermes/aiplayer>, "/etc/xdg/vulkan/implicit_layer.d", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = -1 ENOENT (没有那个文件或目录)
+
+# the PipeWire thread-loop epoll then gets fd 0 (same run)
+6981:168860 00:08:12.895698 epoll_create1(EPOLL_CLOEXEC) = 0<anon_inode:[eventpoll]>
+6991:168860 00:08:12.901425 epoll_create1(EPOLL_CLOEXEC) = 11<anon_inode:[eventpoll]>
+7011:168860 00:08:12.929212 epoll_create1(EPOLL_CLOEXEC) = 16<anon_inode:[eventpoll]>

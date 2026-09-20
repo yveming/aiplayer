@@ -1,0 +1,38 @@
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+Breakpoint 1 at 0x57820
+Catchpoint 2 (syscall 'close' [3])
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[Switching to Thread 0x7fffcd7fa6c0 (LWP 169085)]
+
+=== close(0) caught via close() ===
+  Id   Target Id                                            Frame 
+  1    Thread 0x7fffe8dd02c0 (LWP 169070) "mpv"             0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=32767, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55555583b568) at ./nptl/futex-internal.c:57
+  2    Thread 0x7fffe6fff6c0 (LWP 169073) "lua/osc"         0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=32767, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x5555558859c0) at ./nptl/futex-internal.c:57
+  3    Thread 0x7fffe67fe6c0 (LWP 169074) "lua/ytdl_hook"   0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55555592d0e0) at ./nptl/futex-internal.c:57
+  4    Thread 0x7fffe5ffd6c0 (LWP 169075) "lua/stats"       0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555933824) at ./nptl/futex-internal.c:57
+  5    Thread 0x7fffe57fc6c0 (LWP 169076) "lua/console"     0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555939fc0) at ./nptl/futex-internal.c:57
+  7    Thread 0x7fffcffff6c0 (LWP 169078) "lua/select"      0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555946f04) at ./nptl/futex-internal.c:57
+  8    Thread 0x7fffcf7fe6c0 (LWP 169079) "lua/positioning" 0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55555594d694) at ./nptl/futex-internal.c:57
+  9    Thread 0x7fffceffd6c0 (LWP 169080) "lua/commands"    0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555953e84) at ./nptl/futex-internal.c:57
+  10   Thread 0x7fffce7fc6c0 (LWP 169081) "lua/context_men" 0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55555595a634) at ./nptl/futex-internal.c:57
+  12   Thread 0x7fffe4ffb6c0 (LWP 169083) "demux"           0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x7fffe4ffa2e0, op=137, expected=0, futex_word=0x7fffd402807c) at ./nptl/futex-internal.c:57
+  13   Thread 0x7fffcdffb6c0 (LWP 169084) "worker"          0x00007ffff3098e51 in __futex_abstimed_wait_common64 (private=-1, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x555555885ad8) at ./nptl/futex-internal.c:57
+* 14   Thread 0x7fffcd7fa6c0 (LWP 169085) "vo"              __GI___close (fd=0) at ../sysdeps/unix/sysv/linux/close.c:26
+
+--- current thread backtrace ---
+#0  __GI___close (fd=0) at ../sysdeps/unix/sysv/linux/close.c:26
+#1  0x00005555556e98de in ?? ()
+#2  0x0000555555675d1f in ?? ()
+#3  0x0000555555675ec1 in ?? ()
+#4  0x00005555556a82d0 in ?? ()
+#5  0x0000555555696532 in ?? ()
+#6  0x00007ffff309cb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#7  0x00007ffff3129ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+=== end ===
+[Inferior 1 (process 169070) killed]

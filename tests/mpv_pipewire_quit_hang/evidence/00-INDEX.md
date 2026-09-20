@@ -3,6 +3,14 @@
 All files captured on the same machine/session (Ubuntu 24.04.5, mpv 0.41.0,
 PipeWire 1.0.5). See `../issue.md` for the full write-up.
 
+## Root cause (the `close(0)`)
+- `../root-cause.md` — full analysis: `drm_egl_uninit()` closes fd 0 because
+  `drm_params.render_fd` is zero-initialised; fixed upstream by `7bf2d9cee`.
+- `../gdb-catch-close0.gdb` — gdb script that catches the first `close(0)`.
+- `close0-strace.txt` — strace excerpt: `vo` thread closes `/dev/null`, then
+  the PipeWire thread-loop epoll gets fd 0.
+- `close0-gdb.txt` — gdb output: `Thread "vo"`, `close(fd=0)`, backtrace.
+
 ## Reproduce / primary evidence
 - `../mpv_repro_pipewire_quit_hang.sh` — minimal reproduction script.
 - `pipewire-hang-mpv.log` — `--log-file` output of a run that HUNG (default
