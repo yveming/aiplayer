@@ -200,7 +200,7 @@ def _play_files(player, paths):
 
 ACTION_CHOICES = [
     'discover', 'movie', 'video', 'tv', 'music', 'catchup', 'epg',
-    'playfile', 'playfiles', 'append', 'list', 'remove',
+    'playfile', 'playfiles', 'append', 'list', 'remove', 'clear',
     'pause', 'play', 'playpause', 'next', 'prev', 'stop',
     'restart', 'volume_up', 'volume_down', 'mute', 'status',
 ]
@@ -210,7 +210,7 @@ EPILOG = """actions:
   discover  list KODI instances (SSDP/mDNS, ~5s); --json for JSON array
   media    movie | video (TV episodes, SxxEyy) | music
   live TV  tv (play/list channels) | epg (guide) | catchup (needs --date --time)
-  files    playfile | playfiles | append | list | remove
+  files    playfile | playfiles | append | list | remove | clear
   control  pause | play | playpause | next | prev | stop | restart |
            volume_up | volume_down | mute | status
 
@@ -501,6 +501,14 @@ def main():
             print("File path required.")
             sys.exit(1)
         success = _remove_from_queue(player, query)
+    elif action == 'clear':
+        result = player.playlist_clear()
+        if isinstance(result, dict) and result.get('error') not in (None, 'success'):
+            print(f"Clear error: {result['error']}")
+            success = False
+        else:
+            print("Queue cleared.")
+            success = True
     elif action == 'status':
         info = player.status()
         if not info:

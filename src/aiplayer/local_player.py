@@ -438,7 +438,9 @@ class MpvPlayer:
 
     def playlist_clear(self):
 
-        self._ensure_running()
+        # Clearing only makes sense against a live playlist; do not spawn mpv.
+        if not self._probe():
+            return {"error": "not running"}
         return self._cmd(["playlist-clear"])
 
     def playlist_remove(self, index):

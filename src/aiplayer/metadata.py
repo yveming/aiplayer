@@ -22,7 +22,6 @@ _SUGGEST_URL = 'https://movie.douban.com/j/subject_suggest'
 _TAG_SEARCH_URL = 'https://movie.douban.com/j/search_subjects'
 
 _MAX_SUGGEST_ITEMS = 3
-_MAX_WORKS = 50
 
 
 def _settings():
@@ -89,12 +88,14 @@ def expand_titles(query, debug=False):
     return titles
 
 
-def person_filmography(name, debug=False, limit=_MAX_WORKS):
+def person_filmography(name, debug=False, limit=None):
     """If `name` matches a Douban celebrity, return [{'title','orig'}, ...].
 
     Works are collected via Douban tag search (movies + TV tagged with the
-    person's name). Titles are Chinese display titles; 'orig' stays empty
-    (tag search carries no foreign-title field).
+    person's name), paged through until the tag is exhausted. Titles are
+    Chinese display titles; 'orig' stays empty (tag search carries no
+    foreign-title field). `limit=None` means no cap; pass an int to truncate
+    (reserved for a future configurable limit).
     """
     enabled, timeout = _settings()
     if not enabled or not (name or '').strip():
@@ -106,25 +107,34 @@ def person_filmography(name, debug=False, limit=_MAX_WORKS):
         return []
     works, seen = [], set()
     for stype, page_size in (('movie', 30), ('tv', 20)):
-        try:
-            r = _get(_TAG_SEARCH_URL,
-                     params={'type': stype, 'tag': q, 'sort': 'recommendation',
-                             'page_limit': page_size, 'page_start': 0},
-                     timeout=timeout)
-            data = r.json()
-            items = data.get('subjects') or [] if isinstance(data, dict) else []
-        except Exception as e:
-            if debug:
-                print(f"  [debug] Douban tag search ({stype}) failed: {e}")
-            continue
-        for it in items:
-            title = (it.get('title') or '').strip()
-            if title and title.lower() not in seen:
-                seen.add(title.lower())
-                works.append({'title': title, 'orig': ''})
-            if len(works) >= limit:
+        page_start = 0
+        while True:
+            try:
+                r = _get(_TAG_SEARCH_URL,
+                         params={'type': stype, 'tag': q, 'sort': 'recommendation',
+                                 'page_limit': page_size, 'page_start': page_start},
+                         timeout=timeout)
+                data = r.json()
+                items = data.get('subjects') or [] if isinstance(data, dict) else []
+            except Exception as e:
+                if debug:
+                    print(f"  [debug] Douban tag search ({stype}) failed: {e}")
                 break
-        if len(works) >= limit:
+            if not items:
+                break
+            for it in items:
+                title = (it.get('title') or '').strip()
+                if title and title.lower() not in seen:
+                    seen.add(title.lower())
+                    works.append({'title': title, 'orig': ''})
+                if limit is not None and len(works) >= limit:
+                    break
+            if limit is not None and len(works) >= limit:
+                break
+            if len(items) < page_size:
+                break
+            page_start += page_size
+        if limit is not None and len(works) >= limit:
             break
     if debug:
         print(f"  [debug] Douban filmography {q!r}: {len(works)} work(s)")

@@ -135,6 +135,7 @@ configured m3u - **zero connection flags**.
 | `append` | Append a file to the playlist | yes (path) | both |
 | `list` | List the current queue, marking the playing entry | no | both |
 | `remove` | Remove a queued file by index (as numbered by `list`) or by path/title | yes (index or path) | both |
+| `clear` | Clear the current queue | no | both |
 | `status` | Show current playback info | no | both |
 
 ---
@@ -313,6 +314,7 @@ aiplayer append "G:/music/c.flac"        # add one file to the queue
 aiplayer list                            # show numbered queue with paths (▶ = playing)
 aiplayer remove 2                        # drop queue entry #2 (as numbered by list)
 aiplayer remove "G:/music/c.flac"        # drop a queued file by path
+aiplayer clear                           # clear the whole queue
 ```
 
 Keywords: `暂停`(pause), `继续`/`播放`(play), `下一首`/`下一集`(next), `上一首`/`上一集`(prev), `重播`/`从头开始`(restart), `停止`(stop), `大声点`(volume_up), `小声点`(volume_down), `静音`(mute), `队列`/`播放列表`/`排队`(list), `当前播放`/`状态`(status)
