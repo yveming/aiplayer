@@ -91,6 +91,29 @@ for combo in (['--local', '--host', '1.2.3.4'],
           proc.returncode == 2 and 'mutually exclusive' in proc.stderr,
           'rc=%d err=%r' % (proc.returncode, proc.stderr[-200:]))
 
+# --- --version/--help work alone; combined args are rejected ----------------
+import aiplayer as _pkg
+
+proc = _cli_error(['--version'])
+check('--version alone prints aiplayer <version>',
+      proc.returncode == 0 and proc.stdout.strip() == 'aiplayer %s' % _pkg.__version__,
+      'rc=%d out=%r' % (proc.returncode, proc.stdout))
+
+proc = _cli_error(['--help'])
+check('--help alone prints usage and mentions --version',
+      proc.returncode == 0 and 'usage: aiplayer' in proc.stdout
+      and '--version' in proc.stdout,
+      'rc=%d out=%r' % (proc.returncode, proc.stdout[:150]))
+
+for argv in (['--version', '--host', '1.2.3.4'],
+             ['--help', '--auto'],
+             ['--help', '--version'],
+             ['--version', 'status']):
+    proc = _cli_error(argv)
+    check('%s rejected (exit 2)' % ' '.join(argv),
+          proc.returncode == 2 and 'must be used alone' in proc.stderr,
+          'rc=%d err=%r' % (proc.returncode, proc.stderr[-200:]))
+
 print()
 print('TOTAL: %d passed, %d failed' % (passed, failed))
 sys.exit(0 if failed == 0 else 1)

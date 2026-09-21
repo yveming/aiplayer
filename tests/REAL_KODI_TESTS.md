@@ -1,7 +1,8 @@
 # Real-KODI Test Commands
 
 Manual test commands against real KODI servers. Run with the installed tool
-(`aiplayer`, after `uv tool install .`) or `uv run aiplayer` from the repo root.
+(`aiplayer`, after `uv tool install .` — update it with `--reinstall`) or
+`uv run aiplayer` from the repo root.
 
 Two example boxes are used below (replace hosts/credentials with your own):
 
@@ -25,12 +26,12 @@ work without `--host`/`--port`.
 
 ```
 aiplayer --host kodi-tcp.local --port 9090 --protocol tcp tv
-aiplayer search                 # discovery only: list discoverable instances
-aiplayer search --json          # same, JSON array (exit 0 if any found, else 1)
+aiplayer discover                 # discovery only: list discoverable instances
+aiplayer discover --json          # same, JSON array (exit 0 if any found, else 1)
 aiplayer --auto status          # SSDP/mDNS discovery, slow (~5s), then status
 ```
 
-Expected: `Mode: KODI (kodi-tcp.local:9090)` + channel list. `search` only
+Expected: `Mode: KODI (kodi-tcp.local:9090)` + channel list. `discover` only
 lists instances and does not connect.
 
 Note: boxes that do not advertise SSDP/mDNS (e.g. some Android TV boxes) will
@@ -168,18 +169,19 @@ aiplayer --host kodi-tcp.local --port 9090 list                          # numbe
 aiplayer --host kodi-tcp.local --port 9090 remove    "<url-or-path>"     # drop one by path
 ```
 
-`list` prints `▶` on the playing entry. `remove` matches the full path first,
-then falls back to basename/title (since `list` only shows basenames). Works
+`list` prints `▶` on the playing entry and appends each entry's path.
+`remove` matches the full path first, then basename/title, then a bare
+number as the 1-based list index (`remove 2` drops entry #2). Works
 on local mpv too (no `--host`).
 
 ## Discovery
 
-`search` discovers KODI over SSDP/mDNS and lists instances (probing both
+`discover` discovers KODI over SSDP/mDNS and lists instances (probing both
 HTTP (8080) and TCP (9090, raw JSON-RPC)) without connecting:
 
 ```
-aiplayer search
-aiplayer search --json
+aiplayer discover
+aiplayer discover --json
 ```
 
 `--auto` with an action discovers first, then runs the action (falls back

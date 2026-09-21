@@ -13,6 +13,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from aiplayer import __version__
 from aiplayer.player import PlayerMode, resolve_kodi_api
 from aiplayer.player_factory import create_player
 from aiplayer.discover import discover_player
@@ -93,7 +94,7 @@ def _select_instance(instances, preferred_host):
 
 
 def _discovery_only(credentials=None, json_output=False):
-    """Run discovery for `aiplayer search`.
+    """Run discovery for `aiplayer discover`.
 
     Human mode lets discover_player() print the process and the instance
     list (falling back to local mode info). JSON mode suppresses that and
@@ -126,7 +127,12 @@ def _fmt_hms(seconds):
 
 
 def _print_playlist(entries, json_output=False):
-    """Print the current playlist, marking the playing entry."""
+    """Print the current playlist, marking the playing entry.
+
+    Human mode appends the source path so `remove` can be given an exact
+    argument (title alone is ambiguous across directories); --json already
+    carries the full entries.
+    """
     if json_output:
         print(json.dumps(entries, ensure_ascii=False))
         return
@@ -135,14 +141,17 @@ def _print_playlist(entries, json_output=False):
         return
     for e in entries:
         mark = "▶" if e.get("current") else " "
-        print(f"{mark} {e['index'] + 1}. {e['title']}")
+        path = e.get('path') or ''
+        suffix = f"  —  {path}" if path and path != e.get('title') else ''
+        print(f"{mark} {e['index'] + 1}. {e['title']}{suffix}")
 
 
 def _remove_from_queue(player, path):
     """Remove the first queue entry matching `path`.
 
-    `list` only shows basenames, so match the full path first, then fall
-    back to basename/title. Returns True on success.
+    `list` shows titles (and paths), so match the full path first, then
+    basename/title, then treat a bare number as the 1-based list index.
+    Returns True on success.
     """
     entries = player.playlist_items()
     target = os.path.basename(path)
@@ -151,6 +160,15 @@ def _remove_from_queue(player, path):
         match = next((e for e in entries
                       if os.path.basename(e.get('path', '')) == target
                       or e.get('title') == path), None)
+    if match is None and path.isdigit():
+        # `remove 2` = the 2nd entry as numbered by `list`. Number-like
+        # filenames still win because they match above.
+        n = int(path)
+        if 1 <= n <= len(entries):
+            match = entries[n - 1]
+        else:
+            print(f"No queue entry: {n}")
+            return False
     if match is None:
         print(f"Not in queue: {path}")
         return False
@@ -181,7 +199,7 @@ def _play_files(player, paths):
 
 
 ACTION_CHOICES = [
-    'search', 'movie', 'video', 'tv', 'music', 'catchup', 'epg',
+    'discover', 'movie', 'video', 'tv', 'music', 'catchup', 'epg',
     'playfile', 'playfiles', 'append', 'list', 'remove',
     'pause', 'play', 'playpause', 'next', 'prev', 'stop',
     'restart', 'volume_up', 'volume_down', 'mute', 'status',
@@ -189,7 +207,7 @@ ACTION_CHOICES = [
 
 
 EPILOG = """actions:
-  search   discover KODI instances (SSDP/mDNS, ~5s); --json for JSON array
+  discover  list KODI instances (SSDP/mDNS, ~5s); --json for JSON array
   media    movie | video (TV episodes, SxxEyy) | music
   live TV  tv (play/list channels) | epg (guide) | catchup (needs --date --time)
   files    playfile | playfiles | append | list | remove
@@ -197,7 +215,7 @@ EPILOG = """actions:
            volume_up | volume_down | mute | status
 
 examples:
-  aiplayer search                            # discover KODI instances
+  aiplayer discover                            # list KODI instances
   aiplayer video "黑暗物质第三季第四集" --json # episodes
   aiplayer movie "阿凡达"                      # movie
   aiplayer tv "CCTV-1"                         # live TV
@@ -214,7 +232,14 @@ def main():
         usage='aiplayer [flags] <action> [query] [action-flags]',
         epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
+        add_help=False,
     )
+    # --help/--version are handled manually (add_help=False) so they can be
+    # enforced as exclusive: combined with any other argument they error.
+    parser.add_argument('-h', '--help', action='store_true',
+                        help='Show this help message and exit')
+    parser.add_argument('--version', action='store_true',
+                        help='Print version and exit')
     parser.add_argument('action', nargs='?', default=None, metavar='action',
                         choices=ACTION_CHOICES,
                         help='Action to perform (required) - see "actions" below')
@@ -266,6 +291,21 @@ def main():
                        help='Path to mpv executable (default from config)')
 
     args = parser.parse_args()
+    # --help/--version only work when given alone; combined with any other
+    # argument (or each other) they are a command-line error (exit 2).
+    special = [flag for flag, on in (('--help', args.help), ('--version', args.version)) if on]
+    if special:
+        defaults = {a.dest: a.default for a in parser._actions
+                    if a.dest not in ('help', 'version')}
+        others_used = any(getattr(args, dest) != default
+                          for dest, default in defaults.items())
+        if len(special) > 1 or others_used:
+            parser.error('%s must be used alone' % ' and '.join(special))
+        if args.help:
+            parser.print_help()
+        else:
+            print(f'aiplayer {__version__}')
+        sys.exit(0)
     # Mode flags are mutually exclusive: an explicit --local/--auto/--host
     # combo is a command-line error (exit 2), not a silent priority pick.
     if sum(1 for v in (args.local, args.auto, args.host is not None) if v) > 1:
@@ -290,8 +330,8 @@ def main():
         print("No action provided. Run 'aiplayer --help' for the action list.")
         sys.exit(1)
 
-    if args.action == 'search':
-        # `aiplayer search` only discovers and lists KODI instances.
+    if args.action == 'discover':
+        # `aiplayer discover` lists KODI instances (SSDP/mDNS).
         found = _discovery_only(kodi_creds, json_output=args.json)
         sys.exit(0 if found else 1)
 
@@ -354,7 +394,7 @@ def main():
                 player = create_player(PlayerMode.LOCAL, local_config=local_config)
                 print("Mode: local mpv (no KODI, using m3u)")
             else:
-                print("No player available. Use --host to specify KODI, search to discover, or --m3u (URL or file path) for TV.")
+                print("No player available. Use --host to specify KODI, 'discover' to list instances, or --m3u (URL or file path) for TV.")
                 sys.exit(1)
     else:
         # Default: local mpv playback (skip discovery)
