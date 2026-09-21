@@ -11,9 +11,9 @@ sys.path.insert(0, os.path.join(HERE, '..', 'src'))
 from aiplayer.m3u_catchup import _read_text
 
 URLS = [
-    'http://192.168.100.2:8000/iptv/iptv-10.m3u',
-    'http://192.168.100.2:8000/iptv/iptv-full.m3u',
-    'http://192.168.100.2:8000/iptv/iptv-cmcc.m3u',
+    'http://<M3U_HOST>:8000/iptv/iptv-10.m3u',
+    'http://<M3U_HOST>:8000/iptv/iptv-full.m3u',
+    'http://<M3U_HOST>:8000/iptv/iptv-cmcc.m3u',
 ]
 
 for url in URLS:

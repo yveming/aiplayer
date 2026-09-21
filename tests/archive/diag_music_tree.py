@@ -5,9 +5,9 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from aiplayer.kodi_api import KodiAPI
 
-HOST = '192.168.100.11'
+HOST = '<KODI_IP_A>'
 PORT = 9090
-PWD = 'hermes'
+PWD = '<pass>'
 USER = 'kodi'
 
 api = KodiAPI(host=HOST, port=PORT, protocol='tcp', timeout=10)
@@ -34,4 +34,4 @@ def walk(path, depth=0, max_depth=4):
         if ftype == 'directory':
             walk(fpath, depth + 1, max_depth)
 
-walk('nfs://192.168.100.2/Public/music/赵传/', 0, 4)
+walk('nfs://<M3U_HOST>/Public/music/赵传/', 0, 4)

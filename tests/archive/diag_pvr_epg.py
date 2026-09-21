@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 from aiplayer.kodi_api import KodiAPI
 from aiplayer.pvr_epg import get_all_channels, find_channel_by_name
 
-HOST = '192.168.100.11'
+HOST = '<KODI_IP_A>'
 PORT = 9090
 
 api = KodiAPI(host=HOST, port=PORT, protocol='tcp')

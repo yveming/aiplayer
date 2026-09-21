@@ -8,8 +8,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'src'))
 from aiplayer.m3u_catchup import parse_xmltv, get_x_tvg_url, find_program_in_xmltv, _read_text
 
-EPG_URL = 'http://192.168.100.2:8000/iptv/iptv-epg.xml.gz'
-M3U_URL = 'http://192.168.100.2:8000/iptv/iptv-10.m3u'
+EPG_URL = 'http://<M3U_HOST>:8000/iptv/iptv-epg.xml.gz'
+M3U_URL = 'http://<M3U_HOST>:8000/iptv/iptv-10.m3u'
 LOCAL = timezone(timedelta(hours=8))
 
 print('Fetching m3u to read x-tvg-url...')

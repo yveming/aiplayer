@@ -27,8 +27,8 @@ from aiplayer.kodi_api import KodiAPI
 
 # Both boxes the user has
 TARGETS = [
-    ('11 box',   '192.168.100.11', 9090, 'tcp',  '',     ''),
-    ('Sony TV',  '192.168.100.43', 8080, 'http', 'kodi', 'hermes'),
+    ('11 box',   '<KODI_IP_A>', 9090, 'tcp',  '',     ''),
+    ('Sony TV',  '<KODI_IP_B>', 8080, 'http', 'kodi', '<pass>'),
 ]
 
 # Common KODI userdata paths to probe

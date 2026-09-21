@@ -6,7 +6,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'src'))
 from aiplayer.kodi_api import KodiAPI
 
-host = sys.argv[1] if len(sys.argv) > 1 else '192.168.100.11'
+host = sys.argv[1] if len(sys.argv) > 1 else '<KODI_IP_A>'
 port = int(sys.argv[2]) if len(sys.argv) > 2 else 9090
 proto = sys.argv[3] if len(sys.argv) > 3 else 'tcp'
 api = KodiAPI(host, port, protocol=proto)

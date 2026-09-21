@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-url = 'http://192.168.100.2:8000/iptv/iptv-epg.xml.gz'
+url = 'http://<M3U_HOST>:8000/iptv/iptv-epg.xml.gz'
 print(f'Fetching {url}...')
 r = urllib.request.urlopen(url, timeout=10)
 raw = r.read()

@@ -13,8 +13,8 @@ sys.path.insert(0, os.path.join(HERE, '..', 'src'))
 from aiplayer.kodi_api import KodiAPI
 
 TARGETS = [
-    ('11 box',  '192.168.100.11', 9090, 'tcp',  '',     ''),
-    ('Sony TV', '192.168.100.43', 8080, 'http', 'kodi', 'hermes'),
+    ('11 box',  '<KODI_IP_A>', 9090, 'tcp',  '',     ''),
+    ('Sony TV', '<KODI_IP_B>', 8080, 'http', 'kodi', '<pass>'),
 ]
 
 # Probe PVR.GetProperties with every conceivable property name

@@ -13,7 +13,7 @@ from aiplayer.m3u_catchup import (parse_m3u, find_channel as m3u_find_channel,
                          find_program_in_xmltv, _read_text)
 
 LOCAL = timezone(timedelta(hours=8))
-M3U = 'http://192.168.100.2:8000/iptv/iptv-10.m3u'
+M3U = 'http://<M3U_HOST>:8000/iptv/iptv-10.m3u'
 
 # Read m3u
 m3u_text = _read_text(M3U)

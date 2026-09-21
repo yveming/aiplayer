@@ -9,6 +9,7 @@ import contextlib
 import io
 import json
 import os
+import subprocess
 import sys
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -116,13 +117,13 @@ try:
     dk.discover_mdns = lambda timeout=3: [{'ip': '10.0.0.5', 'port': 22, 'name': 'MediaBox'}]
     dk.discover_ssdp = lambda timeout=5: []
     with contextlib.redirect_stdout(io.StringIO()):
-        insts = dk.discover_kodi(credentials=[('kodi', 'hermes')])
+        insts = dk.discover_kodi(credentials=[('kodi', '<pass>')])
     check('tcp-only box discovered', len(insts) == 1 and insts[0]['ip'] == '10.0.0.5',
           str(insts))
     check('discovered protocol is tcp',
           insts and insts[0].get('protocol') == 'tcp', str(insts))
     check('credentials forwarded to http probe',
-          any(c[0] == 'http' and c[3] == [('kodi', 'hermes')] for c in recorded['calls']),
+          any(c[0] == 'http' and c[3] == [('kodi', '<pass>')] for c in recorded['calls']),
           str(recorded['calls']))
 finally:
     dk.check_kodi_api_http = real_http
@@ -201,7 +202,7 @@ finally:
     kapi.socket.socket = real_sock
 
 
-# --- _discovery_only: `aiplayer --auto` with no action ---------------------
+# --- _discovery_only: `aiplayer search` ------------------------------------
 import aiplayer.aiplayer as ap
 from aiplayer.aiplayer import _discovery_only
 
@@ -247,6 +248,31 @@ try:
           json.loads(out) == [] and insts == [], repr(out))
 finally:
     ap.discover_player = real_discover
+
+
+# --- `aiplayer search` action & closed `--auto`-with-no-action entry ---------
+from aiplayer.aiplayer import ACTION_CHOICES
+
+check('search is the first action choice',
+      ACTION_CHOICES[0] == 'search', str(ACTION_CHOICES[:3]))
+
+_subprocess_code = (
+    "import sys\n"
+    "sys.argv = ['aiplayer', '--auto']\n"
+    "from aiplayer.aiplayer import main\n"
+    "main()\n"
+)
+_proc = subprocess.run(
+    [sys.executable, '-X', 'utf8', '-c', _subprocess_code],
+    capture_output=True, text=True, encoding='utf-8', errors='replace',
+    timeout=30,
+    env={**os.environ, 'PYTHONIOENCODING': 'utf-8',
+         'PYTHONPATH': os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src')},
+)
+check('bare --auto (no action) prints the no-action hint',
+      'No action provided' in _proc.stdout, repr(_proc.stdout))
+check('bare --auto (no action) exits 1 without discovering',
+      _proc.returncode == 1, 'rc=%d out=%r' % (_proc.returncode, _proc.stdout))
 
 
 print()

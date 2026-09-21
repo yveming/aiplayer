@@ -2,7 +2,7 @@
 name: aiplayer
 description: >
   Control media playback using KODI (via JSON-RPC) or local mpv player.
-  Defaults to local mpv playback. Pass --auto to auto-discover KODI or --host to connect directly.
+  Defaults to local mpv playback. Use `search` to discover KODI, or pass --host to connect directly.
   For live TV, uses HTTP m3u/EPG when no KODI is available.
 ---
 
@@ -110,6 +110,7 @@ configured m3u - **zero connection flags**.
 
 | Action | Description | Requires query? | Local/KODI |
 |--------|-------------|-----------------|------------|
+| `search` | Discover and list KODI instances (SSDP/mDNS, ~5s; `--json` for a JSON array; exit 0 if any found, else 1) | no | discovery only |
 | `movie` | Search and play a movie | yes | both |
 | `video` | Search and play a TV episode (S03E04) | yes | both |
 | `music` | Search and play music (with `--artist`/`--album`/`--song`) | optional | both |
@@ -144,8 +145,12 @@ configured m3u - **zero connection flags**.
 | `--protocol` | tcp/http/auto | `--host` | Connection protocol |
 | `--username` | str | `--host` http | HTTP auth username |
 | `--password` | str | `--host` http | HTTP auth password |
-| `--auto` | flag | standalone | Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv |
+| `--auto` | flag | any action | Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv |
 | `--local` | flag | standalone | Force local mpv, ignoring config `kodi.host`/`--host` |
+
+`--host` / `--auto` / `--local` are **mutually exclusive** - combining any two
+exits 2 with a parser error. Config `kodi.host` is not part of the rule
+(`--local` overrides it; `--auto` uses it to pick among discovered instances).
 | `--m3u` | URL or path | tv/catchup/epg | IPTV m3u (config iptv.m3u = local mode only; KODI mode needs it explicitly) |
 | `--epg` | URL or path | epg/catchup | XMLTV EPG (priority: --epg > config iptv.epg > m3u x-tvg-url) |
 | `--artist` | str | music | Artist name filter |
@@ -167,6 +172,16 @@ Examples assume the config from the Configuration File section is filled in
 (kodi.host + media roots + iptv.m3u). Override forms are shown for one-off
 overrides only.
 
+### search — Discover KODI instances
+
+SSDP/mDNS discovery (~5s), lists discoverable KODI instances (HTTP 8080 / TCP 9090).
+Does not connect. Exit 0 if any found, else 1.
+
+```
+aiplayer search
+aiplayer search --json     # JSON array of instances
+```
+
 ### movie — Search and play movies
 
 ```
@@ -175,7 +190,7 @@ aiplayer movie "阿凡达"
 aiplayer movie "Avatar" --json
 
 # temporary override (different box than config)
-aiplayer --host 192.168.1.50 --port 8080 --protocol http --username kodi --password <pass> movie "Interstellar"
+aiplayer --host <KODI_IP> --port 8080 --protocol http --username kodi --password <pass> movie "Interstellar"
 ```
 
 Keywords: `放电影`, `电影`, `movie`
@@ -192,7 +207,7 @@ aiplayer video "黑暗物质第三季第四集"
 aiplayer video "Dark Matter S03E04" --json
 
 # temporary override
-aiplayer --host 192.168.1.50 --port 8080 --protocol http --username kodi --password <pass> video "Dark Matter S03E04"
+aiplayer --host <KODI_IP> --port 8080 --protocol http --username kodi --password <pass> video "Dark Matter S03E04"
 ```
 
 Keywords: `放视频`, `剧集`, `视频`, `连续`, `video`, `episode`
@@ -264,7 +279,7 @@ Requires `--date` and `--time`. Date keywords: yesterday/today/tomorrow/昨天/�
 aiplayer catchup "CCTV-1" --date yesterday --time 21:00
 
 # PVR with broadcastid catch-up support
-aiplayer --host 192.168.1.50 --port 8080 --protocol http --username kodi --password <pass> catchup "CCTV-1" --date yesterday --time "晚上9点"
+aiplayer --host <KODI_IP> --port 8080 --protocol http --username kodi --password <pass> catchup "CCTV-1" --date yesterday --time "晚上9点"
 
 # PVR whose broadcastid catch-up is rejected (-32602): with config iptv.m3u/epg
 # (or --m3u/--epg) it falls back to a self-built m3u/XMLTV URL automatically;
@@ -349,7 +364,7 @@ http://iptv.example/iptv/iptv.m3u
 
 ## Important Notes
 
-- **Discovery is slow (~5s)**: never `--auto` unless the user asks; prefer config `kodi.host` or `--host`. `--auto` probes HTTP (8080) and TCP (9090) and, with several instances, needs `--host` to choose. For DHCP boxes use an mDNS name (e.g. `kodi.local`), not the IP. With no action, `--auto` only discovers and lists instances (`aiplayer --auto`, or `--auto --json` for a JSON array; exit 0 if any found, else 1) - it does not connect.
+- **Discovery is slow (~5s)**: never `--auto` unless the user asks; prefer config `kodi.host` or `--host`. `--auto` probes HTTP (8080) and TCP (9090) and, with several instances, picks the configured `kodi.host` or fails listing the choices. For DHCP boxes use an mDNS name (e.g. `kodi.local`), not the IP. `--host`/`--auto`/`--local` are mutually exclusive (combining two exits 2). To only discover and list instances use the `search` action (`aiplayer search`, or `search --json` for a JSON array; exit 0 if any found, else 1) - it does not connect.
 - **Catch-up without broadcastid support**: if the PVR client rejects broadcastid with -32602, `catchup` detects that and automatically falls back to a self-built m3u/XMLTV URL (config `iptv.m3u`/`iptv.epg`, or `--m3u`/`--epg`); with no m3u it fails loudly. `--m3u` forces the self-built path.
 - **Catch-up with broadcastid support**: the PVR client builds the URL from the m3u; `catchup` stays on broadcastid (no fallback needed).
 - **m3u scoping**: config `iptv.m3u` applies in local mode; in KODI mode `tv` uses PVR. When KODI returns no EPG, or catch-up broadcastid is rejected, `catchup`/`epg` fall back to the m3u/XMLTV patch automatically (config or `--m3u`/`--epg`).

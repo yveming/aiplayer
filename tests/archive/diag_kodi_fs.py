@@ -12,8 +12,8 @@ import urllib.error
 sys.stdout.reconfigure(encoding='utf-8')
 
 TARGETS = [
-    ('11 box',  'http://192.168.100.11:8080', '',     ''),
-    ('Sony TV', 'http://192.168.100.43:8080', 'kodi', 'hermes'),
+    ('11 box',  'http://<KODI_IP_A>:8080', '',     ''),
+    ('Sony TV', 'http://<KODI_IP_B>:8080', 'kodi', '<pass>'),
 ]
 
 # Common IPTV client addon storage locations on the box's filesystem.

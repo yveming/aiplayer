@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(HERE, '..', 'src'))
 from aiplayer.kodi_api import KodiAPI
 from aiplayer.pvr_epg import get_all_channels, find_channel_by_name, get_epg_for_channel, find_program_in_epg, parse_time
 
-api = KodiAPI(host='192.168.100.11', port=9090, protocol='tcp')
+api = KodiAPI(host='<KODI_IP_A>', port=9090, protocol='tcp')
 if not api.get_version():
     print('cannot connect to 11 box')
     sys.exit(1)

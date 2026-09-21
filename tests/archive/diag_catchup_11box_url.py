@@ -20,7 +20,7 @@ from datetime import timezone, timedelta
 
 
 def main():
-    api = KodiAPI('192.168.100.11', 9090, protocol='tcp')
+    api = KodiAPI('<KODI_IP_A>', 9090, protocol='tcp')
     if not api.get_version():
         print('cannot connect to 11 box')
         return 1
@@ -45,7 +45,7 @@ def main():
     # 3. Fetch m3u (auto-discover from IPTV backend)
     ch_names = [c.get('label', '') for c in chs]
     best_url, entries, overlap = discover_m3u(
-        'http://192.168.100.2:8000/iptv/', ch_names)
+        'http://<M3U_HOST>:8000/iptv/', ch_names)
     print(f'\nAuto-picked: {best_url}  overlap={overlap}/{len(ch_names)}')
 
     m3u_entry = find_channel(entries, '湖南卫视')
@@ -68,9 +68,9 @@ def main():
 
     # 5. Show the result, but DON'T play (the user needs to confirm first)
     print('\nURL built successfully. Run pvr_epg.py to play it:')
-    print(f'  python pvr_epg.py --host 192.168.100.11 --port 9090 \\')
+    print(f'  python pvr_epg.py --host <KODI_IP_A> --port 9090 \\')
     print(f'    --protocol tcp --action catchup --channel "湖南卫视" \\')
-    print(f'    --date yesterday --time 18:30 --m3u-url http://192.168.100.2:8000/iptv/')
+    print(f'    --date yesterday --time 18:30 --m3u-url http://<M3U_HOST>:8000/iptv/')
     return 0
 
 

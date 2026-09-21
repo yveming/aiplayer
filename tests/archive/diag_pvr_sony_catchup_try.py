@@ -13,10 +13,10 @@ from datetime import datetime, timedelta, timezone
 from aiplayer.kodi_api import KodiAPI
 from aiplayer.pvr_epg import get_all_channels, find_channel_by_name, get_epg_for_channel, find_program_in_epg
 
-HOST = '192.168.100.43'
+HOST = '<KODI_IP_B>'
 PORT = 8080
 USER = 'kodi'
-PWD = 'hermes'
+PWD = '<pass>'
 
 api = KodiAPI(host=HOST, port=PORT, protocol='http', username=USER, password=PWD)
 if not api.get_version():

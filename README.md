@@ -75,15 +75,22 @@ aiplayer [连接参数] <动作> [查询词] [动作参数]
 |---|---|
 | 无参数（默认） | 配了 `kodi.host` 则用 KODI，否则本地 mpv（搜索 config.json 中的媒体目录） |
 | `--host <IP\|主机名> [--port] [--protocol tcp\|http] [--username --password]` | 直连 KODI（可写 mDNS 名，如 `kodi.local`） |
-| `--auto` | SSDP/mDNS 自动发现 KODI（约 5 秒，慢，偶尔用一次）；**不带动作时只列出可发现实例**（`--auto --json` 输出 JSON，有实例退出 0、无则 1） |
+| `--auto` | SSDP/mDNS 自动发现 KODI（约 5 秒，慢，偶尔用一次），找不到回退本地 mpv |
 | `--local` | 强制本地 mpv，忽略 config/`--host` 的 KODI |
 
-**动作**：必填。`movie` 电影 | `video` 剧集 | `music` 音乐 | `tv` 电视直播/频道 |
+三者互斥：同时给出多个（如 `--auto --host`）会报错并以退出码 2 结束。
+配置文件 `kodi.host` 不参与互斥（`--local` 覆盖它、`--auto` 用它挑选实例）。
+
+**动作**：必填。`search` 发现 KODI 实例 | `movie` 电影 | `video` 剧集 | `music` 音乐 | `tv` 电视直播/频道 |
 `epg` 节目单 | `catchup` 回看 | `playfile`/`playfiles`/`append`/`list`/`remove` 文件播放与队列 |
 其余为播放控制；`stop` 会停止播放并退出本地 mpv 进程（下次播放重新启动），
 mpv 未运行时这些动作提示 Nothing playing。不做任何自动推断。
 
 ```bash
+# 发现 KODI 实例（约 5 秒；--json 输出实例数组，有实例退出 0、无则 1）
+aiplayer search
+aiplayer search --json
+
 # 电影 / 剧集 / 音乐（本地模式）
 aiplayer movie "肖申克的救赎"
 aiplayer video "黑暗物质 S03E04"
@@ -202,10 +209,11 @@ python tests/test_movie_smoke.py
    `PYTHONIOENCODING=utf-8`。
 8. **`--json` 模式**：搜索结果以 JSON 数组输出且无交互提示，供 AI/脚本
    消费；**永不直接播放**（单命中也返回单元素数组），用 `playfile`/`playfiles`/`append` 二次播放。
-9. **自动发现**：`--auto` 触发 SSDP/mDNS（约 5 秒，慢，偶尔用一次），可发现
-   HTTP(8080) 与 TCP(9090) 的 KODI。不带动作时只做发现并列出结果：
-   `aiplayer --auto`（`--auto --json` 输出实例数组）。日常建议用 `--host` 直连，
-   动态 IP 可写 mDNS 名（如 `kodi.local`）或配好 `kodi.host`。
+9. **自动发现**：`aiplayer search` 触发 SSDP/mDNS（约 5 秒，慢，偶尔用一次），
+   只做发现并列出可发现实例（HTTP 8080 / TCP 9090 的 KODI）；
+   `aiplayer search --json` 输出实例数组（有实例退出 0、无则 1）。
+   日常建议用 `--host` 直连，动态 IP 可写 mDNS 名（如 `kodi.local`）或配好
+   `kodi.host`。`--auto` 则配合动作使用：先发现 KODI，找不到回退本地 mpv。
 10. **config m3u 作用域**：`iptv.m3u` 仅在本地模式直接生效；KODI 模式的 `tv`
     用 PVR。但 KODI 不回 EPG、或 `catchup` 的 broadcastid 被拒（-32602）时，
     `catchup`/`epg` 会自动用 config `iptv.m3u`/`--m3u`（+ `iptv.epg`/`--epg`/

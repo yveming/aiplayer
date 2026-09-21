@@ -16,8 +16,8 @@ sys.path.insert(0, os.path.join(HERE, '..', 'src'))
 from aiplayer.kodi_api import KodiAPI
 
 TARGETS = [
-    ('11 box',  '192.168.100.11', 9090, 'tcp',  '',     ''),
-    ('Sony TV', '192.168.100.43', 8080, 'http', 'kodi', 'hermes'),
+    ('11 box',  '<KODI_IP_A>', 9090, 'tcp',  '',     ''),
+    ('Sony TV', '<KODI_IP_B>', 8080, 'http', 'kodi', '<pass>'),
 ]
 
 # Try every path the IPTV Simple Client might store config in.
@@ -28,11 +28,11 @@ USERDATA_PATHS = [
     'special://home/addons/pvr.iptvsimple',
     'special://masterprofile/addon_data/pvr.iptvsimple',
     # NFS roots where we have access
-    'nfs://192.168.100.2/Public/',
-    'nfs://192.168.100.2/Public/.kodi/',
-    'nfs://192.168.100.2/Public/.kodi/userdata/',
-    'nfs://192.168.100.2/Public/.kodi/userdata/addon_data/',
-    'nfs://192.168.100.2/Public/.kodi/userdata/addon_data/pvr.iptvsimple/',
+    'nfs://<M3U_HOST>/Public/',
+    'nfs://<M3U_HOST>/Public/.kodi/',
+    'nfs://<M3U_HOST>/Public/.kodi/userdata/',
+    'nfs://<M3U_HOST>/Public/.kodi/userdata/addon_data/',
+    'nfs://<M3U_HOST>/Public/.kodi/userdata/addon_data/pvr.iptvsimple/',
     # Windows paths to the same
     'C:/',
     'C:/Users',

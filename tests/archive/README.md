@@ -1,8 +1,8 @@
 # Archived Diagnostics
 
 One-off diagnostic scripts used during development to probe a real KODI
-server (`192.168.100.11:9090`) and the user's IPTV backend
-(`http://192.168.100.2:8000/iptv/`). Kept for archaeology only - they are
+server (`<KODI_IP_A>:9090`) and the user's IPTV backend
+(`http://<M3U_HOST>:8000/iptv/`). Kept for archaeology only - they are
 **not** run by `tests/run_all.py` and may reference outdated CLI flags
 (`--m3u-url`, old script paths under `aiplayer/scripts/`).
 

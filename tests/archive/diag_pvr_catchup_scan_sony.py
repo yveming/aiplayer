@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scan the Sony TV (192.168.100.43:8080, HTTP) for catch-up support.
+"""Scan the Sony TV (<KODI_IP_B>:8080, HTTP) for catch-up support.
 Same as diag_pvr_catchup_scan.py but with HTTP+auth defaults."""
 import sys, os
 sys.stdout.reconfigure(encoding='utf-8')
@@ -7,10 +7,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 from aiplayer.kodi_api import KodiAPI
 from aiplayer.pvr_epg import get_all_channels
 
-HOST = '192.168.100.43'
+HOST = '<KODI_IP_B>'
 PORT = 8080
 USER = 'kodi'
-PWD = 'hermes'
+PWD = '<pass>'
 
 api = KodiAPI(host=HOST, port=PORT, protocol='http', username=USER, password=PWD)
 v = api.get_version()

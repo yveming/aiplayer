@@ -13,17 +13,17 @@ sys.path.insert(0, os.path.join(HERE, '..', 'src'))
 from aiplayer.kodi_api import KodiAPI
 
 TARGETS = [
-    ('11 box',  '192.168.100.11', 9090, 'tcp',  '',     ''),
-    ('Sony TV', '192.168.100.43', 8080, 'http', 'kodi', 'hermes'),
+    ('11 box',  '<KODI_IP_A>', 9090, 'tcp',  '',     ''),
+    ('Sony TV', '<KODI_IP_B>', 8080, 'http', 'kodi', '<pass>'),
 ]
 
-# The user has /Public/ on NFS at 192.168.100.2, mount paths we KNOW work
+# The user has /Public/ on NFS at <M3U_HOST>, mount paths we KNOW work
 KNOWN_DIRS = [
-    ('nfs://192.168.100.2/Public/',       'files'),
-    ('nfs://192.168.100.2/Public/',       'video'),
-    ('nfs://192.168.100.2/Public/movie/', 'video'),
-    ('nfs://192.168.100.2/Public/music/', 'music'),
-    ('nfs://192.168.100.2/Public/video/', 'video'),
+    ('nfs://<M3U_HOST>/Public/',       'files'),
+    ('nfs://<M3U_HOST>/Public/',       'video'),
+    ('nfs://<M3U_HOST>/Public/movie/', 'video'),
+    ('nfs://<M3U_HOST>/Public/music/', 'music'),
+    ('nfs://<M3U_HOST>/Public/video/', 'video'),
 ]
 
 # Try addon locations as Files with media=files (raw filesystem)

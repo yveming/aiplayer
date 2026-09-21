@@ -14,8 +14,8 @@ from aiplayer.kodi_api import KodiAPI
 from aiplayer.pvr_epg import get_all_channels, find_channel_by_name
 
 TARGETS = [
-    ('11 box',   '192.168.100.11', 9090, 'tcp',  '',     ''),
-    ('Sony TV',  '192.168.100.43', 8080, 'http', 'kodi', 'hermes'),
+    ('11 box',   '<KODI_IP_A>', 9090, 'tcp',  '',     ''),
+    ('Sony TV',  '<KODI_IP_B>', 8080, 'http', 'kodi', '<pass>'),
 ]
 
 # Try the most likely property names one at a time so we can see

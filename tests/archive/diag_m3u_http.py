@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fetch the IPTV m3u from the user's HTTP backend and inspect formats.
-URL: http://192.168.100.2:8000/iptv/iptv-10.m3u  (used by 11 box)
-URL: http://192.168.100.2:8000/iptv/iptv-full.m3u (probably used by Sony TV)
+URL: http://<M3U_HOST>:8000/iptv/iptv-10.m3u  (used by 11 box)
+URL: http://<M3U_HOST>:8000/iptv/iptv-full.m3u (probably used by Sony TV)
 """
 import urllib.request
 import re
@@ -11,10 +11,10 @@ from collections import Counter
 sys.stdout.reconfigure(encoding='utf-8')
 
 URLS = [
-    'http://192.168.100.2:8000/iptv/iptv-10.m3u',
-    'http://192.168.100.2:8000/iptv/iptv-full.m3u',
-    'http://192.168.100.2:8000/iptv/iptv-cmcc.m3u',
-    'http://192.168.100.2:8000/',
+    'http://<M3U_HOST>:8000/iptv/iptv-10.m3u',
+    'http://<M3U_HOST>:8000/iptv/iptv-full.m3u',
+    'http://<M3U_HOST>:8000/iptv/iptv-cmcc.m3u',
+    'http://<M3U_HOST>:8000/',
 ]
 
 for url in URLS:

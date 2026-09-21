@@ -5,9 +5,9 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from aiplayer.kodi_api import KodiAPI
 
-HOST = '192.168.100.11'
+HOST = '<KODI_IP_A>'
 PORT = 9090
-PWD = 'hermes'
+PWD = '<pass>'
 USER = 'kodi'
 
 api = KodiAPI(host=HOST, port=PORT, protocol='tcp', timeout=10)

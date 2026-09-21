@@ -12,7 +12,7 @@ from aiplayer.kodi_api import KodiAPI
 from aiplayer.pvr_epg import get_all_channels, find_channel_by_name
 
 # 11 box's channels
-api = KodiAPI('192.168.100.11', 9090, protocol='tcp')
+api = KodiAPI('<KODI_IP_A>', 9090, protocol='tcp')
 chs = get_all_channels(api)
 ch_labels = [c.get('label', '') for c in chs]
 print(f'11 box: {len(chs)} channels')
