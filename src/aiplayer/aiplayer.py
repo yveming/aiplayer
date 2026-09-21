@@ -57,8 +57,11 @@ def _m3u_for_tv(args_m3u, m3u_cfg, kodi_mode):
 def _player_kind(args):
     """Resolve the player backend from CLI flags: 'local', 'kodi' or 'auto'.
 
-    --local wins over --host, so a configured kodi.host can be overridden to
-    inspect the local mpv queue (e.g. `aiplayer --local playlist`).
+    CLI-level --local/--auto/--host are mutually exclusive (enforced in
+    main()); the priority order below stays as a defensive fallback for
+    callers that bypass the parser. --local wins over --host, so a
+    configured kodi.host can be overridden to inspect the local mpv queue
+    (e.g. `aiplayer --local playlist`).
     """
     if getattr(args, 'local', False):
         return 'local'
@@ -90,7 +93,7 @@ def _select_instance(instances, preferred_host):
 
 
 def _discovery_only(credentials=None, json_output=False):
-    """Run discovery for `aiplayer --auto` with no action.
+    """Run discovery for `aiplayer search`.
 
     Human mode lets discover_player() print the process and the instance
     list (falling back to local mode info). JSON mode suppresses that and
@@ -178,7 +181,7 @@ def _play_files(player, paths):
 
 
 ACTION_CHOICES = [
-    'movie', 'video', 'tv', 'music', 'catchup', 'epg',
+    'search', 'movie', 'video', 'tv', 'music', 'catchup', 'epg',
     'playfile', 'playfiles', 'append', 'list', 'remove',
     'pause', 'play', 'playpause', 'next', 'prev', 'stop',
     'restart', 'volume_up', 'volume_down', 'mute', 'status',
@@ -186,6 +189,7 @@ ACTION_CHOICES = [
 
 
 EPILOG = """actions:
+  search   discover KODI instances (SSDP/mDNS, ~5s); --json for JSON array
   media    movie | video (TV episodes, SxxEyy) | music
   live TV  tv (play/list channels) | epg (guide) | catchup (needs --date --time)
   files    playfile | playfiles | append | list | remove
@@ -193,6 +197,7 @@ EPILOG = """actions:
            volume_up | volume_down | mute | status
 
 examples:
+  aiplayer search                            # discover KODI instances
   aiplayer video "黑暗物质第三季第四集" --json # episodes
   aiplayer movie "阿凡达"                      # movie
   aiplayer tv "CCTV-1"                         # live TV
@@ -233,8 +238,7 @@ def main():
                         default=_cfg_protocol if _cfg_protocol in ('tcp', 'http', 'auto') else 'auto',
                         help='Connection protocol')
     g_kodi.add_argument('--auto', action='store_true',
-                        help='Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv; '
-                             'with no action, just list discoverable instances (JSON with --json)')
+                        help='Auto-discover KODI (SSDP/mDNS, ~5s), fall back to local mpv')
 
     g_iptv = parser.add_argument_group('IPTV')
     g_iptv.add_argument('--m3u', default=None,
@@ -262,6 +266,10 @@ def main():
                        help='Path to mpv executable (default from config)')
 
     args = parser.parse_args()
+    # Mode flags are mutually exclusive: an explicit --local/--auto/--host
+    # combo is a command-line error (exit 2), not a silent priority pick.
+    if sum(1 for v in (args.local, args.auto, args.host is not None) if v) > 1:
+        parser.error('--local/--auto/--host are mutually exclusive (choose one)')
     # Resolve connection settings CLI > config. args.host stays untouched so
     # _player_kind() only treats an explicit --host as KODI mode.
     kodi_host = args.host if args.host is not None else kodi_cfg.get('host', '')
@@ -279,12 +287,13 @@ def main():
     kodi_creds = [(kodi_user, kodi_pass)] if (kodi_user and kodi_pass) else None
 
     if args.action is None:
-        if args.auto:
-            # `aiplayer --auto` with no action just discovers and reports.
-            found = _discovery_only(kodi_creds, json_output=args.json)
-            sys.exit(0 if found else 1)
         print("No action provided. Run 'aiplayer --help' for the action list.")
         sys.exit(1)
+
+    if args.action == 'search':
+        # `aiplayer search` only discovers and lists KODI instances.
+        found = _discovery_only(kodi_creds, json_output=args.json)
+        sys.exit(0 if found else 1)
 
     m3u_explicit = args.m3u is not None
     m3u_cfg = iptv_cfg.get('m3u', '')
@@ -345,7 +354,7 @@ def main():
                 player = create_player(PlayerMode.LOCAL, local_config=local_config)
                 print("Mode: local mpv (no KODI, using m3u)")
             else:
-                print("No player available. Use --host to specify KODI, --auto to discover, or --m3u (URL or file path) for TV.")
+                print("No player available. Use --host to specify KODI, search to discover, or --m3u (URL or file path) for TV.")
                 sys.exit(1)
     else:
         # Default: local mpv playback (skip discovery)

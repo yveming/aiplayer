@@ -8,10 +8,11 @@ Two example boxes are used below (replace hosts/credentials with your own):
 | Box   | Address              | Protocol | Auth         | Catch-up                                        |
 |-------|----------------------|----------|--------------|-------------------------------------------------|
 | Box A | kodi-tcp.local:9090  | TCP      | none         | PVR broadcastid rejected (-32602) -> **auto m3u fallback** (see below) |
-| Box B | 192.168.1.50:8080    | HTTP     | kodi/<pass>  | YES (broadcastid)                               |
+| Box B | <KODI_IP>:8080       | HTTP     | kodi/<pass>  | YES (broadcastid)                               |
 
 Box A gets its IP from DHCP, so use an mDNS name (`kodi-tcp.local`) instead of
-the IP; Box B has no mDNS name, so use its IP (or give it a DHCP reservation).
+the IP; Box B has no mDNS name, so use its IP (`<KODI_IP>`, or give it a DHCP
+reservation).
 
 TCP does **not** require `--username` / `--password`.
 KODI under test: v21.3, JSON-RPC API 13.5.
@@ -24,13 +25,13 @@ work without `--host`/`--port`.
 
 ```
 aiplayer --host kodi-tcp.local --port 9090 --protocol tcp tv
+aiplayer search                 # discovery only: list discoverable instances
+aiplayer search --json          # same, JSON array (exit 0 if any found, else 1)
 aiplayer --auto status          # SSDP/mDNS discovery, slow (~5s), then status
-aiplayer --auto                 # discovery only: list discoverable instances
-aiplayer --auto --json          # same, JSON array (exit 0 if any found, else 1)
 ```
 
-Expected: `Mode: KODI (kodi-tcp.local:9090)` + channel list. `--auto` with no
-action only lists instances and does not connect.
+Expected: `Mode: KODI (kodi-tcp.local:9090)` + channel list. `search` only
+lists instances and does not connect.
 
 Note: boxes that do not advertise SSDP/mDNS (e.g. some Android TV boxes) will
 not appear; use `kodi.host`/`--host` for those.
@@ -98,7 +99,7 @@ iptvsimple strftime, VLC shorthand).
 ### Mode 1: broadcastid (Box B only)
 
 ```
-aiplayer --host 192.168.1.50 --port 8080 --protocol http --username kodi --password <pass> \
+aiplayer --host <KODI_IP> --port 8080 --protocol http --username kodi --password <pass> \
     catchup "湖南卫视" --date yesterday --time 18:30
 ```
 
@@ -154,7 +155,7 @@ aiplayer --host kodi-tcp.local --port 9090 catchup "湖南卫视" \
 ```
 
 Verified on Box A (2026-06-08): 湖南卫视 yesterday 18:30 → URL
-`rtsp://118.123.55.74/.../...smil?playseek=20260607180000-20260607183000`
+`rtsp://<STREAM_IP>/.../...smil?playseek=20260607180000-20260607183000`
 → KODI `Player.Open` result "OK", `Player.GetItem` shows the same URL.
 
 ## Queue / files
@@ -173,12 +174,24 @@ on local mpv too (no `--host`).
 
 ## Discovery
 
-`--auto` discovers KODI over SSDP/mDNS and probes both HTTP (8080) and TCP
-(9090, raw JSON-RPC). With multiple instances, pass `--host` to choose:
+`search` discovers KODI over SSDP/mDNS and lists instances (probing both
+HTTP (8080) and TCP (9090, raw JSON-RPC)) without connecting:
+
+```
+aiplayer search
+aiplayer search --json
+```
+
+`--auto` with an action discovers first, then runs the action (falls back
+to local mpv when nothing is found). `--local`/`--auto`/`--host` are
+mutually exclusive - combining them is a command-line error (exit 2). With
+several discovered instances, `--auto` picks the one matching the
+**configured** `kodi.host` (or fails listing the choices); `--host` connects
+to a specific box directly without discovering:
 
 ```
 aiplayer --auto status
-aiplayer --auto --host kodi-tcp.local status
+aiplayer --host kodi-tcp.local status
 ```
 
 ## Automated checks

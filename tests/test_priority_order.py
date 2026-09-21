@@ -55,6 +55,9 @@ check('mpv_path from local_config used verbatim',
       p.local.mpv_path == 'C:/fake/mpv.exe')
 
 # --local must win over a configured/--host KODI so the mpv queue is reachable.
+# The CLI enforces --local/--auto/--host as mutually exclusive (see the
+# subprocess checks below); the priority order here is only a defensive
+# fallback for callers that bypass the parser.
 kind = lambda local=False, host='', auto=False: _player_kind(
     SimpleNamespace(local=local, host=host, auto=auto))
 check('--local wins over --host', kind(local=True, host='1.2.3.4') == 'local')
@@ -62,6 +65,31 @@ check('--local wins over --auto', kind(local=True, auto=True) == 'local')
 check('--host selects kodi', kind(host='1.2.3.4') == 'kodi')
 check('--auto selects auto', kind(auto=True) == 'auto')
 check('no flags defaults to local', kind() == 'local')
+
+# --- CLI-level mutual exclusion: combos exit 2 with a parser error ----------
+import subprocess
+
+_SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src')
+
+
+def _cli_error(argv):
+    code = "import sys; sys.argv = ['aiplayer'] + %r\n" \
+           "from aiplayer.aiplayer import main; main()\n" % (argv,)
+    return subprocess.run(
+        [sys.executable, '-X', 'utf8', '-c', code],
+        capture_output=True, text=True, encoding='utf-8', errors='replace',
+        timeout=30,
+        env={**os.environ, 'PYTHONIOENCODING': 'utf-8', 'PYTHONPATH': _SRC},
+    )
+
+
+for combo in (['--local', '--host', '1.2.3.4'],
+              ['--local', '--auto'],
+              ['--auto', '--host', '1.2.3.4']):
+    proc = _cli_error(combo)
+    check('%s rejected (exit 2)' % ' '.join(combo),
+          proc.returncode == 2 and 'mutually exclusive' in proc.stderr,
+          'rc=%d err=%r' % (proc.returncode, proc.stderr[-200:]))
 
 print()
 print('TOTAL: %d passed, %d failed' % (passed, failed))
