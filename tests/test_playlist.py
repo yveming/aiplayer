@@ -299,6 +299,37 @@ check('remove reports a path not in queue', ok is False and qp.removed == [])
 check('remove prints not-in-queue message', 'Not in queue: zzz.mp3' in buf.getvalue(),
       repr(buf.getvalue()))
 
+# --- remove by list index ---------------------------------------------------
+qp = FakeQueuePlayer()
+with contextlib.redirect_stdout(io.StringIO()):
+    ok = _remove_from_queue(qp, '2')
+check('remove by 1-based list index', ok is True and qp.removed == [1], str(qp.removed))
+
+qp = FakeQueuePlayer()
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    ok = _remove_from_queue(qp, '99')
+check('remove rejects an out-of-range index', ok is False and qp.removed == [])
+check('remove prints out-of-range message', 'No queue entry: 99' in buf.getvalue(),
+      repr(buf.getvalue()))
+
+
+# --- remove: number-like filenames beat the index fallback -------------------
+class FakeNumericQueue(FakeQueuePlayer):
+    def __init__(self):
+        super().__init__()
+        self.items = [
+            {'index': 0, 'title': '7', 'path': '/m/7', 'current': False},
+            {'index': 1, 'title': 'other', 'path': '/m/other', 'current': True},
+        ]
+
+
+qp = FakeNumericQueue()
+with contextlib.redirect_stdout(io.StringIO()):
+    ok = _remove_from_queue(qp, '7')
+check('number-like filename matches by title before index', ok is True and qp.removed == [0],
+      str(qp.removed))
+
 
 # --- CLI formatting ---------------------------------------------------------
 def render(entries, as_json=False):
@@ -315,7 +346,13 @@ sample = [
 out = render(sample)
 check('print marks current entry', '▶ 2. b.mp3' in out, repr(out))
 check('print numbers all entries', '  1. a.mp3' in out, repr(out))
+check('print appends the source path',
+      '  1. a.mp3  —  /m/a.mp3' in out and '▶ 2. b.mp3  —  /m/b.mp3' in out, repr(out))
 check('empty queue message', render([]).strip() == 'Queue is empty.')
+
+no_path = [{'index': 0, 'title': 'x', 'path': '', 'current': False}]
+check('print omits the path suffix when empty', render(no_path).strip() == '1. x',
+      repr(render(no_path)))
 
 js = render(sample, as_json=True)
 check('json output round-trips', json.loads(js) == sample, js)

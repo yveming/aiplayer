@@ -202,7 +202,7 @@ finally:
     kapi.socket.socket = real_sock
 
 
-# --- _discovery_only: `aiplayer search` ------------------------------------
+# --- _discovery_only: `aiplayer discover` ------------------------------------
 import aiplayer.aiplayer as ap
 from aiplayer.aiplayer import _discovery_only
 
@@ -250,11 +250,11 @@ finally:
     ap.discover_player = real_discover
 
 
-# --- `aiplayer search` action & closed `--auto`-with-no-action entry ---------
+# --- `aiplayer discover` action & closed `--auto`-with-no-action entry ---------
 from aiplayer.aiplayer import ACTION_CHOICES
 
-check('search is the first action choice',
-      ACTION_CHOICES[0] == 'search', str(ACTION_CHOICES[:3]))
+check('discover is the first action choice',
+      ACTION_CHOICES[0] == 'discover', str(ACTION_CHOICES[:3]))
 
 _subprocess_code = (
     "import sys\n"

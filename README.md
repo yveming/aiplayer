@@ -38,8 +38,11 @@ winget install mpv-player.mpv-CI.MSVC
 # 在项目目录内安装为全局 uv 工具（安装后任意位置可用 aiplayer 命令）
 uv tool install .
 
-# 代码更新后升级
-uv tool install . --upgrade
+# 代码更新后升级（版本号不变时 --upgrade 不会重装代码，必须用 --reinstall）
+uv tool install . --reinstall
+
+# 开发推荐：editable 安装，改代码即时生效，无需重复安装
+uv tool install -e .
 ```
 
 也可以不安装、在项目目录内直接运行：
@@ -81,15 +84,15 @@ aiplayer [连接参数] <动作> [查询词] [动作参数]
 三者互斥：同时给出多个（如 `--auto --host`）会报错并以退出码 2 结束。
 配置文件 `kodi.host` 不参与互斥（`--local` 覆盖它、`--auto` 用它挑选实例）。
 
-**动作**：必填。`search` 发现 KODI 实例 | `movie` 电影 | `video` 剧集 | `music` 音乐 | `tv` 电视直播/频道 |
+**动作**：必填。`discover` 发现 KODI 实例 | `movie` 电影 | `video` 剧集 | `music` 音乐 | `tv` 电视直播/频道 |
 `epg` 节目单 | `catchup` 回看 | `playfile`/`playfiles`/`append`/`list`/`remove` 文件播放与队列 |
 其余为播放控制；`stop` 会停止播放并退出本地 mpv 进程（下次播放重新启动），
 mpv 未运行时这些动作提示 Nothing playing。不做任何自动推断。
 
 ```bash
 # 发现 KODI 实例（约 5 秒；--json 输出实例数组，有实例退出 0、无则 1）
-aiplayer search
-aiplayer search --json
+aiplayer discover
+aiplayer discover --json
 
 # 电影 / 剧集 / 音乐（本地模式）
 aiplayer movie "肖申克的救赎"
@@ -113,8 +116,9 @@ aiplayer --host kodi.local --port 9090 --protocol tcp catchup "CCTV-1" --date ye
 aiplayer playfile "G:/music/歌.flac"
 aiplayer playfiles "G:/music/a.flac" "G:/music/b.flac"
 
-# 队列操作（list 显示编号；append/remove 按路径操作）
+# 队列操作（list 显示编号、标题与路径；remove 按编号或路径）
 aiplayer list
+aiplayer remove 2
 aiplayer append "G:/music/歌.flac"
 aiplayer remove "G:/music/歌.flac"
 
@@ -209,9 +213,9 @@ python tests/test_movie_smoke.py
    `PYTHONIOENCODING=utf-8`。
 8. **`--json` 模式**：搜索结果以 JSON 数组输出且无交互提示，供 AI/脚本
    消费；**永不直接播放**（单命中也返回单元素数组），用 `playfile`/`playfiles`/`append` 二次播放。
-9. **自动发现**：`aiplayer search` 触发 SSDP/mDNS（约 5 秒，慢，偶尔用一次），
-   只做发现并列出可发现实例（HTTP 8080 / TCP 9090 的 KODI）；
-   `aiplayer search --json` 输出实例数组（有实例退出 0、无则 1）。
+9. **自动发现**：`aiplayer discover` 触发 SSDP/mDNS（约 5 秒，慢，偶尔用一次），
+    只做发现并列出可发现实例（HTTP 8080 / TCP 9090 的 KODI）；
+    `aiplayer discover --json` 输出实例数组（有实例退出 0、无则 1）。
    日常建议用 `--host` 直连，动态 IP 可写 mDNS 名（如 `kodi.local`）或配好
    `kodi.host`。`--auto` 则配合动作使用：先发现 KODI，找不到回退本地 mpv。
 10. **config m3u 作用域**：`iptv.m3u` 仅在本地模式直接生效；KODI 模式的 `tv`

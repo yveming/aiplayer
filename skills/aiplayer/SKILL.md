@@ -2,7 +2,7 @@
 name: aiplayer
 description: >
   Control media playback using KODI (via JSON-RPC) or local mpv player.
-  Defaults to local mpv playback. Use `search` to discover KODI, or pass --host to connect directly.
+  Defaults to local mpv playback. Use `discover` to list KODI instances, or pass --host to connect directly.
   For live TV, uses HTTP m3u/EPG when no KODI is available.
 ---
 
@@ -31,7 +31,10 @@ aiplayer (entry point, installed as a uv tool)
   +-- config.py  config loader (~/.config/aiplayer/config.json, auto-generated on first run)
 ```
 
-Installed as a standalone tool with `uv tool install .` and run as `aiplayer`. Update with `uv tool install . --upgrade`. Inside the project: `uv run aiplayer`.
+Installed as a standalone tool with `uv tool install .` and run as `aiplayer`. Update with
+`uv tool install . --reinstall` (an unchanged version number makes plain `--upgrade` skip the
+reinstall). For development prefer `uv tool install -e .` so source edits apply immediately.
+Inside the project: `uv run aiplayer`.
 
 ---
 
@@ -110,7 +113,7 @@ configured m3u - **zero connection flags**.
 
 | Action | Description | Requires query? | Local/KODI |
 |--------|-------------|-----------------|------------|
-| `search` | Discover and list KODI instances (SSDP/mDNS, ~5s; `--json` for a JSON array; exit 0 if any found, else 1) | no | discovery only |
+| `discover` | List KODI instances (SSDP/mDNS, ~5s; `--json` for a JSON array; exit 0 if any found, else 1) | no | discovery only |
 | `movie` | Search and play a movie | yes | both |
 | `video` | Search and play a TV episode (S03E04) | yes | both |
 | `music` | Search and play music (with `--artist`/`--album`/`--song`) | optional | both |
@@ -131,7 +134,7 @@ configured m3u - **zero connection flags**.
 | `playfiles` | Clear playlist, play multiple files by path | yes (paths...) | both |
 | `append` | Append a file to the playlist | yes (path) | both |
 | `list` | List the current queue, marking the playing entry | no | both |
-| `remove` | Remove a queued file by path | yes (path) | both |
+| `remove` | Remove a queued file by index (as numbered by `list`) or by path/title | yes (index or path) | both |
 | `status` | Show current playback info | no | both |
 
 ---
@@ -161,6 +164,7 @@ exits 2 with a parser error. Config `kodi.host` is not part of the rule
 | `--time` | str | catchup, epg | Time keyword or HH:MM |
 | `--json` | flag | search actions | JSON array output, never auto-plays (for AI) |
 | `--debug` | flag | any | Verbose debug output |
+| `--version` | flag | any | Print version and exit |
 | `--mpv-path` | path | local mode | mpv executable path |
 | `--max-depth` | int | search | Directory recursion depth |
 
@@ -172,14 +176,14 @@ Examples assume the config from the Configuration File section is filled in
 (kodi.host + media roots + iptv.m3u). Override forms are shown for one-off
 overrides only.
 
-### search — Discover KODI instances
+### discover — Discover KODI instances
 
 SSDP/mDNS discovery (~5s), lists discoverable KODI instances (HTTP 8080 / TCP 9090).
 Does not connect. Exit 0 if any found, else 1.
 
 ```
-aiplayer search
-aiplayer search --json     # JSON array of instances
+aiplayer discover
+aiplayer discover --json     # JSON array of instances
 ```
 
 ### movie — Search and play movies
@@ -306,7 +310,8 @@ Queue operations (same connection flags as the last play command):
 aiplayer playfile "G:/music/a.flac"      # replace queue, play one file
 aiplayer playfiles "a.flac" "b.flac"     # clear queue, play many (starts at 0)
 aiplayer append "G:/music/c.flac"        # add one file to the queue
-aiplayer list                            # show numbered queue (▶ = playing)
+aiplayer list                            # show numbered queue with paths (▶ = playing)
+aiplayer remove 2                        # drop queue entry #2 (as numbered by list)
 aiplayer remove "G:/music/c.flac"        # drop a queued file by path
 ```
 
@@ -364,7 +369,7 @@ http://iptv.example/iptv/iptv.m3u
 
 ## Important Notes
 
-- **Discovery is slow (~5s)**: never `--auto` unless the user asks; prefer config `kodi.host` or `--host`. `--auto` probes HTTP (8080) and TCP (9090) and, with several instances, picks the configured `kodi.host` or fails listing the choices. For DHCP boxes use an mDNS name (e.g. `kodi.local`), not the IP. `--host`/`--auto`/`--local` are mutually exclusive (combining two exits 2). To only discover and list instances use the `search` action (`aiplayer search`, or `search --json` for a JSON array; exit 0 if any found, else 1) - it does not connect.
+- **Discovery is slow (~5s)**: never `--auto` unless the user asks; prefer config `kodi.host` or `--host`. `--auto` probes HTTP (8080) and TCP (9090) and, with several instances, picks the configured `kodi.host` or fails listing the choices. For DHCP boxes use an mDNS name (e.g. `kodi.local`), not the IP. `--host`/`--auto`/`--local` are mutually exclusive (combining two exits 2). To only discover and list instances use the `discover` action (`aiplayer discover`, or `discover --json` for a JSON array; exit 0 if any found, else 1) - it does not connect.
 - **Catch-up without broadcastid support**: if the PVR client rejects broadcastid with -32602, `catchup` detects that and automatically falls back to a self-built m3u/XMLTV URL (config `iptv.m3u`/`iptv.epg`, or `--m3u`/`--epg`); with no m3u it fails loudly. `--m3u` forces the self-built path.
 - **Catch-up with broadcastid support**: the PVR client builds the URL from the m3u; `catchup` stays on broadcastid (no fallback needed).
 - **m3u scoping**: config `iptv.m3u` applies in local mode; in KODI mode `tv` uses PVR. When KODI returns no EPG, or catch-up broadcastid is rejected, `catchup`/`epg` fall back to the m3u/XMLTV patch automatically (config or `--m3u`/`--epg`).
