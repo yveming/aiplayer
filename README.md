@@ -85,7 +85,7 @@ aiplayer [连接参数] <动作> [查询词] [动作参数]
 配置文件 `kodi.host` 不参与互斥（`--local` 覆盖它、`--auto` 用它挑选实例）。
 
 **动作**：必填。`discover` 发现 KODI 实例 | `movie` 电影 | `video` 剧集 | `music` 音乐 | `tv` 电视直播/频道 |
-`epg` 节目单 | `catchup` 回看 | `playfile`/`playfiles`/`append`/`list`/`remove` 文件播放与队列 |
+`epg` 节目单 | `catchup` 回看 | `playfile`/`playfiles`/`append`/`list`/`remove`/`clear` 文件播放与队列 |
 其余为播放控制；`stop` 会停止播放并退出本地 mpv 进程（下次播放重新启动），
 mpv 未运行时这些动作提示 Nothing playing。不做任何自动推断。
 
@@ -116,11 +116,12 @@ aiplayer --host kodi.local --port 9090 --protocol tcp catchup "CCTV-1" --date ye
 aiplayer playfile "G:/music/歌.flac"
 aiplayer playfiles "G:/music/a.flac" "G:/music/b.flac"
 
-# 队列操作（list 显示编号、标题与路径；remove 按编号或路径）
+# 队列操作（list 显示编号、标题与路径；remove 按编号或路径；clear 清空队列）
 aiplayer list
 aiplayer remove 2
 aiplayer append "G:/music/歌.flac"
 aiplayer remove "G:/music/歌.flac"
+aiplayer clear
 
 # 播放控制（作用于最近一次播放所在的模式）
 aiplayer pause

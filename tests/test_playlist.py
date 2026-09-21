@@ -223,6 +223,34 @@ idle.ipc_path = 'x'
 idle._running = False
 check('mpv remove idle -> not running',
       idle.playlist_remove(0).get('error') == 'not running')
+
+# --- mpv: playlist_clear issues playlist-clear, idle -> not running ---------
+def fake_clear_cmd(ipc_path, command):
+    fake_clear_cmd.seen.append(command)
+    if command == ["get_property", "idle"]:
+        return {"error": "success", "data": False}
+    return {"error": "success"}
+
+
+fake_clear_cmd.seen = []
+lp._cmd = fake_clear_cmd
+try:
+    p = MpvPlayer.__new__(MpvPlayer)
+    p.ipc_path = 'x'
+    p._running = True
+    p.playlist_clear()
+    check('mpv clear sends playlist-clear',
+          ["playlist-clear"] in fake_clear_cmd.seen, str(fake_clear_cmd.seen))
+finally:
+    lp._cmd = real_cmd
+
+# Idle mpv -> not running, never spawns.
+lp._cmd = lambda ipc, cmd: {"error": "not running"}
+idle = MpvPlayer.__new__(MpvPlayer)
+idle.ipc_path = 'x'
+idle._running = False
+check('mpv clear idle -> not running',
+      idle.playlist_clear().get('error') == 'not running')
 lp._cmd = real_cmd
 
 
@@ -359,8 +387,8 @@ check('json output round-trips', json.loads(js) == sample, js)
 
 
 # --- action ordering: file/queue actions grouped before control -------------
-check('action list has append/list/remove',
-      all(a in ACTION_CHOICES for a in ('append', 'list', 'remove')),
+check('action list has append/list/remove/clear',
+      all(a in ACTION_CHOICES for a in ('append', 'list', 'remove', 'clear')),
       str(ACTION_CHOICES))
 check('old action names removed',
       'enqueue' not in ACTION_CHOICES and 'playlist' not in ACTION_CHOICES,
@@ -368,7 +396,7 @@ check('old action names removed',
 check('status stays last',
       ACTION_CHOICES.index('status') == len(ACTION_CHOICES) - 1, str(ACTION_CHOICES))
 check('EPILOG groups file/queue actions on one line',
-      'files    playfile | playfiles | append | list | remove' in EPILOG, EPILOG)
+      'files    playfile | playfiles | append | list | remove | clear' in EPILOG, EPILOG)
 check('EPILOG files group precedes control',
       EPILOG.index('files    playfile') < EPILOG.index('control  pause'), EPILOG)
 check('EPILOG does not mention old names',

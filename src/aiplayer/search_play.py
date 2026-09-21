@@ -408,7 +408,7 @@ def _dir_json(remote_matches):
              "display": m.get('display', ''),
              "type": m.get('type', ''),
              "source": m.get('source', '')}
-            for i, m in enumerate(remote_matches[:50], 1)]
+            for i, m in enumerate(remote_matches, 1)]
 
 
 def _present_dir_matches(remote_matches, player, api, json_output):
@@ -431,7 +431,7 @@ def _present_dir_matches(remote_matches, player, api, json_output):
 def _select_and_play_dir(remote_matches, player, api):
     """Numbered list + interactive pick for directory matches (movie/tv)."""
     print(f"\nFound {len(remote_matches)} matches:")
-    for i, m in enumerate(remote_matches[:50], 1):
+    for i, m in enumerate(remote_matches, 1):
         print(f"{i}. [{m['source']}] {m.get('display', m['label'])}")
     choice = input("\nEnter number to play (or 'q' to quit): ").strip()
     if choice.lower() == 'q':
@@ -526,11 +526,11 @@ def _handle_library_matches(matches, api, kind, json_output, allow_multi=False):
         play(to_item(m))
         return True
     if json_output:
-        out = [to_entry(i, m) for i, (score, m) in enumerate(matches[:50], 1)]
+        out = [to_entry(i, m) for i, (score, m) in enumerate(matches, 1)]
         print(json.dumps(out, ensure_ascii=False))
         return True
     print(f"\nFound {len(matches)} {header}:")
-    for i, (score, m) in enumerate(matches[:50], 1):
+    for i, (score, m) in enumerate(matches, 1):
         print(f"{i}. {list_line(m)}")
     choice = input(prompt).strip()
     if choice.lower() == 'q':
@@ -735,7 +735,7 @@ def play_music(player, query, artist=None, album=None, song=None, shuffle=False,
     if handled:
         return True
     print(f"\nFound {len(remote_matches)} matches:")
-    for i, m in enumerate(remote_matches[:50], 1):
+    for i, m in enumerate(remote_matches, 1):
         print(f"{i}. [{m['source']}] {m.get('display', m['label'])}")
     choice = input("\nEnter number(s) (e.g. 1,3,5 or 1-5), 'a' for all, 'q' to quit: ").strip()
     if choice.lower() == 'q':
