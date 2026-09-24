@@ -27,8 +27,13 @@ class Player(ABC):
         """Play a local file path."""
 
     @abstractmethod
-    def play_url(self, url):
-        """Play a stream URL."""
+    def play_url(self, url, verify=False):
+        """Play a stream URL.
+
+        `verify` asks the backend to confirm playback actually started and
+        report it as a `playing` bool in the result dict; backends that
+        cannot verify just ignore it.
+        """
 
     @abstractmethod
     def play_item(self, item):

@@ -19,6 +19,32 @@ import time
 
 MPV_IPC_PATH = "/tmp/mpv-socket" if sys.platform != "win32" else r"\\.\pipe\mpv-pipe"
 
+# FFmpeg's RTP/UDP protocols honor a `timeout` URL parameter (microseconds):
+# after that much socket silence rtp_read() returns ETIMEDOUT instead of
+# polling forever. mpv's --network-timeout / --stream-lavf-o never reach the
+# rtp protocol (the manual only promises HTTP support), so the URL parameter
+# is the only lever that works. A starved multicast stream (firewall, dead
+# group) would otherwise wedge the demuxer open forever and leak its
+# RTP/RTCP sockets, poisoning later channel loads. Measured on mpv 0.41
+# (FFmpeg n8.0): a dead stream aborts ~2.3x the timeout after load; live
+# streams are unaffected (poll returns data before the timeout can fire).
+_STREAM_TIMEOUT_US = 3000000  # 3s of silence -> mpv aborts the load in ~7s
+_TIMEOUT_SCHEMES = ("rtp://", "udp://")
+
+
+def append_stream_timeout(url, timeout_us=_STREAM_TIMEOUT_US):
+    """Append FFmpeg's per-read timeout to rtp:// / udp:// stream URLs.
+
+    Idempotent: a URL that already carries a timeout parameter is returned
+    unchanged. Non-network URLs are returned unchanged.
+    """
+    if not isinstance(url, str) or not url.lower().startswith(_TIMEOUT_SCHEMES):
+        return url
+    if "timeout=" in url:
+        return url
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}timeout={timeout_us}"
+
 
 _DISPLAY_KEYS = ("DISPLAY", "WAYLAND_DISPLAY", "XAUTHORITY",
                  "XDG_SESSION_TYPE", "XDG_RUNTIME_DIR",
@@ -287,10 +313,10 @@ class MpvPlayer:
     def _cmd(self, command):
         return _cmd(self.ipc_path, command)
 
-    def play(self, path):
+    def play(self, path, verify=False):
 
         self._ensure_running()
-        r = self._cmd(["loadfile", path, "replace"])
+        r = self._cmd(["loadfile", append_stream_timeout(path), "replace"])
         # mpv keeps the `pause` property across file loads (pause is not in
         # the default --reset-on-next-file list), so a queue left paused by a
         # previous session - including the pause mpv sets at EOF via
@@ -304,7 +330,37 @@ class MpvPlayer:
         # the process (see _ensure_gone). A preceding `stop` command does not fix
         # it, so it is intentionally not sent here.
         self._cmd(["set_property", "pause", False])
+        if verify and isinstance(r, dict) and r.get("error") in (None, "success"):
+            r["playing"] = self._wait_playing()
         return r
+
+    def _wait_playing(self, timeout=3.0, interval=0.3):
+        """Poll the IPC for evidence that playback actually started.
+
+        Returns True as soon as `time-pos` exists (demuxer producing output),
+        False when the load aborted back to idle or nothing started within
+        `timeout`. Reports the state only; diagnosing why a stream did not
+        start is left to the user.
+        """
+        deadline = time.time() + timeout
+        first = True
+        while True:
+            t = self._cmd(["get_property", "time-pos"])
+            if t.get("error") in (None, "success") and isinstance(t.get("data"), (int, float)):
+                return True
+            if not first:
+                # Skip on the first pass: right after loadfile there is a
+                # brief window where the state has not flipped yet. Note the
+                # property is `idle-active` (the "nothing loaded" state);
+                # `idle` is the --idle option value and is always true for
+                # our persistent player.
+                r = self._cmd(["get_property", "idle-active"])
+                if r.get("error") in (None, "success") and r.get("data") is True:
+                    return False
+            first = False
+            if time.time() >= deadline:
+                return False
+            time.sleep(interval)
 
     def play_pause(self):
 
