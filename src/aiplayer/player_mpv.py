@@ -15,8 +15,8 @@ class MpvBackend(Player):
     def play_file(self, path):
         return self.local.play(path)
 
-    def play_url(self, url):
-        return self.local.play(url)
+    def play_url(self, url, verify=False):
+        return self.local.play(url, verify=verify)
 
     def play_item(self, item):
         f = item.get('file') or item.get('path', '')

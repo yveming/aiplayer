@@ -28,7 +28,9 @@ class KodiBackend(Player):
         self._playlist_id = None
         return result
 
-    def play_url(self, url):
+    def play_url(self, url, verify=False):
+        # Kodi reports its own success via the Player.Open reply; no IPC
+        # verification is possible (or needed) on this backend.
         result = self.kodi.player_open_item({'file': url})
         self._playlist_id = None
         return result

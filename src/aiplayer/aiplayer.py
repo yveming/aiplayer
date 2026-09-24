@@ -423,9 +423,12 @@ def main():
                     url = m3u_entry['stream_url']
                     print(f"Stream URL: {url}")
                     print("Launching mpv...")
-                    result = player.play_url(url)
+                    result = player.play_url(url, verify=True)
                     if isinstance(result, dict) and result.get('error') not in (None, 'success'):
                         print(f"Playback error: {result['error']}")
+                        success = False
+                    elif isinstance(result, dict) and result.get('playing') is False:
+                        print(f"Not playing: {query}")
                         success = False
                     else:
                         print(f"Playing: {query}")
