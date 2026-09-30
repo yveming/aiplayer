@@ -229,6 +229,5 @@ aiplayer epg "湖南卫视" --m3u "http://iptv.example/iptv/iptv-10.m3u" --date 
 
 ## When something breaks
 
-The old `diag_*.py` probes were archived to `tests/archive/` (they use
-outdated CLI flags). For raw responses, use the current CLI with
-`--debug`, or write a quick probe against `KodiAPI` directly.
+For raw responses, use the current CLI with `--debug`, or write a
+quick probe against `KodiAPI` directly.

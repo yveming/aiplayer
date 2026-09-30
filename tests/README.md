@@ -21,7 +21,6 @@ Offline test suite for aiplayer (KODI + local mpv unified player).
 | `REAL_KODI_TESTS.md`            | checklist   | YES   | Manual real-KODI test commands (movie / music / tv / pvr)   |
 | `test_e2e_real_kodi.py`         | integration | YES   | Read-only smoke-test against a real KODI box (`--box`)      |
 | `real_playback_check.py`        | integration | YES   | Playback checks: tv / catchup / queue (plays media!)        |
-| `archive/`                      | archived    | YES   | 32 one-off `diag_*.py` probes (see `archive/README.md`)     |
 
 Offline suites never hit the network: online metadata (Douban) only
 activates on empty search results, which the mocks never produce, and
@@ -63,5 +62,5 @@ return code for bare scripts (pvr_units). Any non-zero failure exits 1.
    check `search_play.py` / `pvr_epg.py` first.
 2. If a real KODI command from `REAL_KODI_TESTS.md` fails: either
    the KODI source layout changed, the JSON-RPC enum changed, or the
-   user added new content. Re-run the matching `diag_*.py` to see
-   the raw KODI response, then adjust the filter / parser.
+   user added new content. Write a quick probe against `KodiAPI` to
+   see the raw response, then adjust the filter / parser.
